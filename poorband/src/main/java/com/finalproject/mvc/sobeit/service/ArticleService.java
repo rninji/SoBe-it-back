@@ -21,4 +21,13 @@ public class ArticleService {
         articleRepo.save(article);
     }
 
+    /**
+     * 글 수정
+     */
+    public void updateArticle(Article article) {
+        article.setEdited_date(LocalDateTime.now());
+        article.setWritten_date(LocalDateTime.now()); // 작성일 null이 안됨.. select해와서 다시 저장하는 방법 말고 유지시키는 방법 없나?
+        articleRepo.save(article);
+    }
+
 }

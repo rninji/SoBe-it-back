@@ -24,4 +24,15 @@ public class ArticleController {
         return("write");
     }
 
+    /**
+     * 글 수정
+     * @param article
+     * @return
+     */
+    @RequestMapping("article/update")
+    public String updateArticle(Article article){
+        articleService.updateArticle(article);
+        return("update");
+    }
+
 }
