@@ -25,5 +25,18 @@ public class ReplyController {
         return writtenReply;
     }
 
+    /**
+     * 댓글 수정
+     * @param reply
+     * @return
+     */
+    @RequestMapping("/comment/update")
+    public Reply updateReply(Reply reply){
+        Reply updatedReply = replyService.updateReply(reply);
+        if (updatedReply == null) {
+            //throws new Exception("댓글 작성 실패");
+        }
+        return updatedReply;
+    }
 
 }

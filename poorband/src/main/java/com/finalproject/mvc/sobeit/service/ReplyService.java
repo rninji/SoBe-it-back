@@ -20,4 +20,15 @@ public class ReplyService {
         reply.setWritten_date(LocalDateTime.now());
         return replyRepo.save(reply);
     }
+
+    /**
+     * 댓글 수정
+     * @param reply
+     * @return
+     */
+    public Reply updateReply(Reply reply){
+        reply.setWritten_date(LocalDateTime.now());
+        // 수정일 갱신
+        return replyRepo.save(reply);
+    }
 }
