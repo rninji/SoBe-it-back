@@ -2,27 +2,31 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepo userRepo;
 
     @Override
     public Users create(final Users users) {
-        if(users == null || users.getUser_id() == null || users.getEmail() == null || users.getPhone_number() == null) {
+        if(users == null || users.getUserId() == null || users.getEmail() == null || users.getPhoneNumber() == null) {
             throw new RuntimeException("Invalid arguments");
         }
 
-        final String userId = users.getUser_id();
+        final String userId = users.getUserId();
         final String email = users.getEmail();
-        final String phoneNumber = users.getPhone_number();
+        final String phoneNumber = users.getPhoneNumber();
 
-        if(userRepo.existsByUser_id(userId)) {
+        if(userRepo.existsByUserId(userId)) {
             log.warn("UserId already exists {}", userId);
             throw new RuntimeException("UserId already exists");
         }
@@ -32,7 +36,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists");
         }
 
-        if(userRepo.existsByEmail(phoneNumber)) {
+        if(userRepo.existsByPhoneNumber(phoneNumber)) {
             log.warn("PhoneNumber already exists {}", phoneNumber);
             throw new RuntimeException("PhoneNumber already exists");
         }
@@ -42,6 +46,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Users getByCredentials(String user_id, String password) {
-        return userRepo.findByUser_idAndPassword(user_id, password);
+        return userRepo.findByUserIdAndPassword(user_id, password);
     }
 }
