@@ -21,10 +21,10 @@ public class ProfileServiceImpl implements ProfileService {
     public Users selectUserInfo(String user_id) {
         Users user = new Users();
 
-        user.setProfile_image_url(userRep.findByUserId(user_id).getUser_id());
-        user.setNickname(userRep.findByUserId(user_id).getNickname());
+        user.setProfile_image_url(userRep.findByUser_id(user_id).getUser_id());
+        user.setNickname(userRep.findByUser_id(user_id).getNickname());
         user.setUser_id(user_id);
-        user.setIntroduction(userRep.findByUserId(user_id).getIntroduction());
+        user.setIntroduction(userRep.findByUser_id(user_id).getIntroduction());
 
 
         // followingCnt
