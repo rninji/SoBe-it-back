@@ -38,4 +38,13 @@ public class ArticleService {
         articleRepo.deleteById(id);
     }
 
+    /**
+     * 글 상세 조회
+     * @param id
+     * @return
+     */
+    public Article selectArticleById(Long id) {
+        return articleRepo.findById(id).orElse(null);
+    }
+
 }

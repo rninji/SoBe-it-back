@@ -46,4 +46,19 @@ public class ArticleController {
         return("delete");
     }
 
+    /**
+     * 글 상세 페이지
+     * @param article_seq
+     * @return
+     */
+    @RequestMapping("/article/detail")
+    public Article selectArticleById(Long article_seq){
+        Article article = articleService.selectArticleById(article_seq);
+        if (article == null){
+            //throw new Exception("글이 존재하지 않습니다.");
+            return null;
+        }
+        return article;
+    }
+
 }
