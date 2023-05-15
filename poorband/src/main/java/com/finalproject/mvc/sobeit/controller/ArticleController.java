@@ -61,4 +61,14 @@ public class ArticleController {
         return article;
     }
 
+    /**
+     * 글 전체 조회
+     * @return
+     */
+    @RequestMapping("/article/selectAll")
+    public List<Article> selectArticleAll(){
+        List<Article> list = articleService.selectAllArticle();
+        return list;
+    }
+
 }

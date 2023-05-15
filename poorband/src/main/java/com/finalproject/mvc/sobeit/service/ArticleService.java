@@ -47,4 +47,11 @@ public class ArticleService {
         return articleRepo.findById(id).orElse(null);
     }
 
+    /**
+     * 글 전체 조회
+     * @return
+     */
+    public List<Article> selectAllArticle() {
+        return articleRepo.findAll();
+    }
 }
