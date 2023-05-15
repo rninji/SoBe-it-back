@@ -19,4 +19,7 @@ public interface UserRepo extends JpaRepository<Users, Long> {
     @Query(value = "select u from Users u where u.user_id like %?1%")
     List<Users> findAllByUser_id(String userId);
 
+    @Query(value = "select u from Users u where u.user_id like %?1%")
+    List<Users> followingCnt(String userId);
+
 }

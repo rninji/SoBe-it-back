@@ -19,7 +19,7 @@ public interface ProfileService {
     /**
      * 도전 과제 정보 가져오기
      * */
-    List<GoalAmount> selectChallenge();
+    List<GoalAmount> selectChallenge(String user_id);
 
     /**
      * 유저 프로필 편집 저장
