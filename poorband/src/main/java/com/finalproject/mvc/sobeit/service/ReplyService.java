@@ -31,4 +31,12 @@ public class ReplyService {
         // 수정일 갱신
         return replyRepo.save(reply);
     }
+
+    /**
+     * 댓글 삭제
+     * @param id
+     */
+    public void deleteReply(Long id){
+        replyRepo.deleteById(id);
+    }
 }

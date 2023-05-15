@@ -39,4 +39,13 @@ public class ReplyController {
         return updatedReply;
     }
 
+    /**
+     * 댓글 삭제
+     * @param id
+     */
+    @RequestMapping("/comment/delete")
+    public void deleteReply(Long id){
+        replyService.deleteReply(id);
+    }
+
 }
