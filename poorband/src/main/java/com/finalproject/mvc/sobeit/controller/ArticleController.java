@@ -35,4 +35,15 @@ public class ArticleController {
         return("update");
     }
 
+    /**
+     * 글 삭제
+     * @param article_seq
+     * @return
+     */
+    @RequestMapping("/article/delete")
+    public String deleteArticle(Long article_seq){
+        articleService.deleteArticle(article_seq);
+        return("delete");
+    }
+
 }

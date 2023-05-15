@@ -30,4 +30,12 @@ public class ArticleService {
         articleRepo.save(article);
     }
 
+    /**
+     * 글 삭제
+     * @param id
+     */
+    public void deleteArticle(Long id) {
+        articleRepo.deleteById(id);
+    }
+
 }
