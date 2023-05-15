@@ -20,7 +20,7 @@ public class ArticleController {
      */
     @RequestMapping("/article/write")
     public String writeArticle(Article article){
-        articleService.writeArticle(article); // 현재 user_seq가 User로 되어 있어서 null로 들어옴
+        articleService.writeArticle(article);
         return("write");
     }
 
