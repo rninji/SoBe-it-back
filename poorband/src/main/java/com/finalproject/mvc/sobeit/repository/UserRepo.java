@@ -9,14 +9,18 @@ import java.util.List;
 
 @Repository
 public interface UserRepo extends JpaRepository<Users, Long> {
-
-    Users findByUser_id(String user_id);
+    Users findByUserId(String user_id);
+  
     Users findByEmail(String email);
-    Boolean existsByUser_id(String user_id);
+  
+    Users findByUserIdAndPassword(String user_id, String password);
+  
+    Boolean existsByUserId(String user_id);
+  
     Boolean existsByEmail(String email);
-    Boolean existsByPhone_number(String phone_number);
-
+  
+    Boolean existsByPhoneNumber(String phone_number);
+  
     @Query(value = "select u from Users u where u.user_id like %?1%")
     List<Users> findAllByUser_id(String userId);
-
 }
