@@ -19,10 +19,10 @@ import java.util.List;
 @Transactional
 public class ProfileServiceImpl implements ProfileService {
 
-    private UserRepo userRepo;
-    private ArticleRepo articleRepo;
-    private GoalAmountRepo goalAmountRepo;
-    private FollowingRepo followingRepo;
+    private final UserRepo userRepo;
+    private final ArticleRepo articleRepo;
+    private final GoalAmountRepo goalAmountRepo;
+    private final FollowingRepo followingRepo;
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -97,12 +97,20 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void insertChallenge(GoalAmount challenge) {
+    public void insertChallenge(String userId, GoalAmount challenge) {
 
+        /*data: {
+            "title": String,
+            "startDate": Date,
+            "endDate": Date,
+            "routine": String, // 반복 주기 설정 // 어떻게 구현할지 ..?
+            "goalAmount": int
+        }*/
+        challenge.setUser_seq(userRepo.findByUserId(userId));
     }
 
     @Override
-    public void deleteChallenge(Long userSeq, Long challenge_seq) {
+    public void deleteChallenge(String userId, Long challenge_seq) {
 
     }
 
