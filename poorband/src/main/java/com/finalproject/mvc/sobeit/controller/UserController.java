@@ -57,12 +57,13 @@ public class UserController {
                     .introduction(registeredUser.getIntroduction()) // 사용자 한 줄 소개
                     .user_name(registeredUser.getUserName()) // 사용자 이름
                     .nickname(registeredUser.getNickname()) // 사용자 닉네임
-                    .user_tier(userDTO.getUser_tier()) // 사용자 티어
-                    .challenge_count(userDTO.getChallenge_count()) // 사용자가 완료한 도전 과제 개수
-                    .phone_number(userDTO.getPhone_number()) // 사용자 전화번호
-                    .profile_image_url(userDTO.getProfile_image_url()) // 사용자 프로필 이미지 URL
+                    .user_tier(registeredUser.getUserTier()) // 사용자 티어
+                    .challenge_count(registeredUser.getChallengeCount()) // 사용자가 완료한 도전 과제 개수
+                    .phone_number(registeredUser.getPhoneNumber()) // 사용자 전화번호
+                    .profile_image_url(registeredUser.getProfileImageUrl()) // 사용자 프로필 이미지 URL
                     .build();
 
+            // 사용자 정보는 항상 하나이므로 리스트로 만들어야 하는 ResponseDTO를 사용하지 않고 그냥 UserDTO 리턴
             return ResponseEntity.ok().body(responseUserDTO);
         }
         catch (Exception e) {
