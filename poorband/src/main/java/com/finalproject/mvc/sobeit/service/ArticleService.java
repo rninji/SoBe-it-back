@@ -42,8 +42,8 @@ public class ArticleService {
      * 글 삭제
      * @param id
      */
-    public void deleteArticle(Long id) {
-        articleRepo.deleteById(id);
+    public void deleteArticle(Long articleSeq) {
+        articleRepo.deleteById(articleSeq);
     }
 
     /**
@@ -51,8 +51,8 @@ public class ArticleService {
      * @param id
      * @return
      */
-    public Article selectArticleById(Long id) {
-        return articleRepo.findById(id).orElse(null);
+    public Article selectArticleById(Long articleSeq) {
+        return articleRepo.findById(articleSeq).orElse(null);
     }
 
     /**
@@ -99,5 +99,17 @@ public class ArticleService {
         Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(vote).orElse(null);
         if (existingVote==null) return false;
         return true;
+    }
+
+    /**
+     * 투표수 확인
+     * @param articleSeq
+     * @return v[0] 찬성표수, v[1] 반대표수
+     */
+    public int[] voteCount(Long articleSeq){
+        int[] voteValue = new int[2];
+        voteValue[0] = voteRepo.findAgreeCountByArticleSeq(articleSeq);
+        voteValue[1] = voteRepo.findDisagreeCountByArticleSeq(articleSeq);
+        return voteValue;
     }
 }
