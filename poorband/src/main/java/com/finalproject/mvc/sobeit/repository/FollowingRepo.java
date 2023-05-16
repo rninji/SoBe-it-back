@@ -12,7 +12,7 @@ import java.util.List;
 public interface FollowingRepo extends JpaRepository<Following, Long> {
 
     // jpa cnt 문법으로 고치기
-    @Query(value = "select u from Users u where u.user_id = ?1")
+    @Query(value = "select u from Users u where u.userId = ?1")
     int followingCnt(String userId);
 
 }

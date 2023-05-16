@@ -9,17 +9,17 @@ public interface ProfileService {
     /**
      * 프로필 유저 정보 가져오기
      * */
-    Users selectUserInfo(String user_id);
+    Users selectUserInfo(String userId);
 
     /**
      * 내가 쓴 글 가져오기
      * */
-    List<Article> selectMyArticle(String user_id);
+    List<Article> selectMyArticle(String userId);
 
     /**
      * 도전 과제 정보 가져오기
      * */
-    List<GoalAmount> selectChallenge(String user_id);
+    List<GoalAmount> selectChallenge(String userId);
 
     /**
      * 유저 프로필 편집 저장
@@ -54,6 +54,6 @@ public interface ProfileService {
     /**
      * 도전과제 삭제
      * */
-    void deleteChallenge(Long userSeq, Long challenge_seq);
+    void deleteChallenge(Long userSeq, Long challengeSeq);
 
 }

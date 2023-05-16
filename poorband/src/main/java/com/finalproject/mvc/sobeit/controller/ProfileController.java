@@ -26,9 +26,9 @@ public class ProfileController {
     @RequestMapping("/profileinfo")
     public void profileinfo() {
 
-        Users selectUserInfo(String user_id);
+//        Users selectUserInfo(userId);
 
-        Users user = profileService.selectUserInfo('kkk');
+        Users user = profileService.selectUserInfo("kkk");
 
         List<Article> list = profileService.selectMyArticle("kkk");
 
