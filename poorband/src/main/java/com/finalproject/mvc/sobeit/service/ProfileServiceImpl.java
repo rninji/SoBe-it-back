@@ -107,7 +107,7 @@ public class ProfileServiceImpl implements ProfileService {
             "routine": String, // 반복 주기 설정 // 어떻게 구현할지 ..?
             "goalAmount": int
         }*/
-        challenge.setUser_seq(userRepo.findByUserId(userId));
+        challenge.setUserSeq(userRepo.findByUserId(userId));
     }
 
     @Override
