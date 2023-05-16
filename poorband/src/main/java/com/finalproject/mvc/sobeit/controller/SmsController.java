@@ -23,7 +23,7 @@ public class SmsController {
     private final SmsService smsService;
     private final HttpSession session;
 
-    @PostMapping("auth/smsAuthRequset")
+    @PostMapping("sms/smsAuthRequset")
     public Boolean phoneAuth(String tel) throws JSONException, UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
 
 //        try { // 이미 가입된 전화번호가 있으면
@@ -49,7 +49,7 @@ public class SmsController {
         return true;
     }
 
-    @PostMapping("auth/smsAuthOk")
+    @PostMapping("sms/smsAuthOk")
     public Boolean phoneAuthOk(@RequestParam String code) {
         String savedAuthCode = (String) session.getAttribute("rand");
 
@@ -62,5 +62,6 @@ public class SmsController {
 
         return false;  // Auth failed
     }
+
 
 }
