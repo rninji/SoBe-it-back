@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,6 +86,15 @@ public class ArticleController {
         // 좋아요 생성 시 true, 취소 시 false
         boolean isLiked = articleService.likeArticle(articleLike);
         return isLiked;
+    }
+
+    @PostMapping("/vote")
+    public void vote(Vote vote){
+        Vote votedVote = articleService.voteArticle(vote);
+        if (votedVote == null) {
+            //throw Exception("투표 실패");
+        }
+        // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
     }
 
 }

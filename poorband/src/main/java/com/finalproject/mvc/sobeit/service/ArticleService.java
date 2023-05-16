@@ -2,8 +2,10 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
+import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ public class ArticleService {
     ArticleRepo articleRepo;
     @Autowired
     ArticleLikeRepo articleLikeRepo;
+    @Autowired
+    VoteRepo voteRepo;
 
     /**
      * 글 작성
@@ -74,5 +78,13 @@ public class ArticleService {
             articleLikeRepo.delete(existingLike);
         }
         return isLiked;
+    }
+
+    /**
+     * 투표하기
+     */
+    public Vote voteArticle(Vote vote){
+        Vote votedVote = voteRepo.save(vote);
+        return votedVote;
     }
 }
