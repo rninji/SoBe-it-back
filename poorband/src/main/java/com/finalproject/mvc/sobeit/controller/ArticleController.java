@@ -37,23 +37,23 @@ public class ArticleController {
 
     /**
      * 글 삭제
-     * @param article_seq
+     * @param articleSeq
      * @return
      */
     @RequestMapping("/article/delete")
-    public String deleteArticle(Long article_seq){
-        articleService.deleteArticle(article_seq);
+    public String deleteArticle(Long articleSeq){
+        articleService.deleteArticle(articleSeq);
         return("delete");
     }
 
     /**
      * 글 상세 페이지
-     * @param article_seq
+     * @param articleSeq
      * @return
      */
     @RequestMapping("/article/detail")
-    public Article selectArticleById(Long article_seq){
-        Article article = articleService.selectArticleById(article_seq);
+    public Article selectArticleById(Long articleSeq){
+        Article article = articleService.selectArticleById(articleSeq);
         if (article == null){
             //throw new Exception("글이 존재하지 않습니다.");
             return null;
