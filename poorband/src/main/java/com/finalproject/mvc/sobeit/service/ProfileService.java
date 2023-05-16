@@ -49,11 +49,11 @@ public interface ProfileService {
     /**
      * 도전과제 추가
      * */
-    void insertChallenge(GoalAmount challenge);
+    void insertChallenge(String userId, GoalAmount challenge);
 
     /**
      * 도전과제 삭제
      * */
-    void deleteChallenge(Long userSeq, Long challengeSeq);
+    void deleteChallenge(String userId, Long challengeSeq);
 
 }

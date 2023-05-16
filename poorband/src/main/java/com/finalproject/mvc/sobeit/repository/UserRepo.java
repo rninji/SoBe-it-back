@@ -1,14 +1,16 @@
 package com.finalproject.mvc.sobeit.repository;
 
+import com.finalproject.mvc.sobeit.entity.Following;
 import com.finalproject.mvc.sobeit.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UserRepo extends JpaRepository<Users, Long> {
+public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateExecutor<Users> {
 
         Users findByUserSeq(Long userSeq);
 
