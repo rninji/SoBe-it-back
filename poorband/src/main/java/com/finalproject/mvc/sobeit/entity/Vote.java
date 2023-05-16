@@ -13,11 +13,11 @@ import javax.persistence.*;
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long vote_seq;
+    private Long voteSeq;
 
     @ManyToOne
-    @JoinColumn(name = "article_seq", referencedColumnName = "article_seq")
-    private Article article_seq;
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    private Article articleSeq;
 
     @Column(nullable = false)
     private int vote;
