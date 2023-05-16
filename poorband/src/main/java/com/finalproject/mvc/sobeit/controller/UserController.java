@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.controller;
 
+import com.finalproject.mvc.sobeit.dto.FindIdDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.dto.UserDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -92,16 +93,15 @@ public class UserController {
 
     /**
      *
-     * @param userName : 유저가 입력한 이름
-     * @param phoneNumber : 유저가 입력한 핸드폰 번호
+     * @param findIdDTO : 유저가 입력한 이름, 핸드폰 번호
      * @return null일 경우 : 500으로 응답해주고 에러리스폰스 보내주기
      * @return null 아닐 경우 : JSON으로 { "userId" : userId } 보내주기
      */
     @PostMapping("/findid")
-    public ResponseEntity<?> findUserId(@RequestParam String userName, @RequestParam String phoneNumber) {
-        Users findUser = userService.findUserId(userName, phoneNumber);
-        String userId = findUser.getUserId();
+    public ResponseEntity<?> findUserId(@RequestBody FindIdDTO findIdDTO) {
+        Users findUser = userService.findUserId(findIdDTO.getInputUserName(), findIdDTO.getInputUserPhoneNumber());
         if (findUser != null) {
+            String userId = findUser.getUserId();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userId", userId);
             return ResponseEntity.ok().body(jsonObject);
