@@ -25,8 +25,9 @@ public class ArticleController {
      */
     @PostMapping("/write")
     public String writeArticle(Article article){
-        articleService.writeArticle(article);
-        return("write");
+        Article writtenArticle = articleService.writeArticle(article);
+        // if (writtenArticle==null) throw Exception("글 작성 실패");
+        return("success");
     }
 
     /**
@@ -36,8 +37,9 @@ public class ArticleController {
      */
     @PostMapping("/update")
     public String updateArticle(Article article){
-        articleService.updateArticle(article);
-        return("update");
+        Article updatedArticle = articleService.updateArticle(article);
+        // if (updatedArticle==null) throw Exception("글 수정 실패");
+        return("success");
     }
 
     /**
@@ -88,13 +90,24 @@ public class ArticleController {
         return isLiked;
     }
 
+    /**
+     * 투표하기
+     * @param vote
+     */
     @PostMapping("/vote")
     public void vote(Vote vote){
+        if (articleService.voteCheck(vote)){
+            // throw Exception("이미 투표 완료했습니다.");
+            System.out.println("중복 투표");
+            return;
+        }
+
         Vote votedVote = articleService.voteArticle(vote);
         if (votedVote == null) {
             //throw Exception("투표 실패");
         }
         // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
     }
+
 
 }

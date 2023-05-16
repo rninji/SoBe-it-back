@@ -16,13 +16,13 @@ public class Vote {
     private Long voteSeq;
 
     @ManyToOne
-    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
     private Article articleSeq;
 
     @Column(nullable = false)
     private int vote;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users userSeq;
 }

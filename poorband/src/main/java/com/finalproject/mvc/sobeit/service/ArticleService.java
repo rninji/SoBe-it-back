@@ -24,18 +24,18 @@ public class ArticleService {
      * 글 작성
      * @param article
      */
-    public void writeArticle(Article article) {
+    public Article writeArticle(Article article) {
         article.setWrittenDate(LocalDateTime.now());
-        articleRepo.save(article);
+        return articleRepo.save(article);
     }
 
     /**
      * 글 수정
      */
-    public void updateArticle(Article article) {
+    public Article updateArticle(Article article) {
         article.setEditedDate(LocalDateTime.now());
         article.setWrittenDate(LocalDateTime.now()); // 작성일 null이 안됨.. select해와서 다시 저장하는 방법 말고 유지시키는 방법 없나?
-        articleRepo.save(article);
+        return articleRepo.save(article);
     }
 
     /**
@@ -82,9 +82,22 @@ public class ArticleService {
 
     /**
      * 투표하기
+     * @param vote
+     * @return 생성된 투표
      */
     public Vote voteArticle(Vote vote){
         Vote votedVote = voteRepo.save(vote);
         return votedVote;
+    }
+
+    /**
+     * 해당 사용자의 해당 글에 대한 투표 여부 확인
+     * @param vote
+     * @return true면 투표한 적 있음 / false면 투표한 적 없음
+     */
+    public boolean voteCheck(Vote vote){
+        Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(vote).orElse(null);
+        if (existingVote==null) return false;
+        return true;
     }
 }
