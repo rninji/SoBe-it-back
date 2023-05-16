@@ -38,5 +38,6 @@ public class ReplyService {
      */
     public void deleteReply(Long id){
         replyRepo.deleteById(id);
+        // 자식 댓글 다 삭제해야 댐ㅎㅎ
     }
 }

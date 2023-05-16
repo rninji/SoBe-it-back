@@ -44,8 +44,8 @@ public class ReplyController {
      * @param id
      */
     @RequestMapping("/comment/delete")
-    public void deleteReply(Long id){
-        replyService.deleteReply(id);
+    public void deleteReply(Long reply_seq){
+        replyService.deleteReply(reply_seq);
     }
 
 }
