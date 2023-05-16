@@ -48,4 +48,13 @@ public class UserServiceImpl implements UserService {
     public Users getByCredentials(String user_id, String password) {
         return userRepo.findByUserIdAndPassword(user_id, password);
     }
+
+    @Override
+    public Users findUserId(String inputUserName, String inputPhoneNumber) {
+        //TODO : userRepo 업뎃 되면 붙여주기
+        Users users = userRepo.findByUserNameAndPhoneNumber(inputUserName, inputPhoneNumber);
+        return users;
+    }
+
+
 }
