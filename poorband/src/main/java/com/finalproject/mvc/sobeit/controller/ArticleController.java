@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.entity.Article;
+import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +73,18 @@ public class ArticleController {
     public List<Article> selectArticleAll(){
         List<Article> list = articleService.selectAllArticle();
         return list;
+    }
+
+    /**
+     * 글 좋아요
+     * @param articleLike
+     * @return true면 좋아요 false면 좋아요 삭제
+     */
+    @PostMapping("/like")
+    public boolean likeArticle(ArticleLike articleLike){
+        // 좋아요 생성 시 true, 취소 시 false
+        boolean isLiked = articleService.likeArticle(articleLike);
+        return isLiked;
     }
 
 }

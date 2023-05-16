@@ -1,6 +1,8 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.entity.Article;
+import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,8 @@ import java.util.List;
 public class ArticleService {
     @Autowired
     ArticleRepo articleRepo;
+    @Autowired
+    ArticleLikeRepo articleLikeRepo;
 
     /**
      * 글 작성
@@ -53,5 +57,22 @@ public class ArticleService {
      */
     public List<Article> selectAllArticle() {
         return articleRepo.findAll();
+    }
+
+    /**
+     * 글 좋아요
+     * @param articleLike
+     */
+    public boolean likeArticle(ArticleLike articleLike){
+        boolean isLiked = false;
+        ArticleLike existingLike = articleLikeRepo.findById(articleLike.getLikeSeq()).orElse(null); // 기존 좋아요가 있는 지 확인
+        if (existingLike==null){ // 좋아요한 적 없으면 좋아요 생성
+            articleLikeRepo.save(articleLike);
+            isLiked = true;
+        }
+        else { // 좋아요한 적 있으면 좋아요 취소(삭제)
+            articleLikeRepo.delete(existingLike);
+        }
+        return isLiked;
     }
 }
