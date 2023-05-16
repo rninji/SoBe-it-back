@@ -15,7 +15,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
-
+/**
+ * 회원가입 시 SMS 인증할 때 사용되는 컨트롤러
+ */
 @RestController
 @RequiredArgsConstructor
 public class SmsController {

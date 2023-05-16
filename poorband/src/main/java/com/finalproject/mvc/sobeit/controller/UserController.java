@@ -1,23 +1,30 @@
 package com.finalproject.mvc.sobeit.controller;
 
-import com.finalproject.mvc.sobeit.dto.FindIdDTO;
-import com.finalproject.mvc.sobeit.dto.ResponseDTO;
-import com.finalproject.mvc.sobeit.dto.UserDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.finalproject.mvc.sobeit.dto.*;
 import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.service.SmsService;
 import com.finalproject.mvc.sobeit.security.TokenProvider;
 import com.finalproject.mvc.sobeit.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+    private final SmsService smsService;
 
     @Autowired
     private TokenProvider tokenProvider;
@@ -113,6 +120,29 @@ public class UserController {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userId", userId);
             return ResponseEntity.ok().body(jsonObject);
+        }
+        else{
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("해당하는 사용자 정보를 찾을 수 없습니다.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
+    }
+    @PostMapping("/findpassword")
+    public ResponseEntity<?> findUserPassword(@RequestBody FindPasswordDTO findPasswordDTO) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        MessageDTO messageDTO = new MessageDTO();
+        Users findUser = userService.findUserId(findPasswordDTO.getUserName(), findPasswordDTO.getPhoneNumber());
+
+        if (findUser != null) {
+            String userPassword = findUser.getPassword();
+            String userName = findUser.getUserName();
+            messageDTO.setTo(findPasswordDTO.getPhoneNumber());
+            messageDTO.setContent("Sobe-it ["+ userName + "] 님의 비밀번호는 [" + userPassword + "] 입니다.");
+            smsService.sendSms(messageDTO);
+            return ResponseEntity.ok().body("비밀번호가 입력하신 핸드폰 번호로 전송되었습니다.");
         }
         else{
             ResponseDTO responseDTO = ResponseDTO.builder()
