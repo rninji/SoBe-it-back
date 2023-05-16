@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -23,12 +25,15 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class UserController {
-
+    @Autowired
     private final UserService userService;
+
     private final SmsService smsService;
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -38,7 +43,7 @@ public class UserController {
                     .userId(userDTO.getUser_id()) // 사용자 아이디
                     .email(userDTO.getEmail()) // 사용자 이메일
                     .userName(userDTO.getUser_name()) // 사용자 이름
-                    .password(userDTO.getPassword()) // 사용자 비밀번호
+                    .password(passwordEncoder.encode(userDTO.getPassword())) // 사용자 비밀번호
                     .nickname(userDTO.getNickname()) // 사용자 닉네임
                     .phoneNumber(userDTO.getPhone_number()) // 사용자 전화번호
                     .build();
@@ -61,7 +66,6 @@ public class UserController {
             return ResponseEntity.ok().body(responseUserDTO);
         }
         catch (Exception e) {
-            // 사용자 정보는 항상 하나이므로 리스트로 만들어야 하는 ResponseDTO를 사용하지 않고 그냥 UserDTO 리턴
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
             return ResponseEntity
@@ -74,7 +78,8 @@ public class UserController {
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
         Users user = userService.getByCredentials(
                 userDTO.getUser_id(),
-                userDTO.getPassword());
+                userDTO.getPassword(),
+                passwordEncoder);
 
         if(user != null) {
             // 토큰 생성
