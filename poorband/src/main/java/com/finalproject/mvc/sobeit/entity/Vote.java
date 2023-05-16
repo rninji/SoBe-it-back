@@ -21,4 +21,8 @@ public class Vote {
 
     @Column(nullable = false)
     private int vote;
+
+    @ManyToOne
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
 }
