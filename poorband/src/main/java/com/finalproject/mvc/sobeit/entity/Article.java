@@ -16,28 +16,38 @@ import java.time.LocalDateTime;
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long article_seq;
+    private Long articleSeq;
+
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
+
     @Column(nullable = false)
     private int status;
+
     private String imageUrl;
+
     @Column(nullable = false)
-    private String expenditure_category;
+    private String expenditureCategory;
+
     @Column(nullable = false)
     private Long amount;
-    private String financial_text;
-    @Column(nullable = false)
-    private String article_text;
-    @Column(nullable = false)
-    private LocalDateTime written_date;
-    private LocalDateTime edited_date;
+
+    private String financialText;
 
     @Column(nullable = false)
-    private String article_type;
-    private LocalDate consumption_date;
+    private String articleText;
 
     @Column(nullable = false)
-    private String is_allowed;
+    private LocalDateTime writtenDate;
+
+    private LocalDateTime editedDate;
+
+    @Column(nullable = false)
+    private String articleType;
+
+    private LocalDate consumptionDate;
+
+    @Column(nullable = false)
+    private String isAllowed;
 }

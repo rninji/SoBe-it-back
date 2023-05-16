@@ -12,15 +12,15 @@ import javax.persistence.*;
 @Builder
 @ToString
 public class CommentLike {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long reply_like_seq;
-    @ManyToOne
-    @JoinColumn(name = "reply_seq", referencedColumnName = "reply_seq")
-    private Reply reply_seq;
-    @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    private Long replyLikeSeq;
 
+    @ManyToOne
+    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
+    private Reply replySeq;
+
+    @ManyToOne
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
 }
