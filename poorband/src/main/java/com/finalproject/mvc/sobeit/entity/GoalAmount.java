@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,4 +31,5 @@ public class GoalAmount {
 
     @Column(nullable = false, length = 4)
     private String is_success;
+
 }
