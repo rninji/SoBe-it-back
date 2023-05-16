@@ -11,4 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MessageDTO {
     String to;
+    String content;
 }
