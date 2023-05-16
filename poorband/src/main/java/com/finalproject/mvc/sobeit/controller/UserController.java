@@ -3,6 +3,7 @@ package com.finalproject.mvc.sobeit.controller;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.dto.UserDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.security.TokenProvider;
 import com.finalproject.mvc.sobeit.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -66,6 +70,9 @@ public class UserController {
                 userDTO.getPassword());
 
         if(user != null) {
+            // 토큰 생성
+            final String token = tokenProvider.create(user);
+
             final UserDTO responseUserDTO = UserDTO.builder()
                     .user_seq(user.getUserSeq())
                     .user_id(user.getUserId())
@@ -77,6 +84,7 @@ public class UserController {
                     .challenge_count(user.getChallengeCount())
                     .phone_number(user.getPhoneNumber())
                     .profile_image_url(user.getProfileImageUrl())
+                    .token(token)
                     .build();
 
             return ResponseEntity.ok().body(responseUserDTO);
