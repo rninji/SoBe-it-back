@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,15 +24,20 @@ public class SearchServiceImpl implements SearchService{
      **/
     @Override
     public List<Users> usersSearch(String inputText) {
-
-        return userRep.findAllByUserId(inputText);
+        List<Users> userSearchResult;
+        try{
+            userSearchResult = userRep.findAllByUserId(inputText);
+        } catch (NullPointerException exception) { // 검색어가 포함되는 userId가 없을 경우(null)
+            throw new RuntimeException("검색어와 일치하는 유저가 없습니다.");
+        }
+        return userSearchResult;
     }
 
     /**
      * 게시글(Articles) 검색
      **/
     @Override
-    public List<Article> articleSearch(String inputText) {
+    public List<Article>  articleSearch(String inputText) {
 
         return null;
     }
