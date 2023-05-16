@@ -15,18 +15,23 @@ import javax.persistence.*;
 public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long notice_seq;
+    private Long noticeSeq;
+
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
+
     @ManyToOne
-    @JoinColumn(name = "from_user_seq", referencedColumnName = "user_seq")
-    private Users from_user_seq;
+    @JoinColumn(name = "fromUserSeq", referencedColumnName = "userSeq")
+    private Users fromUserSeq;
+
     @Column(nullable = false)
     private String type;
+
     @ManyToOne
-    @JoinColumn(name = "not_content_seq", referencedColumnName = "article_seq")
-    private Article not_content_seq;
+    @JoinColumn(name = "notContentSeq", referencedColumnName = "articleSeq")
+    private Article notContentSeq;
+
     @Column(nullable = false)
-    private DATE not_datetime;
+    private DATE notDatetime;
 }
