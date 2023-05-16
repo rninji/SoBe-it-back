@@ -14,11 +14,13 @@ import javax.persistence.*;
 public class ArticleLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long like_seq;
+    private Long likeSeq;
+
     @ManyToOne
-    @JoinColumn(name = "article_seq", referencedColumnName = "article_seq")
-    private Article article_seq;
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    private Article articleSeq;
+
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
 }

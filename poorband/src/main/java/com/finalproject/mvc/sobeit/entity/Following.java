@@ -13,15 +13,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Following {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
 
     @Column(nullable = false)
-    private int followingUser_seq;
+    private int followingUserSeq;
 }

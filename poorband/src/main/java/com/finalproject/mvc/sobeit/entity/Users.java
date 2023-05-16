@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Users {
     @Id
-    @Column (name = "user_seq", nullable = false)
+    @Column (name = "userSeq", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userSeq; // 사용자 고유 번호
 

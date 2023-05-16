@@ -15,24 +15,27 @@ import java.time.LocalDateTime;
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long reply_seq;
+    private Long replySeq;
+
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
+
     @ManyToOne
-    @JoinColumn(name = "article_seq", referencedColumnName = "article_seq")
-    private Article article_seq;
-    @Column(nullable = false)
-    private String reply_text;
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    private Article articleSeq;
 
     @Column(nullable = false)
-    private Long parent_reply_seq;
+    private String replyText;
+
     @Column(nullable = false)
-    private LocalDateTime written_date;
+    private Long parentReplySeq;
+
+    @Column(nullable = false)
+    private LocalDateTime writtenDate;
 
     @PrePersist
     public void prePersist(){
-        this.parent_reply_seq = this.parent_reply_seq == null ? 0L : this.parent_reply_seq;
+        this.parentReplySeq = this.parentReplySeq == null ? 0L : this.parentReplySeq;
     }
-
 }

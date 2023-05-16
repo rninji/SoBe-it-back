@@ -16,20 +16,21 @@ import java.util.List;
 public class GoalAmount {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long goal_amount_seq;
+    private Long goalAmountSeq;
+
     @Column(nullable = false)
-    private Long goal_amount;
+    private Long goalAmount;
+
     @ManyToOne
-    @JoinColumn(name = "user_seq", referencedColumnName = "user_seq")
-    private Users user_seq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    private Users userSeq;
 
     @Column(nullable = false)
-    private LocalDateTime start_date;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    private LocalDateTime end_date;
+    private LocalDateTime endDate;
 
     @Column(nullable = false, length = 4)
-    private String is_success;
-
+    private String isSuccess;
 }
