@@ -5,12 +5,10 @@ import com.finalproject.mvc.sobeit.dto.UserDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -92,5 +90,30 @@ public class UserController {
         }
     }
 
+    /**
+     *
+     * @param userName : 유저가 입력한 이름
+     * @param phoneNumber : 유저가 입력한 핸드폰 번호
+     * @return null일 경우 : 500으로 응답해주고 에러리스폰스 보내주기
+     * @return null 아닐 경우 : JSON으로 { "userId" : userId } 보내주기
+     */
+    @PostMapping("/findid")
+    public ResponseEntity<?> findUserId(@RequestParam String userName, @RequestParam String phoneNumber) {
+        Users findUser = userService.findUserId(userName, phoneNumber);
+        String userId = findUser.getUserId();
+        if (findUser != null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userId", userId);
+            return ResponseEntity.ok().body(jsonObject);
+        }
+        else{
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("해당하는 사용자 정보를 찾을 수 없습니다.")
+                    .build();
 
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
+    }
 }
