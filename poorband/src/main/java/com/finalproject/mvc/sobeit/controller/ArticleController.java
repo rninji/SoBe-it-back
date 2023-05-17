@@ -2,11 +2,13 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,52 +24,71 @@ public class ArticleController {
 
     /**
      * 글 작성
+     * @param user
      * @param article
      * @return
      */
     @PostMapping("/write")
-    public String writeArticle(Article article){
+    public String writeArticle(@AuthenticationPrincipal Users user, Article article){
+        article.setUserSeq(user); // 작성자 등록
         Article writtenArticle = articleService.writeArticle(article);
-        // if (writtenArticle==null) throw Exception("글 작성 실패");
+        if (writtenArticle==null) {
+            // throw Exception("글 작성 실패");
+            return ("fail");
+        }
         return("success");
     }
 
     /**
      * 글 수정
+     * @param user
      * @param article
      * @return
      */
     @PostMapping("/update")
-    public String updateArticle(Article article){
-        Article updatedArticle = articleService.updateArticle(article);
-        // if (updatedArticle==null) throw Exception("글 수정 실패");
+    public String updateArticle(@AuthenticationPrincipal Users user, Article article){
+        Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
+        if (updatedArticle==null) {
+            //throw Exception("글 수정 실패");
+            return ("fail");
+        }
         return("success");
     }
 
     /**
      * 글 삭제
+     * @param user
      * @param articleSeq
      * @return
      */
     @PostMapping("/delete")
-    public String deleteArticle(Long articleSeq){
-        articleService.deleteArticle(articleSeq);
-        return("delete");
+    public String deleteArticle(@AuthenticationPrincipal Users user, Long articleSeq){
+        articleService.deleteArticle(user.getUserSeq(), articleSeq);
+        // 예외 처리
+        return("success");
     }
 
     /**
-     * 글 상세 페이지
+     * 글 상세 조회
+     * @param user
      * @param articleSeq
      * @return
      */
     @GetMapping("/detail")
-    public Article selectArticleById(Long articleSeq){
-        Article article = articleService.selectArticleById(articleSeq);
-        if (article == null){
-            //throw new Exception("글이 존재하지 않습니다.");
-            return null;
-        }
-        return article;
+    public JSONObject selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
+        JSONObject articleData = new JSONObject();
+
+        // 글 조회
+        Article article = articleService.selectArticleById(user.getUserSeq(), articleSeq);
+        // 예외처리 추가
+        articleData.put("article", article);
+
+        // 작성자 여부 체크
+        boolean isMine = false;
+        if (user == article.getUserSeq()) isMine = true;
+        articleData.put("isMine", isMine);
+
+        return articleData;
     }
 
     /**
