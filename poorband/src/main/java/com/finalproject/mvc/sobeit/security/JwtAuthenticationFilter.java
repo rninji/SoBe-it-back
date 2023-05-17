@@ -1,5 +1,7 @@
 package com.finalproject.mvc.sobeit.security;
 
+import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -24,6 +26,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private UserRepo userRepo;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -38,9 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userId = tokenProvider.validateAndGetUserId(token);
                 log.info("Authenticated userId : " + userId);
 
+                // userId를 통해 user 정보 가져오기
+                Users user = userRepo.findByUserId(userId);
+
                 // 인증 완료 // SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, // 인증된 사용자의 정보
+                        user, // 인증된 사용자의 정보
                         null,
                         AuthorityUtils.NO_AUTHORITIES
                 );
