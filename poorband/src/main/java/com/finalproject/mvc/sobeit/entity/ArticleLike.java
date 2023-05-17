@@ -17,10 +17,10 @@ public class ArticleLike {
     private Long likeSeq;
 
     @ManyToOne
-    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
     private Article article;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 }

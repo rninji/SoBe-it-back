@@ -18,11 +18,11 @@ public class Reply {
     private Long replySeq;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
     private Article article;
 
     @Column(nullable = false)
