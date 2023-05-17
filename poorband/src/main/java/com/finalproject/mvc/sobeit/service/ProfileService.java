@@ -40,12 +40,12 @@ public interface ProfileService {
     /**
      * 팔로잉 해제
      * */
-    void unfollow(Long userSeq, boolean state) throws Exception;
+    void unfollow(Users user, Users targetUser) throws Exception;
 
     /**
      * 팔로우 추가
      * */
-    void follow(Long userSeq, boolean state) throws Exception;
+    void follow(Users user, Users targetUser) throws Exception;
 
     /**
      * 도전과제 추가

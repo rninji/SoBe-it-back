@@ -9,9 +9,11 @@ import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,6 +50,16 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public ArticleDTO selectMyArticle(String userId) {
+
+//        List<Object[]> list = new ArrayList<>();
+//
+//        list.add("profileImg", user.getProfileImageUrl());
+//        list.add(user.getNickname());
+//
+//        List<Article[]> listArticle = articleRepo.getArticlesByUser(user);
+//
+//        return
+
         ArticleDTO articleDTO = new ArticleDTO();
         Users user = userRepo.findByUserId(userId);
         Article article = articleRepo.findByUserId(userId);
@@ -108,31 +120,45 @@ public class ProfileServiceImpl implements ProfileService {
      * 팔로잉 해제
      * */
     @Override
-    public void unfollow(Long userSeq, boolean state) throws Exception {
-        Users followingUser = userRepo.findByUserSeq(userSeq); //.orElse(null);
+    public void unfollow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
+        Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
+
+        // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
             throw new Exception("User not found");
         }
-        FollowDTO f = new FollowDTO();
-        f.setFollower(followingUser);
-        f.setFollowing(userRepo.findByUserSeq(userSeq));
-//        followingRepo.save(f);
+
+        Following f = followingRepo.findByFollowingAndFollower(user, targetUser).orElse(null);
+
+        // 서로 팔로잉 관계가 아닐 때
+        if(f == null) {
+            throw new Exception("User not following " + targetUser.getNickname());
+        }
+
+        followingRepo.save(f);
     }
 
     /**
      * 팔로우 추가
      * */
     @Override
-    public void follow(Long userSeq, boolean state) throws Exception {
+    public void follow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
 
-//        Users followingUser = userRepo.findByUserSeq(userSeq); //.orElse(null);
-//        if(followingUser == null) {
-//            throw new Exception("User not found");
-//        }
-//        FollowDTO f = new FollowDTO();
-//        f.setFollower(followingUser);
-//        f.setFollowing(userRepo.findByUserSeq(userSeq));
-//        followingRepo.save(f);
+        Users loggedInUser = userRepo.findById(user.getUserSeq()).orElse(null);
+        Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
+
+
+        // 팔로우하려는 사용자가 없음.
+        if(followingUser == null) {
+            throw new Exception("User not found!");
+        }
+
+        Following f = new Following();
+        f.setUser(user);
+        f.setFollowingUserSeq(targetUser.getUserSeq());
+
+        followingRepo.save(f);
+
     }
 
     /**

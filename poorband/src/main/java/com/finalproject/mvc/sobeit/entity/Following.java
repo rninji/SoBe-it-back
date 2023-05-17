@@ -22,5 +22,5 @@ public class Following {
     private Users user;
 
     @Column(nullable = false)
-    private int followingUserSeq;
+    private Long followingUserSeq;
 }

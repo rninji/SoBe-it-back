@@ -9,6 +9,7 @@ import com.finalproject.mvc.sobeit.responses.ApiResponse;
 import com.finalproject.mvc.sobeit.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,12 @@ public class ProfileController {
      * */
     @RequestMapping("/myarticle")
     public ResponseEntity<Object> articleList(String userId) {
-        ArticleDTO articleDTO = profileService.selectMyArticle(userId);
+//        List<ArticleDTO> list = profileService.selectMyArticle(userId);
+
+        //ArticleDTO articleDTO = profileService.selectMyArticle(userId);
 
         // list 가져오기
+
 
         apiResponse.setData(articleDTO);
         apiResponse.setMessage("작성한 글 가져오기");
