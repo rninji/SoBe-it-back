@@ -29,7 +29,6 @@ public class ProfileController {
     @RequestMapping("/profileinfo")
     public void profileinfo(String user_id) {
         Users user = profileService.selectUserInfo(user_id);
-
     }
 
     /**
@@ -38,8 +37,6 @@ public class ProfileController {
     @RequestMapping("/myarticle")
     public void articleList(String user_id) {
         List<Article> list = profileService.selectMyArticle("");
-
-
     }
 
     /**

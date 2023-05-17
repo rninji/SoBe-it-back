@@ -18,10 +18,10 @@ public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslP
     @Query(value = "select u from Users u where u.userId = ?1")
     int followingCnt(String userId);
 
-    @Query("select f from Following f where f.userSeq = ?1")
+    @Query("select f from Following f where f.user = ?1")
     List<Following> findTweetsThatUserFollows(Users user);
 
-    @Query("select f from Following f where f.userSeq = ?1 and f.followingUserSeq=?2")
+    @Query("select f from Following f where f.user = ?1 and f.followingUserSeq=?2")
     Optional<Following> findByFolloweeAndFollower(Users followee, Users followingUser_seq);
 
 }

@@ -25,13 +25,11 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class UserController {
-    @Autowired
     private final UserService userService;
 
     private final SmsService smsService;
 
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -138,6 +136,13 @@ public class UserController {
                     .body(responseDTO);
         }
     }
+
+    /**
+     *
+     * @param findPasswordDTO : 유저가 입력한 아이디와 핸드폰 번호
+     * @return : 입력받은 정보를 기반으로 User를 찾아서 성공적으로 SMS를 보내면 200 리턴
+     *
+     */
     @PostMapping("/findpassword")
     public ResponseEntity<?> findUserPassword(@RequestBody FindPasswordDTO findPasswordDTO) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         MessageDTO messageDTO = new MessageDTO();

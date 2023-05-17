@@ -6,19 +6,19 @@ import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.VoteRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 @Service
+@RequiredArgsConstructor
 public class ArticleService {
-    @Autowired
-    ArticleRepo articleRepo;
-    @Autowired
-    ArticleLikeRepo articleLikeRepo;
-    @Autowired
-    VoteRepo voteRepo;
+
+    private final ArticleRepo articleRepo;
+    private final ArticleLikeRepo articleLikeRepo;
+    private final VoteRepo voteRepo;
 
     /**
      * 글 작성

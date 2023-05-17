@@ -20,7 +20,7 @@ public class Article {
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    private Users user;
 
     @Column(nullable = false)
     private int status;
