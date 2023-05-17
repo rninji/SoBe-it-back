@@ -1,5 +1,7 @@
 package com.finalproject.mvc.sobeit.controller;
 
+import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -8,12 +10,12 @@ import com.finalproject.mvc.sobeit.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,35 +27,84 @@ public class ArticleController {
     /**
      * 글 작성
      * @param user
-     * @param article
+     * @param articleDTO
      * @return
      */
     @PostMapping("/write")
-    public String writeArticle(@AuthenticationPrincipal Users user, Article article){
-        article.setUser(user); // 작성자 등록
-        System.out.println("닉네임 : " + user.getUserName());
-        Article writtenArticle = articleService.writeArticle(article);
-        if (writtenArticle==null) {
-            // throw Exception("글 작성 실패");
-            return ("fail");
+    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
+
+        try{
+            // 요청 이용해 저장할 글 생성
+            Article article = Article.builder()
+                    .user(user)
+                    .status(articleDTO.getStatus())
+                    .imageUrl(articleDTO.getImageUrl())
+                    .expenditureCategory(articleDTO.getExpenditureCategory())
+                    .amount(articleDTO.getAmount())
+                    .financialText(articleDTO.getFinancialText())
+                    .articleText(articleDTO.getArticleText())
+                    .writtenDate(LocalDateTime.now())
+                    .articleType(articleDTO.getArticleType())
+                    //.consumptionDate(articleDTO.getConsumptionDate())
+                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                    .isAllowed(articleDTO.getIsAllowed())
+                    .build();
+
+            // 서비스 이용해 글 저장
+            Article writtenArticle = articleService.writeArticle(article);
+
+            // 저장된 글 번호 반환 (이것만 반환해도 되겠지?ㅎㅎ)
+            Long articleSeq = writtenArticle.getArticleSeq();
+            return ResponseEntity.ok().body(articleSeq);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
         }
-        return("success");
+
     }
 
     /**
      * 글 수정
      * @param user
-     * @param article
+     * @param articleDTO
      * @return
      */
     @PostMapping("/update")
-    public String updateArticle(@AuthenticationPrincipal Users user, Article article){
-        Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
-        if (updatedArticle==null) {
-            //throw Exception("글 수정 실패");
-            return ("fail");
+    public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
+        try{
+            Article article = Article.builder()
+                    .user(user)
+                    .status(articleDTO.getStatus())
+                    .imageUrl(articleDTO.getImageUrl())
+                    .expenditureCategory(articleDTO.getExpenditureCategory())
+                    .amount(articleDTO.getAmount())
+                    .financialText(articleDTO.getFinancialText())
+                    .articleText(articleDTO.getArticleText())
+                    .writtenDate(LocalDateTime.now())
+                    .articleType(articleDTO.getArticleType())
+                    //.consumptionDate(articleDTO.getConsumptionDate())
+                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                    .editedDate(LocalDateTime.now())
+                    .isAllowed(articleDTO.getIsAllowed())
+                    .build();
+            Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
+            if (updatedArticle==null) {
+                throw new RuntimeException("글 수정 실패");
+            }
+
+            // 업데이트된 글 번호 반환
+            Long articleSeq = updatedArticle.getArticleSeq();
+            return ResponseEntity.ok().body(articleSeq);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
         }
-        return("success");
     }
 
     /**
@@ -63,10 +114,19 @@ public class ArticleController {
      * @return
      */
     @PostMapping("/delete")
-    public String deleteArticle(@AuthenticationPrincipal Users user, Long articleSeq){
-        articleService.deleteArticle(user.getUserSeq(), articleSeq);
-        // 예외 처리
-        return("success");
+    public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, Long articleSeq){
+        try{
+            articleService.deleteArticle(user.getUserSeq(), articleSeq);
+            return ResponseEntity.ok().body("success");
+        }
+        catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+
     }
 
     /**
