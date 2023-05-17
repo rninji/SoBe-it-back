@@ -19,7 +19,7 @@ public class Article {
     private Long articleSeq;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 
     @Column(nullable = false)
@@ -45,7 +45,7 @@ public class Article {
 
     @Column(nullable = false)
     private String articleType;
-
+    @Column(nullable = false)
     private LocalDate consumptionDate;
 
     @Column(nullable = false)

@@ -17,10 +17,10 @@ public class CommentLike {
     private Long replyLikeSeq;
 
     @ManyToOne
-    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
+    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq", nullable = false)
     private Reply reply;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 }

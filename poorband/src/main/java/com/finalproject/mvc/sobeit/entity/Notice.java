@@ -18,11 +18,11 @@ public class Notice {
     private Long noticeSeq;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "fromUserSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "fromUserSeq", referencedColumnName = "userSeq", nullable = false)
     private Users fromUser;
 
     @Column(nullable = false)
