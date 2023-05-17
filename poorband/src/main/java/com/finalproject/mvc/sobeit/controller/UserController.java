@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -113,8 +114,23 @@ public class UserController {
         }
     }
 
+    @PostMapping("/signout")
+    public ResponseEntity<?> signOut(@AuthenticationPrincipal Users user) {
+        if (user != null) {
+            return ResponseEntity.ok().body("Logout Succeed.");
+        }
+        else {
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("Logout failed.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
+    }
+
     /**
-     *
      * @param findIdDTO : 유저가 입력한 이름, 핸드폰 번호
      * @return null일 경우 : 500으로 응답해주고 에러리스폰스 보내주기
      * @return null 아닐 경우 : JSON으로 { "userId" : userId } 보내주기
@@ -138,6 +154,7 @@ public class UserController {
                     .body(responseDTO);
         }
     }
+
     @PostMapping("/findpassword")
     public ResponseEntity<?> findUserPassword(@RequestBody FindPasswordDTO findPasswordDTO) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         MessageDTO messageDTO = new MessageDTO();
