@@ -17,12 +17,12 @@ public class Vote {
 
     @ManyToOne
     @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
-    private Article articleSeq;
+    private Article article;
 
     @Column(nullable = false)
     private int vote;
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
-    private Users userSeq;
+    private Users user;
 }

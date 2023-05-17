@@ -18,9 +18,9 @@ public class ArticleLike {
 
     @ManyToOne
     @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
-    private Article articleSeq;
+    private Article article;
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    private Users user;
 }

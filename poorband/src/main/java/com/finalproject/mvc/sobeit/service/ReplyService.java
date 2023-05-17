@@ -2,15 +2,17 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.entity.Reply;
 import com.finalproject.mvc.sobeit.repository.ReplyRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class ReplyService {
-    @Autowired
-    ReplyRepo replyRepo;
+
+    private final ReplyRepo replyRepo;
 
     /**
      * 댓글 작성
