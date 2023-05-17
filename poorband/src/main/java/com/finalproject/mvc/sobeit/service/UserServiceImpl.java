@@ -5,6 +5,7 @@ import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users getByCredentials(String user_id, String password) {
-        return userRepo.findByUserIdAndPassword(user_id, password);
+    public Users getByCredentials(final String user_id, final String password, final PasswordEncoder encoder) {
+        final Users originalUser = userRepo.findByUserId(user_id);
+
+        // matches 메서드를 이용해 패스워드가 같은지 확인
+        if(originalUser != null && encoder.matches(password, originalUser.getPassword())) {
+            return originalUser;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Users findUserId(String inputUserName, String inputPhoneNumber) {
+        //TODO : userRepo 업뎃 되면 붙여주기
+        Users users = userRepo.findByUserNameAndPhoneNumber(inputUserName, inputPhoneNumber);
+        return users;
     }
 }

@@ -11,4 +11,7 @@ import java.util.List;
 public interface ArticleRepo extends JpaRepository<Article, Long> {
     @Query("select a from Article a where a.userSeq = ?1 order by a.writtenDate desc")
     List<Article> findArticlesByUser(String user_id);
+
+    @Query("select a from Article a where a.articleText like %?1%")
+    List<Article> findArticlesByArticleText(String articleText);
 }
