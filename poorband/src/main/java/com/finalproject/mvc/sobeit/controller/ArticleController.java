@@ -2,7 +2,9 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +26,9 @@ public class ArticleController {
      */
     @PostMapping("/write")
     public String writeArticle(Article article){
-        articleService.writeArticle(article);
-        return("write");
+        Article writtenArticle = articleService.writeArticle(article);
+        // if (writtenArticle==null) throw Exception("글 작성 실패");
+        return("success");
     }
 
     /**
@@ -35,8 +38,9 @@ public class ArticleController {
      */
     @PostMapping("/update")
     public String updateArticle(Article article){
-        articleService.updateArticle(article);
-        return("update");
+        Article updatedArticle = articleService.updateArticle(article);
+        // if (updatedArticle==null) throw Exception("글 수정 실패");
+        return("success");
     }
 
     /**
@@ -87,4 +91,51 @@ public class ArticleController {
         return isLiked;
     }
 
+    /**
+     * 투표하기
+     * @param vote
+     */
+    @PostMapping("/vote")
+    public void vote(Vote vote){
+        if (articleService.voteCheck(vote)){
+            // throw Exception("이미 투표 완료했습니다.");
+            System.out.println("중복 투표");
+            return;
+        }
+
+        Vote votedVote = articleService.voteArticle(vote);
+        if (votedVote == null) {
+            //throw Exception("투표 실패");
+        }
+        // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
+    }
+
+    // 투표 여부에 따라 보여지는 글 형태가 다르니까 프론트한테 알려줘야된다면 만들어야 됨
+    /**
+     * 투표 여부 확인
+     */
+    @PostMapping("/voteCheck")
+    public void voteCheck(){}
+
+    /**
+     * 투표율 확인
+     * @param articleSeq
+     * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
+     */
+    @PostMapping("/voteRate")
+    public JSONObject voteRate(Long articleSeq){
+        int[] voteValue = articleService.voteCount(articleSeq);
+        JSONObject rate = new JSONObject();
+        rate.put("agree",voteValue[0]);
+        rate.put("disagree",voteValue[1]);
+        int agreeRate = 0;
+        int disagreeRate = 0;
+        if (voteValue[0]!=0 || voteValue[1]!=0) { // 투표수가 0이 아니라면
+            agreeRate = voteValue[0]/(voteValue[0]+voteValue[1]) * 100;
+            disagreeRate = 100 - agreeRate;
+        }
+        rate.put("agreeRate", agreeRate);
+        rate.put("disagreeRate", disagreeRate);
+        return rate;
+    }
 }
