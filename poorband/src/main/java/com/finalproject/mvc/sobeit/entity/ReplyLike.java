@@ -7,19 +7,17 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@ToString
-public class CommentLike {
+public class ReplyLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long replyLikeSeq;
+    private Long replyLike;
 
     @ManyToOne
     @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
     private Reply reply;
-
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
     private Users user;

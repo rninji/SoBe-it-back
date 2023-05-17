@@ -19,18 +19,18 @@ public class Notice {
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "fromUserSeq", referencedColumnName = "userSeq")
-    private Users fromUserSeq;
+    private Users fromUser;
 
     @Column(nullable = false)
     private String type;
 
     @ManyToOne
     @JoinColumn(name = "notContentSeq", referencedColumnName = "articleSeq")
-    private Article notContentSeq;
+    private Article notContent;
 
     @Column(nullable = false)
     private DATE notDatetime;
