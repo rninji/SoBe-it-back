@@ -30,7 +30,8 @@ public class ArticleController {
      */
     @PostMapping("/write")
     public String writeArticle(@AuthenticationPrincipal Users user, Article article){
-        article.setUserSeq(user); // 작성자 등록
+        article.setUser(user); // 작성자 등록
+        System.out.println("닉네임 : " + user.getUserName());
         Article writtenArticle = articleService.writeArticle(article);
         if (writtenArticle==null) {
             // throw Exception("글 작성 실패");
@@ -85,7 +86,7 @@ public class ArticleController {
 
         // 작성자 여부 체크
         boolean isMine = false;
-        if (user == article.getUserSeq()) isMine = true;
+        if (user.getUserSeq() == article.getUser().getUserSeq()) isMine = true;
         articleData.put("isMine", isMine);
 
         return articleData;

@@ -34,13 +34,13 @@ public class ArticleService {
      */
     public Article updateArticle(Long userSeq, Article article) {
         Article existingArticle = articleRepo.findById(article.getArticleSeq()).orElse(null); // 기존 작성글 가져오기
-
         if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
             // throws new Exception("수정할 글이 없습니다.");
             return null;
         }
-        if (userSeq != existingArticle.getUserSeq().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
+        if (userSeq != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
             //throws new Exception("글의 작성자가 아닙니다.");
+
             return null;
         }
 
@@ -58,10 +58,12 @@ public class ArticleService {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
         if (foundArticle==null){ // 삭제할 글이 없는 경우
             // thorw new Exception("삭제할 글이 없습니다.");
+            System.out.println("삭제할 글이 없습니다.");
         }
 
-        if (userSeq!=foundArticle.getUserSeq().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+        if (userSeq!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
             // thorw new Exception("작성자가 아닙니다.");
+            System.out.println("작성자가 아닙니다.");
         }
         articleRepo.deleteById(articleSeq);
     }
@@ -78,7 +80,7 @@ public class ArticleService {
             //throw new Exception("글이 존재하지 않습니다.");
             return null;
         }
-        if (foundArticle.getStatus()==3 && userSeq!=foundArticle.getUserSeq().getUserSeq()){ // 권한이 없는 경우 - 비공개 글 & 내 글 아님
+        if (foundArticle.getStatus()==3 && userSeq!=foundArticle.getUser().getUserSeq()){ // 권한이 없는 경우 - 비공개 글 & 내 글 아님
             //throw new Exception("글을 조회할 권한이 없습니다.");
         }
         // if (foundArticle.getStatus()==2 && 맞팔확인) // 권한이 없는 경우 - 맞팔 공갠데 맞팔이 아님
