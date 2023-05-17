@@ -14,14 +14,13 @@ import java.util.Optional;
 @Repository
 public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslPredicateExecutor<Following> {
 
-    // jpa cnt 문법으로 고치기
-    @Query(value = "select u from Users u where u.userId = ?1")
+    @Query(value = "select count(u) from Users u where u.userId = ?1")
     int followingCnt(String userId);
 
     @Query("select f from Following f where f.user = ?1")
-    List<Following> findTweetsThatUserFollows(Users user);
+    List<Following> findArticleThatUserFollows(Users user);
 
     @Query("select f from Following f where f.user = ?1 and f.followingUserSeq=?2")
-    Optional<Following> findByFolloweeAndFollower(Users followee, Users followingUser_seq);
+    Optional<Following> findByFollowingAndFollower(Users followee, Users followingUser_seq);
 
 }
