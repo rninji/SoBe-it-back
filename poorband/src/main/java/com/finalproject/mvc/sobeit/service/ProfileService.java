@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 
 import java.util.List;
@@ -12,9 +13,9 @@ public interface ProfileService {
     Users selectUserInfo(String userId);
 
     /**
-     * 내가 쓴 글 가져오기
+     * 작성한 글 가져오기
      * */
-    List<Article> selectMyArticle(String userId);
+    ArticleDTO selectMyArticle(String userId);
 
     /**
      * 도전 과제 정보 가져오기
