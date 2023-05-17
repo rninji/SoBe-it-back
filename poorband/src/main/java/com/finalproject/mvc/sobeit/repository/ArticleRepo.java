@@ -19,6 +19,8 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
 
     Article findByUserId(String userId);
 
+
     @Query("SELECT u, a FROM Users u LEFT JOIN Article a ON a.user =:user")
     List<Article[]> getArticlesByUser(@Param("user") Users user);
+
 }

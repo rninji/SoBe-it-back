@@ -48,13 +48,11 @@ public class ProfileController {
     @RequestMapping("/myarticle")
     public ResponseEntity<Object> articleList(String userId) {
 //        List<ArticleDTO> list = profileService.selectMyArticle(userId);
-        ArticleDTO articleDTO = profileService.selectMyArticle(userId);
+
+        //ArticleDTO articleDTO = profileService.selectMyArticle(userId);
 
         // list 가져오기
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("userId", userId);
-        return ResponseEntity.ok().body(jsonObject);
 
         apiResponse.setData(articleDTO);
         apiResponse.setMessage("작성한 글 가져오기");

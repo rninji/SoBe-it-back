@@ -50,6 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public ArticleDTO selectMyArticle(String userId) {
+
 //        List<Object[]> list = new ArrayList<>();
 //
 //        list.add("profileImg", user.getProfileImageUrl());
@@ -58,7 +59,6 @@ public class ProfileServiceImpl implements ProfileService {
 //        List<Article[]> listArticle = articleRepo.getArticlesByUser(user);
 //
 //        return
-
 
         ArticleDTO articleDTO = new ArticleDTO();
         Users user = userRepo.findByUserId(userId);
@@ -147,6 +147,7 @@ public class ProfileServiceImpl implements ProfileService {
         Users loggedInUser = userRepo.findById(user.getUserSeq()).orElse(null);
         Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
 
+
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
             throw new Exception("User not found!");
@@ -157,6 +158,7 @@ public class ProfileServiceImpl implements ProfileService {
         f.setFollowingUserSeq(targetUser.getUserSeq());
 
         followingRepo.save(f);
+
     }
 
     /**

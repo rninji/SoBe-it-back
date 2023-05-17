@@ -21,7 +21,7 @@ public class GoalAmount {
     private Long goalAmount;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 
     @Column(nullable = false)

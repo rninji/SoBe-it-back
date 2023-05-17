@@ -18,7 +18,7 @@ public class Following {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 
     @Column(nullable = false)

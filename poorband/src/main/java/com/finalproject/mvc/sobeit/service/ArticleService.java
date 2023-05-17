@@ -32,27 +32,62 @@ public class ArticleService {
     /**
      * 글 수정
      */
-    public Article updateArticle(Article article) {
-        article.setEditedDate(LocalDateTime.now());
-        article.setWrittenDate(LocalDateTime.now()); // 작성일 null이 안됨.. select해와서 다시 저장하는 방법 말고 유지시키는 방법 없나?
+    public Article updateArticle(Long userSeq, Article article) {
+        Article existingArticle = articleRepo.findById(article.getArticleSeq()).orElse(null); // 기존 작성글 가져오기
+        if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
+            // throws new Exception("수정할 글이 없습니다.");
+            return null;
+        }
+        if (userSeq != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
+            //throws new Exception("글의 작성자가 아닙니다.");
+
+            return null;
+        }
+
+        article.setWrittenDate(existingArticle.getWrittenDate()); // 작성시간 복사
+        article.setEditedDate(LocalDateTime.now()); // 수정시간 등록
         return articleRepo.save(article);
     }
 
     /**
      * 글 삭제
-     * @param id
+     * @param userSeq
+     * @param articleSeq
      */
-    public void deleteArticle(Long articleSeq) {
+    public void deleteArticle(Long userSeq, Long articleSeq) {
+        Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
+        if (foundArticle==null){ // 삭제할 글이 없는 경우
+            // thorw new Exception("삭제할 글이 없습니다.");
+            System.out.println("삭제할 글이 없습니다.");
+        }
+
+        if (userSeq!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+            // thorw new Exception("작성자가 아닙니다.");
+            System.out.println("작성자가 아닙니다.");
+        }
         articleRepo.deleteById(articleSeq);
     }
 
     /**
      * 글 상세 조회
-     * @param id
+     * @param userSeq
+     * @param articleSeq
      * @return
      */
-    public Article selectArticleById(Long articleSeq) {
-        return articleRepo.findById(articleSeq).orElse(null);
+    public Article selectArticleById(Long userSeq, Long articleSeq) {
+        Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
+        if (foundArticle == null){ // 글이 없는 경우 예외 발생
+            //throw new Exception("글이 존재하지 않습니다.");
+            return null;
+        }
+        if (foundArticle.getStatus()==3 && userSeq!=foundArticle.getUser().getUserSeq()){ // 권한이 없는 경우 - 비공개 글 & 내 글 아님
+            //throw new Exception("글을 조회할 권한이 없습니다.");
+        }
+        // if (foundArticle.getStatus()==2 && 맞팔확인) // 권한이 없는 경우 - 맞팔 공갠데 맞팔이 아님
+        {
+            //throw new Exception("글을 조회할 권한이 없습니다.");
+        }
+        return foundArticle;
     }
 
     /**
