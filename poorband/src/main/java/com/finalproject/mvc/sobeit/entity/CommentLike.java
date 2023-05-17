@@ -18,9 +18,9 @@ public class CommentLike {
 
     @ManyToOne
     @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
-    private Reply replySeq;
+    private Reply reply;
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    private Users user;
 }

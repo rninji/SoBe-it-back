@@ -2,16 +2,18 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.entity.Reply;
 import com.finalproject.mvc.sobeit.service.ReplyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/comment")
 public class ReplyController {
-    @Autowired
-    ReplyService replyService;
+
+    private final ReplyService replyService;
 
     /**
      * 댓글 작성

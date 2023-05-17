@@ -19,11 +19,11 @@ public class Reply {
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
-    private Article articleSeq;
+    private Article article;
 
     @Column(nullable = false)
     private String replyText;

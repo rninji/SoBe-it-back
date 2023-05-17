@@ -8,7 +8,6 @@ import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -107,7 +106,7 @@ public class ProfileServiceImpl implements ProfileService {
             "routine": String, // 반복 주기 설정 // 어떻게 구현할지 ..?
             "goalAmount": int
         }*/
-        challenge.setUserSeq(userRepo.findByUserId(userId));
+        challenge.setUser(userRepo.findByUserId(userId));
     }
 
     @Override
