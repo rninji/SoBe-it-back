@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,6 +50,16 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public ArticleDTO selectMyArticle(String userId) {
+//        List<Object[]> list = new ArrayList<>();
+//
+//        list.add("profileImg", user.getProfileImageUrl());
+//        list.add(user.getNickname());
+//
+//        List<Article[]> listArticle = articleRepo.getArticlesByUser(user);
+//
+//        return
+
+
         ArticleDTO articleDTO = new ArticleDTO();
         Users user = userRepo.findByUserId(userId);
         Article article = articleRepo.findByUserId(userId);
