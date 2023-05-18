@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
@@ -19,9 +20,11 @@ import java.util.List;
 public interface ArticleService {
     /**
      * 글 작성
-     * @param article
+     * @param user
+     * @param articleDTO
+     * @return 작성된 글
      */
-    public Article writeArticle(Article article);
+    public Article writeArticle(Users user, ArticleDTO articleDTO);
 
     /**
      * 글 수정

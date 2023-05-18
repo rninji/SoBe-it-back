@@ -30,33 +30,14 @@ public class ArticleController {
      * 글 작성
      * @param user
      * @param articleDTO
-     * @return 성공 시 작성된 글 번호
+     * @return 성공 시 작성된 글
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            // 요청 이용해 저장할 글 생성
-            Article article = Article.builder()
-                    .user(user)
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    .articleType(articleDTO.getArticleType())
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-
             // 서비스 이용해 글 저장
-            Article writtenArticle = articleService.writeArticle(article);
-
-            // 저장된 글 번호 반환 (이것만 반환해도 되겠지?ㅎㅎ)
-            Long articleSeq = writtenArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article article = articleService.writeArticle(user, articleDTO);
+            return ResponseEntity.ok().body(article);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 

@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,9 +26,27 @@ public class ArticleServiceImpl implements ArticleService{
 
     /**
      * 글 작성
-     * @param article
+     * @param user
+     * @param articleDTO
+     * @return 저장된 글
      */
-    public Article writeArticle(Article article) {
+    @Override
+    public Article writeArticle(Users user, ArticleDTO articleDTO) {
+        // 요청 이용해 저장할 글 생성
+        Article article = Article.builder()
+                .user(user)
+                .status(articleDTO.getStatus())
+                .imageUrl(articleDTO.getImageUrl())
+                .expenditureCategory(articleDTO.getExpenditureCategory())
+                .amount(articleDTO.getAmount())
+                .financialText(articleDTO.getFinancialText())
+                .articleText(articleDTO.getArticleText())
+                .writtenDate(LocalDateTime.now())
+                .articleType(articleDTO.getArticleType())
+                //.consumptionDate(articleDTO.getConsumptionDate())
+                .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                .isAllowed(articleDTO.getIsAllowed())
+                .build();
         return articleRepo.save(article);
     }
 
