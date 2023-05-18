@@ -67,19 +67,19 @@ public class ProfileServiceImpl implements ProfileService {
 
         ArticleResponseDTO articleResponseDTO = new ArticleResponseDTO();
         Users user = userRepo.findByUserId(userIdMap.get("userId"));
-        Article article = articleRepo.findByUserId(userIdMap.get("userId"));
-
-        Users articleDTOUser = articleResponseDTO.getUser();
-        articleDTOUser.setProfileImageUrl(user.getProfileImageUrl());
-        articleDTOUser.setNickname(user.getNickname());
-
-        articleResponseDTO.setUser(articleDTOUser);
-        articleResponseDTO.setWrittenDate(article.getWrittenDate());
-        articleResponseDTO.setStatus(article.getStatus());
-        articleResponseDTO.setArticleType(article.getArticleType());
-        articleResponseDTO.setExpenditureCategory(article.getExpenditureCategory());
-        articleResponseDTO.setArticleText(article.getArticleText());
-        articleResponseDTO.setAmount(article.getAmount());
+//        Article article = articleRepo.findByUserId(userIdMap.get("userId"));
+//
+//        Users articleDTOUser = articleResponseDTO.getUser();
+//        articleDTOUser.setProfileImageUrl(user.getProfileImageUrl());
+//        articleDTOUser.setNickname(user.getNickname());
+//
+//        articleResponseDTO.setUser(articleDTOUser);
+//        articleResponseDTO.setWrittenDate(article.getWrittenDate());
+//        articleResponseDTO.setStatus(article.getStatus());
+////        articleResponseDTO.setArticleType(article.getArticleType());
+////        articleResponseDTO.setExpenditureCategory(article.getExpenditureCategory());
+//        articleResponseDTO.setArticleText(article.getArticleText());
+//        articleResponseDTO.setAmount(article.getAmount());
 
         return articleResponseDTO;
     }
