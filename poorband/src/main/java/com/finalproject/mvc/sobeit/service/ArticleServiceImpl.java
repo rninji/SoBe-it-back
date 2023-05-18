@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
+import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
@@ -223,6 +224,9 @@ public class ArticleServiceImpl implements ArticleService{
      * @throws RuntimeException
      */
     public boolean likeArticle(Users user, Long articleSeq) throws RuntimeException{
+        if (selectArticleById(articleSeq) == null){ // 글이 없는 경우 예외 발생
+            throw new RuntimeException("좋아요할 글이 존재하지 않습니다.");
+        }
         ArticleLike existingLike = findArticleLike(user.getUserSeq(), articleSeq); // 기존 좋아요가 있는 지 확인
         if (existingLike==null){ // 좋아요한 적 없으면 좋아요 생성
             ArticleLike articleLike = ArticleLike.builder()
@@ -261,11 +265,34 @@ public class ArticleServiceImpl implements ArticleService{
 
     /**
      * 투표하기
-     * @param vote
-     * @return 생성된 투표
+     * @param user
+     * @param voteDTO
+     * @return
      */
-    public Vote voteArticle(Vote vote){
+    public Vote voteArticle(Users user, VoteDTO voteDTO) throws RuntimeException{
+        if (selectArticleById(voteDTO.getArticleSeq()) == null){ // 글이 없는 경우 예외 발생
+            throw new RuntimeException("투표할 글이 존재하지 않습니다.");
+        }
+        // 결재 글이 맞는 지 확인
+        if (selectArticleById(voteDTO.getArticleSeq()).getArticleType()!=2){
+            throw new RuntimeException("투표가 가능한 글이 아닙니다.");
+        }
+        // 이 사용자가 이 글에 투표한 적이 있는 지 확인
+        if (voteCheck(user.getUserSeq(), voteDTO.getArticleSeq())){
+            throw new RuntimeException("이미 투표 완료했습니다.");
+        }
+        // 투표 생성
+        Vote vote = Vote.builder()
+                .article(selectArticleById(voteDTO.getArticleSeq()))
+                .user(user)
+                .vote(voteDTO.getVoteType())
+                .build();
+
+        // 투표 저장
         Vote votedVote = voteRepo.save(vote);
+        if (votedVote == null) {
+            throw new RuntimeException("투표 실패");
+        }
         return votedVote;
     }
 
