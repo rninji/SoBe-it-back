@@ -1,8 +1,10 @@
 package com.finalproject.mvc.sobeit.repository;
 
 import com.finalproject.mvc.sobeit.entity.Article;
+import com.finalproject.mvc.sobeit.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +18,9 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
     List<Article> findArticlesByArticleText(String articleText);
 
     Article findByArticleSeq(Long articleSeq);
+
+    Article findByUserId(String userId);
+
+    @Query("SELECT u, a FROM Users u LEFT JOIN Article a ON a.user =:user")
+    List<Article[]> getArticlesByUser(@Param("user") Users user);
 }
