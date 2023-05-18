@@ -1,54 +1,53 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
      * */
-    ProfileUserDTO selectUserInfo(String userId);
+    ProfileUserDTO selectUserInfo(Users user);
 
     /**
      * 작성한 글 가져오기
      * */
-    ArticleResponseDTO selectMyArticle(Map<String, String> userIdMap);
+    List<Article> selectMyArticle(Users user);
 
     /**
      * 도전 과제 정보 가져오기
      * */
-    List<GoalAmount> selectChallenge(String userId);
+    List<GoalAmount> selectChallenge(Users user);
 
     /**
      * 유저 프로필 편집 저장
+     *
      * */
-    void insertProfile(Users users);
+    Users insertProfile(String userId, Users updateUser);
 
     /**
      * 팔로잉 정보 가져오기
      * */
-    List<Following> selectFollowing();
+    List<Users> selectFollowing(Users user);
 
     /**
      * 팔로워 정보 가져오기
      * */
-    List<Following> selectFollower();
+    List<Users> selectFollower(Users user);
 
     /**
      * 팔로잉 해제
      * */
-    void unfollow(Users user, Users targetUser) throws Exception;
+    Following unfollow(Users user, Users targetUser) throws Exception;
 
     /**
      * 팔로우 추가
      * */
-    void follow(Users user, Users targetUser) throws Exception;
+    Following follow(Users user, Users targetUser) throws Exception;
 
     /**
      * 도전과제 추가
