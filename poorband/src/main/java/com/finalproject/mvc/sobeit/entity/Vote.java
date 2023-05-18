@@ -10,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

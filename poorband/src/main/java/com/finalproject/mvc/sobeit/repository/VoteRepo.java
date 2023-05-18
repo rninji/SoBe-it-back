@@ -12,11 +12,12 @@ import java.util.Optional;
 public interface VoteRepo extends JpaRepository <Vote, Long>{
     /**
      * 투표 여부 확인
-     * @param vote
+     * @param userSeq
+     * @param articleSeq
      * @return 투표했다면 vote, 투표한 적 없으면 null
      */
-    @Query("select v from Vote v where v.user =:#{#vote.user} and v.article =:#{#vote.article}")
-    Optional<Vote> findVoteByUserSeqAndArticleSeq(@Param("vote") Vote vote);
+    @Query("select v from Vote v where v.user.userSeq =?1 and v.article.articleSeq =?2")
+    Optional<Vote> findVoteByUserSeqAndArticleSeq(Long userSeq, Long articleSeq);
 
     /**
      * 찬성표 수 확인
