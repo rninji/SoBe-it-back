@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -60,16 +59,40 @@ public class ReplyController {
 
     /**
      * 댓글 수정
-     * @param reply
+     * @param user
+     * @param replyDTO
      * @return
      */
-    @RequestMapping("/update")
-    public Reply updateReply(Reply reply){
-        Reply updatedReply = replyService.updateReply(reply);
-        if (updatedReply == null) {
-            //throws new Exception("댓글 작성 실패");
+    @PostMapping("/update")
+    public ResponseEntity<?> updateReply(@AuthenticationPrincipal Users user, @RequestBody ReplyDTO replyDTO){
+        if (Objects.equals(user.getUserSeq(), replyDTO.getUser_seq())) {
+            Reply reply = Reply.builder()
+                    .replySeq(replyDTO.getReply_seq())
+                    .replyText(replyDTO.getReply_text())
+                    .build();
+
+            Reply updatedReply = replyService.updateReply(reply);
+            ReplyDTO responseReplyDTO = ReplyDTO.builder()
+                    .reply_seq(updatedReply.getReplySeq())
+                    .article_seq(updatedReply.getArticle().getArticleSeq())
+                    .user_seq(updatedReply.getUser().getUserSeq())
+                    .reply_text(updatedReply.getReplyText())
+                    .parent_reply_seq(updatedReply.getParentReplySeq())
+                    .written_date(updatedReply.getWrittenDate())
+                    .is_updated(updatedReply.getIsUpdated())
+                    .build();
+
+            return ResponseEntity.ok().body(responseReplyDTO);
         }
-        return updatedReply;
+        else {
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("Update failed.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
     }
 
     /**
