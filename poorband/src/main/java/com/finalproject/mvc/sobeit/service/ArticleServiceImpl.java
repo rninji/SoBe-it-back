@@ -88,21 +88,20 @@ public class ArticleServiceImpl implements ArticleService{
 
     /**
      * 글 삭제
-     * @param userSeq
+     * @param user
      * @param articleSeq
      */
-    public void deleteArticle(Long userSeq, Long articleSeq) throws RuntimeException {
+    public void deleteArticle(Users user, Long articleSeq) throws RuntimeException {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
         if (foundArticle==null){ // 삭제할 글이 없는 경우
             throw new RuntimeException("삭제할 글이 없습니다.");
         }
 
-        if (userSeq!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+        if (user.getUserSeq()!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
             throw new RuntimeException("작성자가 아닙니다.");
         }
         articleRepo.deleteById(articleSeq);
     }
-    //////////////////////////////////////////////////////////////////
 
     /**
      * 디테일 페이지
@@ -213,7 +212,7 @@ public class ArticleServiceImpl implements ArticleService{
         //
         return null;
     }
-    //////////////////////////////////////////////////////////////////
+
     /**
      * 글 좋아요
      * @param articleLike

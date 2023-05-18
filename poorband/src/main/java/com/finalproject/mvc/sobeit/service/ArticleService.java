@@ -36,10 +36,10 @@ public interface ArticleService {
 
     /**
      * 글 삭제
-     * @param userSeq
+     * @param user
      * @param articleSeq
      */
-    public void deleteArticle(Long userSeq, Long articleSeq);
+    public void deleteArticle(Users user, Long articleSeq);
 
     /**
      * 디테일 페이지

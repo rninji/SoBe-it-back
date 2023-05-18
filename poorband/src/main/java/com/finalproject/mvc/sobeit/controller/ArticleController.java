@@ -77,8 +77,8 @@ public class ArticleController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
         try{
-            articleService.deleteArticle(user.getUserSeq(), articleSeqMap.get("articleSeq"));
-            return ResponseEntity.ok().body("success");
+            articleService.deleteArticle(user, articleSeqMap.get("articleSeq"));
+            return ResponseEntity.ok().body("delete success");
         }
         catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -109,7 +109,7 @@ public class ArticleController {
     }
 
     /**
-     * 글 전체 조회
+     * 피드 글 조회
      * @return
      */
     @GetMapping("/selectAll")
