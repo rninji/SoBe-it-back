@@ -14,4 +14,6 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
 
     @Query("select a from Article a where a.articleText like %?1%")
     List<Article> findArticlesByArticleText(String articleText);
+
+    Article findByArticleSeq(Long articleSeq);
 }
