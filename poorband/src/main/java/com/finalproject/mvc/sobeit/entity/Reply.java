@@ -34,8 +34,12 @@ public class Reply {
     @Column(nullable = false)
     private LocalDateTime writtenDate;
 
+    @Column(nullable = false)
+    private Integer isUpdated; // 0 : 수정 X  // 1 이상 : 수정 O
+
     @PrePersist
     public void prePersist(){
         this.parentReplySeq = this.parentReplySeq == null ? 0L : this.parentReplySeq;
+        this.isUpdated = this.isUpdated == null ? 0 : this.isUpdated;
     }
 }

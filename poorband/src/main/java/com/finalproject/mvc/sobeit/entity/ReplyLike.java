@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CommentLike {
+public class ReplyLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long replyLikeSeq;

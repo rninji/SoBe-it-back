@@ -10,8 +10,7 @@ public class ApiResponse {
 
     private Map<String, Object> body = new LinkedHashMap<>();
 
-    public ApiResponse()
-    {
+    public ApiResponse() {
         body.put("timestamp", null);
         body.put("message", null);
         body.put("data", null);
@@ -28,8 +27,7 @@ public class ApiResponse {
     }
 
 
-    public Map<String,Object> getBodyResponse()
-    {
+    public Map<String,Object> getBodyResponse() {
         body.put("timestamp", LocalDateTime.now());
         return body;
     }
