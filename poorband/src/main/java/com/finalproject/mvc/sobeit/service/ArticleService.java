@@ -6,19 +6,22 @@ import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.VoteRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+
 @Service
+@RequiredArgsConstructor
 public class ArticleService {
-    @Autowired
-    ArticleRepo articleRepo;
-    @Autowired
-    ArticleLikeRepo articleLikeRepo;
-    @Autowired
-    VoteRepo voteRepo;
+
+    private final ArticleRepo articleRepo;
+    private final ArticleLikeRepo articleLikeRepo;
+    private final VoteRepo voteRepo;
 
     /**
      * 글 작성
@@ -31,28 +34,53 @@ public class ArticleService {
 
     /**
      * 글 수정
+     * @param userSeq
+     * @param article
+     * @return
      */
-    public Article updateArticle(Article article) {
-        article.setEditedDate(LocalDateTime.now());
-        article.setWrittenDate(LocalDateTime.now()); // 작성일 null이 안됨.. select해와서 다시 저장하는 방법 말고 유지시키는 방법 없나?
+    public Article updateArticle(Long userSeq, Article article) {
+        Article existingArticle = articleRepo.findById(article.getArticleSeq()).orElse(null); // 기존 작성글 가져오기
+        if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
+            throw new RuntimeException("수정할 글이 없습니다.");
+        }
+        if (userSeq != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
+            throw new RuntimeException("글의 작성자가 아닙니다.");
+        }
+
+        article.setWrittenDate(existingArticle.getWrittenDate()); // 작성시간 복사
+        article.setArticleType(existingArticle.getArticleType()); // 타입 복사
+        article.setEditedDate(LocalDateTime.now()); // 수정시간 등록
         return articleRepo.save(article);
     }
 
     /**
      * 글 삭제
-     * @param id
+     * @param userSeq
+     * @param articleSeq
      */
-    public void deleteArticle(Long articleSeq) {
+    public void deleteArticle(Long userSeq, Long articleSeq) {
+        Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
+        if (foundArticle==null){ // 삭제할 글이 없는 경우
+            throw new RuntimeException("삭제할 글이 없습니다.");
+        }
+
+        if (userSeq!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+            throw new RuntimeException("작성자가 아닙니다.");
+        }
         articleRepo.deleteById(articleSeq);
     }
 
     /**
-     * 글 상세 조회
-     * @param id
+     * 글 아이디로 조회
+     * @param articleSeq
      * @return
      */
     public Article selectArticleById(Long articleSeq) {
-        return articleRepo.findById(articleSeq).orElse(null);
+        Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
+        if (foundArticle == null){ // 글이 없는 경우 예외 발생
+            throw new RuntimeException("글이 존재하지 않습니다.");
+        }
+        return foundArticle;
     }
 
     /**
@@ -92,11 +120,12 @@ public class ArticleService {
 
     /**
      * 해당 사용자의 해당 글에 대한 투표 여부 확인
-     * @param vote
+     * @param userSeq
+     * @param articleSeq
      * @return true면 투표한 적 있음 / false면 투표한 적 없음
      */
-    public boolean voteCheck(Vote vote){
-        Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(vote).orElse(null);
+    public boolean voteCheck(Long userSeq, Long articleSeq){
+        Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(userSeq, articleSeq).orElse(null);
         if (existingVote==null) return false;
         return true;
     }

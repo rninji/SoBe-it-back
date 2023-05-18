@@ -1,72 +1,146 @@
 package com.finalproject.mvc.sobeit.controller;
 
+import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ResponseDTO;
+import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleService;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/article")
 public class ArticleController {
-    @Autowired
-    ArticleService articleService;
+    private final ArticleService articleService;
 
     /**
      * 글 작성
-     * @param article
-     * @return
+     * @param user
+     * @param articleDTO
+     * @return 성공 시 작성된 글 번호
      */
     @PostMapping("/write")
-    public String writeArticle(Article article){
-        Article writtenArticle = articleService.writeArticle(article);
-        // if (writtenArticle==null) throw Exception("글 작성 실패");
-        return("success");
+    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
+        try{
+            // 요청 이용해 저장할 글 생성
+            Article article = Article.builder()
+                    .user(user)
+                    .status(articleDTO.getStatus())
+                    .imageUrl(articleDTO.getImageUrl())
+                    .expenditureCategory(articleDTO.getExpenditureCategory())
+                    .amount(articleDTO.getAmount())
+                    .financialText(articleDTO.getFinancialText())
+                    .articleText(articleDTO.getArticleText())
+                    .writtenDate(LocalDateTime.now())
+                    .articleType(articleDTO.getArticleType())
+                    //.consumptionDate(articleDTO.getConsumptionDate())
+                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                    .isAllowed(articleDTO.getIsAllowed())
+                    .build();
+
+            // 서비스 이용해 글 저장
+            Article writtenArticle = articleService.writeArticle(article);
+
+            // 저장된 글 번호 반환 (이것만 반환해도 되겠지?ㅎㅎ)
+            Long articleSeq = writtenArticle.getArticleSeq();
+            return ResponseEntity.ok().body(articleSeq);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+
     }
 
     /**
      * 글 수정
-     * @param article
-     * @return
+     * @param user
+     * @param articleDTO
+     * @return 성공 시 업데이트된 글 번호
      */
     @PostMapping("/update")
-    public String updateArticle(Article article){
-        Article updatedArticle = articleService.updateArticle(article);
-        // if (updatedArticle==null) throw Exception("글 수정 실패");
-        return("success");
+    public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
+        try{
+            Article article = Article.builder()
+                    .user(user)
+                    .articleSeq(articleDTO.getArticleSeq())
+                    .status(articleDTO.getStatus())
+                    .imageUrl(articleDTO.getImageUrl())
+                    .expenditureCategory(articleDTO.getExpenditureCategory())
+                    .amount(articleDTO.getAmount())
+                    .financialText(articleDTO.getFinancialText())
+                    .articleText(articleDTO.getArticleText())
+                    .writtenDate(LocalDateTime.now())
+                    //.articleType(articleDTO.getArticleType()) // 유형은 못 바꾸게 해야될거같음
+                    //.consumptionDate(articleDTO.getConsumptionDate())
+                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                    .editedDate(LocalDateTime.now())
+                    .isAllowed(articleDTO.getIsAllowed())
+                    .build();
+            Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
+            if (updatedArticle==null) {
+                throw new RuntimeException("글 수정 실패");
+            }
+
+            // 업데이트된 글 번호 반환
+            Long articleSeq = updatedArticle.getArticleSeq();
+            return ResponseEntity.ok().body(articleSeq);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 글 삭제
-     * @param articleSeq
+     * @param user
+     * @param { "articleSeq": 삭제할 글번호}
      * @return
      */
     @PostMapping("/delete")
-    public String deleteArticle(Long articleSeq){
-        articleService.deleteArticle(articleSeq);
-        return("delete");
+    public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
+        try{
+            articleService.deleteArticle(user.getUserSeq(), articleSeqMap.get("articleSeq"));
+            return ResponseEntity.ok().body("success");
+        }
+        catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
+    ////////// 상세 조회 ArticleResponseDTO 반환하기
     /**
-     * 글 상세 페이지
+     * 글 상세 조회
+     * @param user
      * @param articleSeq
      * @return
      */
     @GetMapping("/detail")
-    public Article selectArticleById(Long articleSeq){
-        Article article = articleService.selectArticleById(articleSeq);
-        if (article == null){
-            //throw new Exception("글이 존재하지 않습니다.");
-            return null;
-        }
-        return article;
+    public JSONObject selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
+       // 다시 작성
+        return null;
     }
 
     /**
@@ -93,36 +167,54 @@ public class ArticleController {
 
     /**
      * 투표하기
-     * @param vote
+     * @param user
+     * @param voteDTO
+     * @return 투표 성공 시 "success"
      */
     @PostMapping("/vote")
-    public void vote(Vote vote){
-        if (articleService.voteCheck(vote)){
-            // throw Exception("이미 투표 완료했습니다.");
-            System.out.println("중복 투표");
-            return;
+    public ResponseEntity<?> vote(@AuthenticationPrincipal Users user, @RequestBody VoteDTO voteDTO){
+        try{
+            // 결재 글이 맞는 지 확인
+//            if (articleService.selectArticleById(voteDTO.getArticleSeq()).getArticleType()!=결재타입){
+//                throw new RuntimeException("투표가 가능한 글이 아닙니다.");
+//            }
+            System.out.println(1);
+            // 이 사용자가 이 글에 투표한 적이 있는 지 확인
+            if (articleService.voteCheck(user.getUserSeq(), voteDTO.getArticleSeq())){
+                throw new RuntimeException("이미 투표 완료했습니다.");
+            }
+            System.out.println(2);
+            // 투표 생성
+            Vote vote = Vote.builder()
+                    .article(articleService.selectArticleById(voteDTO.getArticleSeq()))
+                    .user(user)
+                    .vote(voteDTO.getVoteType())
+                    .build();
+            System.out.println(3);
+            // 서비스 이용해서 투표하기
+            Vote votedVote = articleService.voteArticle(vote);
+
+            if (votedVote == null) {
+                throw new RuntimeException("투표 실패");
+            }
+            System.out.println(4);
+            // 성공 여부 반환
+            return ResponseEntity.ok().body("success");
+        } catch(Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
         }
 
-        Vote votedVote = articleService.voteArticle(vote);
-        if (votedVote == null) {
-            //throw Exception("투표 실패");
-        }
-        // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
     }
-
-    // 투표 여부에 따라 보여지는 글 형태가 다르니까 프론트한테 알려줘야된다면 만들어야 됨
-    /**
-     * 투표 여부 확인
-     */
-    @PostMapping("/voteCheck")
-    public void voteCheck(){}
 
     /**
      * 투표율 확인
      * @param articleSeq
      * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
      */
-    @PostMapping("/voteRate")
     public JSONObject voteRate(Long articleSeq){
         int[] voteValue = articleService.voteCount(articleSeq);
         JSONObject rate = new JSONObject();
@@ -137,5 +229,13 @@ public class ArticleController {
         rate.put("agreeRate", agreeRate);
         rate.put("disagreeRate", disagreeRate);
         return rate;
+    }
+
+    /**
+     * 좋아요 수 확인
+     */
+    public int countLike(Long articleSeq){
+
+        return 0;
     }
 }

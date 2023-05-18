@@ -18,12 +18,12 @@ public class Reply {
     private Long replySeq;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
+    private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq")
-    private Article articleSeq;
+    @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
+    private Article article;
 
     @Column(nullable = false)
     private String replyText;
@@ -34,8 +34,12 @@ public class Reply {
     @Column(nullable = false)
     private LocalDateTime writtenDate;
 
+    @Column(nullable = false)
+    private Integer isUpdated; // 0 : 수정 X  // 1 이상 : 수정 O
+
     @PrePersist
     public void prePersist(){
         this.parentReplySeq = this.parentReplySeq == null ? 0L : this.parentReplySeq;
+        this.isUpdated = this.isUpdated == null ? 0 : this.isUpdated;
     }
 }
