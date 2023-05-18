@@ -9,9 +9,12 @@ import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -45,6 +48,7 @@ public class ArticleService {
         }
 
         article.setWrittenDate(existingArticle.getWrittenDate()); // 작성시간 복사
+        article.setArticleType(existingArticle.getArticleType()); // 타입 복사
         article.setEditedDate(LocalDateTime.now()); // 수정시간 등록
         return articleRepo.save(article);
     }

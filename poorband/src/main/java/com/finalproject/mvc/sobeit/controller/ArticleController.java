@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class ArticleController {
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
-
+        System.out.println("좀 떠라");
         try{
             // 요청 이용해 저장할 글 생성
             Article article = Article.builder()
@@ -77,6 +78,7 @@ public class ArticleController {
         try{
             Article article = Article.builder()
                     .user(user)
+                    .articleSeq(articleDTO.getArticleSeq())
                     .status(articleDTO.getStatus())
                     .imageUrl(articleDTO.getImageUrl())
                     .expenditureCategory(articleDTO.getExpenditureCategory())
@@ -84,7 +86,7 @@ public class ArticleController {
                     .financialText(articleDTO.getFinancialText())
                     .articleText(articleDTO.getArticleText())
                     .writtenDate(LocalDateTime.now())
-                    .articleType(articleDTO.getArticleType())
+                    //.articleType(articleDTO.getArticleType()) // 유형은 못 바꾸게 해야될거같음
                     //.consumptionDate(articleDTO.getConsumptionDate())
                     .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
                     .editedDate(LocalDateTime.now())
@@ -114,9 +116,9 @@ public class ArticleController {
      * @return
      */
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, Long articleSeq){
+    public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
         try{
-            articleService.deleteArticle(user.getUserSeq(), articleSeq);
+            articleService.deleteArticle(user.getUserSeq(), articleSeqMap.get("articleSeq"));
             return ResponseEntity.ok().body("success");
         }
         catch (Exception e){
@@ -129,6 +131,7 @@ public class ArticleController {
 
     }
 
+    ////////// 상세 조회 ArticleResponseDTO 반환하기
     /**
      * 글 상세 조회
      * @param user
@@ -193,19 +196,18 @@ public class ArticleController {
         // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
     }
 
-    // 투표 여부에 따라 보여지는 글 형태가 다르니까 프론트한테 알려줘야된다면 만들어야 됨
     /**
      * 투표 여부 확인
      */
-    @PostMapping("/voteCheck")
-    public void voteCheck(){}
+    public boolean voteCheck(@AuthenticationPrincipal Users user, Long articleSeq){
+        return false;
+    }
 
     /**
      * 투표율 확인
      * @param articleSeq
      * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
      */
-    @PostMapping("/voteRate")
     public JSONObject voteRate(Long articleSeq){
         int[] voteValue = articleService.voteCount(articleSeq);
         JSONObject rate = new JSONObject();

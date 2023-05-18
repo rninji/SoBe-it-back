@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleDTO {
+    private Long articleSeq;
     private Users user;
     private int status;
     private String imageUrl;
