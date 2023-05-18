@@ -172,10 +172,17 @@ public class ArticleController {
      * @return true면 좋아요 false면 좋아요 삭제
      */
     @PostMapping("/like")
-    public boolean likeArticle(ArticleLike articleLike){
-        // 좋아요 생성 시 true, 취소 시 false
-        boolean isLiked = articleService.likeArticle(articleLike);
-        return isLiked;
+    public ResponseEntity<?> likeArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
+        try{
+            boolean like = articleService.likeArticle(user, articleSeqMap.get("articleSeq"));
+            return ResponseEntity.ok().body(like);
+        }
+        catch(Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**

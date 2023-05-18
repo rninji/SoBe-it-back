@@ -123,8 +123,10 @@ public class ArticleServiceImpl implements ArticleService{
         // 좋아요 수 가져오기
         int likeCnt = countArticleLike(articleSeq);
 
-        // 좋아요 여부 가져오기
-        boolean isLiked = isArticleLike(userSeq, articleSeq);
+        // 좋아요 여부 확인
+        ArticleLike articleLike = findArticleLike(userSeq, articleSeq);
+        boolean isLiked = true;
+        if (articleLike==null) isLiked = false;
 
         // 투표율 가져오기
         int [] voteInfo = findVoteInfo(articleSeq);
@@ -179,38 +181,45 @@ public class ArticleServiceImpl implements ArticleService{
         return null;
     }
     //////////////////////////////////////////////////////////////////
+
     /**
      * 글 좋아요
-     * @param articleLike
+     * @param user
+     * @param articleSeq
+     * @return
+     * @throws RuntimeException
      */
-    public boolean likeArticle(ArticleLike articleLike){
-        boolean isLiked = false;
-        ArticleLike existingLike = articleLikeRepo.findById(articleLike.getLikeSeq()).orElse(null); // 기존 좋아요가 있는 지 확인
+    public boolean likeArticle(Users user, Long articleSeq) throws RuntimeException{
+        ArticleLike existingLike = findArticleLike(user.getUserSeq(), articleSeq); // 기존 좋아요가 있는 지 확인
         if (existingLike==null){ // 좋아요한 적 없으면 좋아요 생성
+            ArticleLike articleLike = ArticleLike.builder()
+                    .article(selectArticleById(articleSeq))
+                    .user(user)
+                    .build();
             articleLikeRepo.save(articleLike);
-            isLiked = true;
+            return true;
         }
         else { // 좋아요한 적 있으면 좋아요 취소(삭제)
             articleLikeRepo.delete(existingLike);
+            return false;
         }
-        return isLiked;
     }
 
     /**
-     * 글 좋아요 여부 확인
+     * 기존 좋아요 확인
      * @param userSeq
      * @param articleSeq
-     * @return true : 이미 좋아요 함, false : 좋아요 안 함
+     * @return
      */
     @Override
-    public boolean isArticleLike(Long userSeq, Long articleSeq) {
-        ArticleLike articleLike = articleLikeRepo.findArticleLikeByUserSeqAndArticleSeq(userSeq, articleSeq).orElse(null);
-        if (articleLike == null) return false;
-        return true;
+    public ArticleLike findArticleLike(Long userSeq, Long articleSeq) {
+        return articleLikeRepo.findArticleLikeByUserSeqAndArticleSeq(userSeq, articleSeq).orElse(null);
     }
 
     /**
      * 글 좋아요 수 확인
+     * @param articleSeq
+     * @return 좋아요 수
      */
     @Override
     public int countArticleLike(Long articleSeq){

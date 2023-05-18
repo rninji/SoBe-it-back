@@ -72,14 +72,19 @@ public interface ArticleService {
 
     /**
      * 글 좋아요
-     * @param articleLike
+     * @param userSeq
+     * @param articleSeq
+     * @return true : 좋아요, false : 좋아요 취소
      */
-    public boolean likeArticle(ArticleLike articleLike);
+    public boolean likeArticle(Users user, Long articleSeq);
 
     /**
-     * 글 좋아요 여부 확인
+     * 기존 좋아요 확인
+     * @param userSeq
+     * @param articleSeq
+     * @return
      */
-    public boolean isArticleLike(Long userSeq, Long articleSeq);
+    public ArticleLike findArticleLike(Long userSeq, Long articleSeq);
 
     /**
      * 글 좋아요 수 확인
