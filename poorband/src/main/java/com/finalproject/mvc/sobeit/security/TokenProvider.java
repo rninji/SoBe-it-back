@@ -14,7 +14,7 @@ import java.util.Date;
 @Slf4j
 @Service
 public class TokenProvider {
-    private static final String SECRET_KEY = "";
+    private static final String SECRET_KEY = "abcdefg";
 
     public String create(Users users) {
         // 기한은 지금부터 1 일로 설정
