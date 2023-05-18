@@ -17,11 +17,11 @@ public class ArticleDTO {
     private Users user;
     private int status;
     private String imageUrl;
-    private String expenditureCategory;
+    private int expenditureCategory;
     private Long amount;
     private String financialText;
     private String articleText;
-    private String articleType;
+    private int articleType;
     private LocalDate consumptionDate;
     private String isAllowed;
 }

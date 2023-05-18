@@ -71,23 +71,14 @@ public class ArticleService {
     }
 
     /**
-     * 글 상세 조회
-     * @param userSeq
+     * 글 아이디로 조회
      * @param articleSeq
      * @return
      */
-    public Article selectArticleById(Long userSeq, Long articleSeq) {
+    public Article selectArticleById(Long articleSeq) {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
         if (foundArticle == null){ // 글이 없는 경우 예외 발생
-            //throw new Exception("글이 존재하지 않습니다.");
-            return null;
-        }
-        if (foundArticle.getStatus()==3 && userSeq!=foundArticle.getUser().getUserSeq()){ // 권한이 없는 경우 - 비공개 글 & 내 글 아님
-            //throw new Exception("글을 조회할 권한이 없습니다.");
-        }
-        // if (foundArticle.getStatus()==2 && 맞팔확인) // 권한이 없는 경우 - 맞팔 공갠데 맞팔이 아님
-        {
-            //throw new Exception("글을 조회할 권한이 없습니다.");
+            throw new RuntimeException("글이 존재하지 않습니다.");
         }
         return foundArticle;
     }
@@ -129,11 +120,12 @@ public class ArticleService {
 
     /**
      * 해당 사용자의 해당 글에 대한 투표 여부 확인
-     * @param vote
+     * @param userSeq
+     * @param articleSeq
      * @return true면 투표한 적 있음 / false면 투표한 적 없음
      */
-    public boolean voteCheck(Vote vote){
-        Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(vote).orElse(null);
+    public boolean voteCheck(Long userSeq, Long articleSeq){
+        Vote existingVote = voteRepo.findVoteByUserSeqAndArticleSeq(userSeq, articleSeq).orElse(null);
         if (existingVote==null) return false;
         return true;
     }
