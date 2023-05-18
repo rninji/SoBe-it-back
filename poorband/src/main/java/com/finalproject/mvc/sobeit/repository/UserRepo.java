@@ -35,3 +35,4 @@ public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateE
 //        List<Users> followingCnt(String userId);
 
     }
+
