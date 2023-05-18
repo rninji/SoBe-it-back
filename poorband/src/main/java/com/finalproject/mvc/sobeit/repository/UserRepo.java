@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateExecutor<Users> {
 
         Users findByUserSeq(Long userSeq);
