@@ -1,6 +1,8 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.entity.Reply;
+import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.ReplyRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,15 +14,25 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
+    private final ArticleRepo articleRepo;
     private final ReplyRepo replyRepo;
 
     /**
      * 댓글 작성
+     * @param user,
+     * @param articleNum
      * @param reply
      */
     @Override
-    public Reply writeReply(Reply reply){
+    public Reply writeReply(final Users user, Long articleNum, Reply reply){
+        if (reply == null || user == null || articleNum == null) {
+            throw new RuntimeException("Invalid arguments");
+        }
+
+        reply.setArticle(articleRepo.findByArticleSeq(articleNum));
+        reply.setUser(user);
         reply.setWrittenDate(LocalDateTime.now());
+
         return replyRepo.save(reply);
     }
 
