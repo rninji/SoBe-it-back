@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
@@ -51,7 +52,9 @@ public class ProfileServiceImpl implements ProfileService {
      * 작성한 글 가져오기
      * */
     @Override
-    public ArticleDTO selectMyArticle(@RequestBody Map<String, String> userIdMap) {
+    public ArticleResponseDTO selectMyArticle(@RequestBody Map<String, String> userIdMap) {
+
+        List<Article> userArticles = articleRepo.findArticlesByUser(userIdMap.get("userId"));
 
 //        List<Object[]> list = new ArrayList<>();
 //
@@ -62,20 +65,23 @@ public class ProfileServiceImpl implements ProfileService {
 //
 //        return
 
-        ArticleDTO articleDTO = new ArticleDTO();
+        ArticleResponseDTO articleResponseDTO = new ArticleResponseDTO();
         Users user = userRepo.findByUserId(userIdMap.get("userId"));
         Article article = articleRepo.findByUserId(userIdMap.get("userId"));
 
-        articleDTO.setProfileImg(user.getProfileImageUrl());
-        articleDTO.setNickname(user.getNickname());
-        articleDTO.setWrittenDate(article.getWrittenDate());
-        articleDTO.setStatus(article.getStatus());
-        articleDTO.setArticleType(article.getArticleType());
-        articleDTO.setCategory(article.getExpenditureCategory());
-        articleDTO.setArticleText(article.getArticleText());
-        articleDTO.setAmount(article.getAmount());
+        Users articleDTOUser = articleResponseDTO.getUser();
+        articleDTOUser.setProfileImageUrl(user.getProfileImageUrl());
+        articleDTOUser.setNickname(user.getNickname());
 
-        return articleDTO;
+        articleResponseDTO.setUser(articleDTOUser);
+        articleResponseDTO.setWrittenDate(article.getWrittenDate());
+        articleResponseDTO.setStatus(article.getStatus());
+        articleResponseDTO.setArticleType(article.getArticleType());
+        articleResponseDTO.setExpenditureCategory(article.getExpenditureCategory());
+        articleResponseDTO.setArticleText(article.getArticleText());
+        articleResponseDTO.setAmount(article.getAmount());
+
+        return articleResponseDTO;
     }
 
     /**
