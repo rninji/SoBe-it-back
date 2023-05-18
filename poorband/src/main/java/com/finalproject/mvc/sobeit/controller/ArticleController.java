@@ -30,33 +30,14 @@ public class ArticleController {
      * 글 작성
      * @param user
      * @param articleDTO
-     * @return 성공 시 작성된 글 번호
+     * @return 성공 시 작성된 글
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            // 요청 이용해 저장할 글 생성
-            Article article = Article.builder()
-                    .user(user)
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    .articleType(articleDTO.getArticleType())
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-
             // 서비스 이용해 글 저장
-            Article writtenArticle = articleService.writeArticle(article);
-
-            // 저장된 글 번호 반환 (이것만 반환해도 되겠지?ㅎㅎ)
-            Long articleSeq = writtenArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article article = articleService.writeArticle(user, articleDTO);
+            return ResponseEntity.ok().body(article);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
@@ -71,35 +52,13 @@ public class ArticleController {
      * 글 수정
      * @param user
      * @param articleDTO
-     * @return 성공 시 업데이트된 글 번호
+     * @return 성공 시 업데이트된 글
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            Article article = Article.builder()
-                    .user(user)
-                    .articleSeq(articleDTO.getArticleSeq())
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    //.articleType(articleDTO.getArticleType()) // 유형은 못 바꾸게 해야될거같음
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .editedDate(LocalDateTime.now())
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-            Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
-            if (updatedArticle==null) {
-                throw new RuntimeException("글 수정 실패");
-            }
-
-            // 업데이트된 글 번호 반환
-            Long articleSeq = updatedArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article updatedArticle = articleService.updateArticle(user, articleDTO);
+            return ResponseEntity.ok().body(updatedArticle);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
@@ -118,8 +77,8 @@ public class ArticleController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
         try{
-            articleService.deleteArticle(user.getUserSeq(), articleSeqMap.get("articleSeq"));
-            return ResponseEntity.ok().body("success");
+            articleService.deleteArticle(user, articleSeqMap.get("articleSeq"));
+            return ResponseEntity.ok().body("delete success");
         }
         catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -150,7 +109,7 @@ public class ArticleController {
     }
 
     /**
-     * 글 전체 조회
+     * 피드 글 조회
      * @return
      */
     @GetMapping("/selectAll")
