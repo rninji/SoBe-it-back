@@ -9,15 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface ArticleRepo extends JpaRepository<Article, Long> {
-    @Query("select a from Article a where a.user = ?1 order by a.writtenDate desc")
+    @Query("select a from Article a where a.user.userId = ?1 order by a.writtenDate desc")
     List<Article> findArticlesByUser(String user_id);
 
     @Query("select a from Article a where a.articleText like %?1%")
     List<Article> findArticlesByArticleText(String articleText);
 
-    Article findByUserId(String userId);
 
     Article findByArticleSeq(Long articleSeq);
 
