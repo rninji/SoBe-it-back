@@ -323,7 +323,7 @@ public class ArticleServiceImpl implements ArticleService{
         int agreeRate = 0;
         int disagreeRate = 0;
         if (voteInfo[0]!=0 || voteInfo[1]!=0) { // 투표수가 0이 아니라면
-            agreeRate = voteInfo[0]/(voteInfo[0]+voteInfo[1]) * 100;
+            agreeRate = (int)((voteInfo[0]*1.0)/(voteInfo[0]+voteInfo[1]) * 100);
             disagreeRate = 100 - agreeRate;
         }
         voteInfo[2] = agreeRate;
