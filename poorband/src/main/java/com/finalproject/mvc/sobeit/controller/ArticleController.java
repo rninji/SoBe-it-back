@@ -168,8 +168,9 @@ public class ArticleController {
 
     /**
      * 글 좋아요
-     * @param articleLike
-     * @return true면 좋아요 false면 좋아요 삭제
+     * @param user
+     * @param articleSeqMap
+     * @return
      */
     @PostMapping("/like")
     public ResponseEntity<?> likeArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
@@ -189,37 +190,13 @@ public class ArticleController {
      * 투표하기
      * @param user
      * @param voteDTO
-     * @return 투표 성공 시 "success"
+     * @return 성공 시 투표 정보 반환
      */
     @PostMapping("/vote")
     public ResponseEntity<?> vote(@AuthenticationPrincipal Users user, @RequestBody VoteDTO voteDTO){
         try{
-            // 결재 글이 맞는 지 확인
-//            if (articleService.selectArticleById(voteDTO.getArticleSeq()).getArticleType()!=결재타입){
-//                throw new RuntimeException("투표가 가능한 글이 아닙니다.");
-//            }
-            System.out.println(1);
-            // 이 사용자가 이 글에 투표한 적이 있는 지 확인
-            if (articleService.voteCheck(user.getUserSeq(), voteDTO.getArticleSeq())){
-                throw new RuntimeException("이미 투표 완료했습니다.");
-            }
-            System.out.println(2);
-            // 투표 생성
-            Vote vote = Vote.builder()
-                    .article(articleService.selectArticleById(voteDTO.getArticleSeq()))
-                    .user(user)
-                    .vote(voteDTO.getVoteType())
-                    .build();
-            System.out.println(3);
-            // 서비스 이용해서 투표하기
-            Vote votedVote = articleService.voteArticle(vote);
-
-            if (votedVote == null) {
-                throw new RuntimeException("투표 실패");
-            }
-            System.out.println(4);
-            // 성공 여부 반환
-            return ResponseEntity.ok().body("success");
+            Vote vote = articleService.voteArticle(user, voteDTO);
+            return ResponseEntity.ok().body(vote);
         } catch(Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 

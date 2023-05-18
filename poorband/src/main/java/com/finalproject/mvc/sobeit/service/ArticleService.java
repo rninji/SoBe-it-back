@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
+import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -72,7 +73,7 @@ public interface ArticleService {
 
     /**
      * 글 좋아요
-     * @param userSeq
+     * @param user
      * @param articleSeq
      * @return true : 좋아요, false : 좋아요 취소
      */
@@ -93,10 +94,10 @@ public interface ArticleService {
 
     /**
      * 투표하기
-     * @param vote
+     * @param voteDTO
      * @return 생성된 투표
      */
-    public Vote voteArticle(Vote vote);
+    public Vote voteArticle(Users user, VoteDTO voteDTO);
 
     /**
      * 해당 사용자의 해당 글에 대한 투표 여부 확인
