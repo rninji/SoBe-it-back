@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.Following;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
@@ -36,8 +37,8 @@ public class ProfileController {
     @RequestMapping("/profileinfo")
     public ResponseEntity<Object> profileinfo(String userId) {
 
-        Users user = profileService.selectUserInfo(userId);
-        apiResponse.setData(user);
+        ProfileUserDTO profileUserDTO = profileService.selectUserInfo(userId);
+        apiResponse.setData(profileUserDTO);
         apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
@@ -48,14 +49,16 @@ public class ProfileController {
     @RequestMapping("/myarticle")
     public ResponseEntity<Object> articleList(String userId) {
 //        List<ArticleDTO> list = profileService.selectMyArticle(userId);
-
-        //ArticleDTO articleDTO = profileService.selectMyArticle(userId);
+//        ArticleDTO articleDTO = profileService.selectMyArticle(userId);
 
         // list 가져오기
 
-
-        apiResponse.setData(articleDTO);
-        apiResponse.setMessage("작성한 글 가져오기");
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("userId", userId);
+//        return ResponseEntity.ok().body(jsonObject);
+//
+//        apiResponse.setData(articleDTO);
+//        apiResponse.setMessage("작성한 글 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 
@@ -88,9 +91,9 @@ public class ProfileController {
      * */
     @RequestMapping("/following")
     public ResponseEntity<Object> following(String userId) {
-        Users user = profileService.selectUserInfo(userId);
-        apiResponse.setData(user);
-        apiResponse.setMessage("프로필 유저 정보 가져오기");
+//        Users user = profileService.selectUserInfo(userId);
+//        apiResponse.setData(user);
+//        apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 
     }
@@ -100,9 +103,9 @@ public class ProfileController {
      * */
     @RequestMapping("/follower")
     public ResponseEntity<Object> follower(String userId) {
-        Users user = profileService.selectUserInfo(userId);
-        apiResponse.setData(user);
-        apiResponse.setMessage("프로필 유저 정보 가져오기");
+//        Users user = profileService.selectUserInfo(userId);
+//        apiResponse.setData(user);
+//        apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 
     }
@@ -112,9 +115,9 @@ public class ProfileController {
      * */
     @RequestMapping("/deleteFollowing")
     public ResponseEntity<Object> deleteFollowing(String userId, String target_user_id) {
-        Users user = profileService.selectUserInfo(userId);
-        apiResponse.setData(user);
-        apiResponse.setMessage("프로필 유저 정보 가져오기");
+//        Users user = profileService.selectUserInfo(userId);
+//        apiResponse.setData(user);
+//        apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 
     }
@@ -124,9 +127,9 @@ public class ProfileController {
      * */
     @RequestMapping("/addFollow")
     public ResponseEntity<Object> addFollow(String userId) {
-        Users user = profileService.selectUserInfo(userId);
-        apiResponse.setData(user);
-        apiResponse.setMessage("프로필 유저 정보 가져오기");
+//        Users user = profileService.selectUserInfo(userId);
+//        apiResponse.setData(user);
+//        apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 
     }
@@ -148,9 +151,9 @@ public class ProfileController {
      * */
     @RequestMapping("/challenge/delete")
     public ResponseEntity<Object> deleteChallenge(String goalAmountSeq) {
-        Users user = profileService.selectUserInfo(goalAmountSeq);
-        apiResponse.setData(user);
-        apiResponse.setMessage("프로필 유저 정보 가져오기");
+//        Users user = profileService.selectUserInfo(goalAmountSeq);
+//        apiResponse.setData(user);
+//        apiResponse.setMessage("프로필 유저 정보 가져오기");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 
     }

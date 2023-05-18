@@ -1,21 +1,23 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
      * */
-    Users selectUserInfo(String userId);
+    ProfileUserDTO selectUserInfo(String userId);
 
     /**
      * 작성한 글 가져오기
      * */
-    ArticleDTO selectMyArticle(String userId);
+    ArticleDTO selectMyArticle(Map<String, String> userIdMap);
 
     /**
      * 도전 과제 정보 가져오기
