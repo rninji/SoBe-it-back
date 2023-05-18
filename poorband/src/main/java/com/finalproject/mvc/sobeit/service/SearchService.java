@@ -14,6 +14,6 @@ public interface SearchService {
     /**
      * 게시글(Articles) 검색
      **/
-    List<Article> articleSearch(String inputText);
+    List<Article> articlesSearch(String inputText);
 
 }

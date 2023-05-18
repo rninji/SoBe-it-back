@@ -27,8 +27,9 @@ public class SearchServiceImpl implements SearchService{
         List<Users> userSearchResult;
         try{
             userSearchResult = userRep.findAllByUserId(inputText);
+            System.out.println("userSearchResult = " + userSearchResult);
         } catch (NullPointerException exception) { // 검색어가 포함되는 userId가 없을 경우(null)
-            throw new RuntimeException("검색어와 일치하는 유저가 없습니다.");
+            throw new RuntimeException("검색어와 포함된 유저가 없습니다.");
         }
         return userSearchResult;
     }
@@ -37,8 +38,13 @@ public class SearchServiceImpl implements SearchService{
      * 게시글(Articles) 검색
      **/
     @Override
-    public List<Article>  articleSearch(String inputText) {
-
-        return null;
+    public List<Article>  articlesSearch(String inputText) {
+        List<Article> articleSearchResult;
+        try {
+            articleSearchResult = articleRep.findArticlesByArticleText(inputText);
+        } catch (NullPointerException exception) {
+            throw new RuntimeException("검색어가 포함된 게시글이 없습니다.");
+        }
+        return articleSearchResult;
     }
 }

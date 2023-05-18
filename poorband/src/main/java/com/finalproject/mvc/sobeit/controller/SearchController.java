@@ -1,11 +1,12 @@
 package com.finalproject.mvc.sobeit.controller;
 
+import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,13 +22,18 @@ public class SearchController {
      **/
     @RequestMapping("/users")
     public List<Users> usersSearch(String inputText){
-        List<Users> list = searchService.usersSearch(inputText);
+        List<Users> usersList = searchService.usersSearch(inputText);
 
-        return list;
+        return usersList;
     }
 
     /**
      * 게시글(Articles) 검색
      **/
+    @RequestMapping("/articles")
+    public List<Article> articlesSearch(String inputText){
+        List<Article> articleList = searchService.articlesSearch(inputText);
 
+        return articleList;
+    }
 }
