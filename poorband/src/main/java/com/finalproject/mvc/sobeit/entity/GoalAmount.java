@@ -20,6 +20,9 @@ public class GoalAmount {
     @Column(nullable = false)
     private Long goalAmount;
 
+    @Column(nullable = false)
+    private String title;
+
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
