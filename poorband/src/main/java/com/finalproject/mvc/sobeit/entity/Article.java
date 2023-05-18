@@ -23,12 +23,12 @@ public class Article {
     private Users user;
 
     @Column(nullable = false)
-    private int status;
+    private int status; // 1 : 전체 공개, 2 : 맞팔 공개, 3 : 비공개
 
     private String imageUrl;
 
     @Column(nullable = false)
-    private String expenditureCategory;
+    private int expenditureCategory; // 1 ~ 6까지 뭘로 할 지 정하기
 
     @Column(nullable = false)
     private Long amount;
@@ -44,7 +44,7 @@ public class Article {
     private LocalDateTime editedDate;
 
     @Column(nullable = false)
-    private String articleType;
+    private int articleType; // 1 : 지출, 2 : 결재
     @Column(nullable = false)
     private LocalDate consumptionDate;
 
