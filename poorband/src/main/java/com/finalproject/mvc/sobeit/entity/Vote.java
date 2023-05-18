@@ -21,7 +21,7 @@ public class Vote {
     private Article article;
 
     @Column(nullable = false)
-    private int vote;
+    private int vote; // 1 : 찬성, 2 : 반대
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
