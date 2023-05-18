@@ -28,7 +28,6 @@ public class ArticleService {
      * @param article
      */
     public Article writeArticle(Article article) {
-        article.setWrittenDate(LocalDateTime.now());
         return articleRepo.save(article);
     }
 
