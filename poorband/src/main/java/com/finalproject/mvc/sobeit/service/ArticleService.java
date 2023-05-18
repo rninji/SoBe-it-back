@@ -9,9 +9,12 @@ import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -31,20 +34,21 @@ public class ArticleService {
 
     /**
      * 글 수정
+     * @param userSeq
+     * @param article
+     * @return
      */
     public Article updateArticle(Long userSeq, Article article) {
         Article existingArticle = articleRepo.findById(article.getArticleSeq()).orElse(null); // 기존 작성글 가져오기
         if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
-            // throws new Exception("수정할 글이 없습니다.");
-            return null;
+            throw new RuntimeException("수정할 글이 없습니다.");
         }
         if (userSeq != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
-            //throws new Exception("글의 작성자가 아닙니다.");
-
-            return null;
+            throw new RuntimeException("글의 작성자가 아닙니다.");
         }
 
         article.setWrittenDate(existingArticle.getWrittenDate()); // 작성시간 복사
+        article.setArticleType(existingArticle.getArticleType()); // 타입 복사
         article.setEditedDate(LocalDateTime.now()); // 수정시간 등록
         return articleRepo.save(article);
     }
@@ -57,13 +61,11 @@ public class ArticleService {
     public void deleteArticle(Long userSeq, Long articleSeq) {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
         if (foundArticle==null){ // 삭제할 글이 없는 경우
-            // thorw new Exception("삭제할 글이 없습니다.");
-            System.out.println("삭제할 글이 없습니다.");
+            throw new RuntimeException("삭제할 글이 없습니다.");
         }
 
         if (userSeq!=foundArticle.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
-            // thorw new Exception("작성자가 아닙니다.");
-            System.out.println("작성자가 아닙니다.");
+            throw new RuntimeException("작성자가 아닙니다.");
         }
         articleRepo.deleteById(articleSeq);
     }
