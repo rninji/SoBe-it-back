@@ -52,8 +52,11 @@ public interface ArticleService {
 
     /**
      * 글 하나에 대한 ArticleResponseDTO 가져오기
+     * @param userSeq 조회 요청한 유저 번호
+     * @param articleSeq 조회하려는 글 번호
+     * @return
      */
-    public ArticleResponseDTO findArticleResponse(Long articleSeq);
+    public ArticleResponseDTO findArticleResponse(Long userSeq, Long articleSeq);
 
     /**
      * 피드
@@ -99,18 +102,11 @@ public interface ArticleService {
     public boolean voteCheck(Long userSeq, Long articleSeq);
 
     /**
-     * 투표수 확인
+     * 투표수, 투표율 확인
      * @param articleSeq
-     * @return v[0] 찬성표수, v[1] 반대표수
+     * @return [0] : 찬성표수, [1] : 반대표수, [2] : 찬성표율, [3] : 반대표율
      */
-    public int[] voteCount(Long articleSeq);
-
-    /**
-     * 투표율 확인
-     * @param articleSeq
-     * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
-     */
-    public JSONObject voteRate(Long articleSeq);
+    public int[] findVoteInfo(Long articleSeq);
 
 
 }
