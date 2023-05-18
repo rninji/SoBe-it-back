@@ -43,9 +43,16 @@ public class ReplyServiceImpl implements ReplyService {
      */
     @Override
     public Reply updateReply(Reply reply){
-        reply.setWrittenDate(LocalDateTime.now());
-        // 수정일 갱신
-        return replyRepo.save(reply);
+        if (reply == null) {
+            throw new RuntimeException("Invalid arguments");
+        }
+
+        Reply updatingReply = replyRepo.findReplyByReplySeq(reply.getReplySeq()); // 업데이트할 댓글
+
+        updatingReply.setReplyText(reply.getReplyText()); // 댓글 수정 내용 반영
+        updatingReply.setIsUpdated(updatingReply.getIsUpdated() + 1); // 수정 횟수 추가
+
+        return replyRepo.save(updatingReply);
     }
 
     /**
