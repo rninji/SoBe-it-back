@@ -33,7 +33,6 @@ public class ArticleController {
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
-        System.out.println("좀 떠라");
         try{
             // 요청 이용해 저장할 글 생성
             Article article = Article.builder()
