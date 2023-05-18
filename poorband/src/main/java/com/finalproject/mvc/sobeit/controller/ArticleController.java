@@ -1,16 +1,16 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
-import com.finalproject.mvc.sobeit.service.ArticleService;
+import com.finalproject.mvc.sobeit.service.ArticleServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/article")
 public class ArticleController {
-    private final ArticleService articleService;
+    private final ArticleServiceImpl articleService;
 
     /**
      * 글 작성
@@ -132,15 +132,33 @@ public class ArticleController {
 
     ////////// 상세 조회 ArticleResponseDTO 반환하기
     /**
-     * 글 상세 조회
+     * 글 1개 조회
      * @param user
      * @param articleSeq
      * @return
      */
     @GetMapping("/detail")
-    public JSONObject selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
-       // 다시 작성
-        return null;
+    public ResponseEntity<?> selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
+        try{
+            // 보려는 글 가져오기
+            Article article = articleService.selectArticleById(articleSeq);
+            // 글에 대한 권한 확인
+            //if (article.getStatus()==2 && !맞팔체크){
+            //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
+            //}
+            //else
+            if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
+                throw new RuntimeException("비공개 글입니다.");
+            }
+            // ArticleResponseDTO 가져오기
+            ArticleResponseDTO articleResponseDTO = findArticleResponse(articleSeq);
+            return ResponseEntity.ok().body(articleResponseDTO);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
@@ -148,9 +166,18 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/selectAll")
-    public List<Article> selectArticleAll(){
+    public ResponseDTO<?> selectArticleAll(@AuthenticationPrincipal Users user){
         List<Article> list = articleService.selectAllArticle();
-        return list;
+        // 권한에 맞는 글번호 리스트 가져오기
+        // ArticleResponseDTO 가져오기
+        return null;
+    }
+
+    /**
+     * 글 하나에 대한 ArticleResponseDTO 가져오기
+     */
+    public ArticleResponseDTO findArticleResponse(Long articleSeq) {
+        return null;
     }
 
     /**
