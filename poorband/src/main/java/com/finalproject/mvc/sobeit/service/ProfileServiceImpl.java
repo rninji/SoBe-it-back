@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setNickname(user.getNickname());
         profileUserDTO.setUserId(loggedInUser.getUserId());
         profileUserDTO.setIntroDetail(user.getIntroduction());
-        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
+        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user.getUserSeq()));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user.getUserSeq()));
 
         return profileUserDTO;
@@ -89,13 +89,9 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollowing(Users user) {
+        List<Users> followingList = followingRepo.findArticleThatUserFollows(user.getUserSeq());
 
-/*        "profileImg" : String,
-        "nickname" : String,
-        "userId" : String*/
-
-
-        return null;
+        return followingList;
     }
 
     /**
@@ -103,7 +99,9 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollower(Users user) {
-        return null;
+        List<Users> followerList = followingRepo.findArticleThatUserFollowed(user.getUserSeq());
+
+        return followerList;
     }
 
     /**
