@@ -49,6 +49,13 @@ public interface ArticleService {
     public List<Article> selectAllArticle();
 
     /**
+     * 피드 글 조회
+     * @param userSeq
+     * @return 유저가 볼 수 있는 피드 글 번호 리스트
+     */
+    public List<Long> selectFeedArticleSeq(Long userSeq);
+
+    /**
      * 글 좋아요
      * @param articleLike
      */

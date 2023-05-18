@@ -166,7 +166,7 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/selectAll")
-    public ResponseDTO<?> selectArticleAll(){
+    public ResponseDTO<?> selectArticleAll(@AuthenticationPrincipal Users user){
         List<Article> list = articleService.selectAllArticle();
         // 권한에 맞는 글번호 리스트 가져오기
         // ArticleResponseDTO 가져오기
@@ -177,7 +177,7 @@ public class ArticleController {
      * 글 하나에 대한 ArticleResponseDTO 가져오기
      */
     public ArticleResponseDTO findArticleResponse(Long articleSeq) {
-
+        return null;
     }
 
     /**

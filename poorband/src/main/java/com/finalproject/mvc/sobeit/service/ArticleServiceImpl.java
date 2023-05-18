@@ -88,6 +88,17 @@ public class ArticleServiceImpl implements ArticleService{
     }
 
     /**
+     * 피드 글 조회
+     * @param userSeq
+     * @return 유저가 볼 수 있는 권한의 글번호 리스트 최신순
+     */
+    @Override
+    public List<Long> selectFeedArticleSeq(Long userSeq) {
+        //
+        return null;
+    }
+
+    /**
      * 글 좋아요
      * @param articleLike
      */
