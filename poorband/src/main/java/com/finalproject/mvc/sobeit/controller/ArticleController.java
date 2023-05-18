@@ -29,7 +29,7 @@ public class ArticleController {
      * 글 작성
      * @param user
      * @param articleDTO
-     * @return
+     * @return 성공 시 작성된 글 번호
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
@@ -70,7 +70,7 @@ public class ArticleController {
      * 글 수정
      * @param user
      * @param articleDTO
-     * @return
+     * @return 성공 시 업데이트된 글 번호
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
@@ -111,7 +111,7 @@ public class ArticleController {
     /**
      * 글 삭제
      * @param user
-     * @param articleSeq
+     * @param { "articleSeq": 삭제할 글번호}
      * @return
      */
     @PostMapping("/delete")
@@ -127,7 +127,6 @@ public class ArticleController {
                     .internalServerError() // Error 500
                     .body(responseDTO);
         }
-
     }
 
     ////////// 상세 조회 ArticleResponseDTO 반환하기
@@ -221,5 +220,13 @@ public class ArticleController {
         rate.put("agreeRate", agreeRate);
         rate.put("disagreeRate", disagreeRate);
         return rate;
+    }
+
+    /**
+     * 좋아요 수 확인
+     */
+    public int countLike(Long articleSeq){
+
+        return 0;
     }
 }
