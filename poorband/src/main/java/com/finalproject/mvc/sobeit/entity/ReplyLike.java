@@ -7,18 +7,20 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@ToString
 public class ReplyLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long replyLike;
+    private Long replyLikeSeq;
 
     @ManyToOne
-    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
+    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq", nullable = false)
     private Reply reply;
+
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
     private Users user;
 }
