@@ -7,10 +7,9 @@ import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
-import com.finalproject.mvc.sobeit.service.ArticleService;
+import com.finalproject.mvc.sobeit.service.ArticleServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/article")
 public class ArticleController {
-    private final ArticleService articleService;
+    private final ArticleServiceImpl articleService;
 
     /**
      * 글 작성
