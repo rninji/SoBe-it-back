@@ -30,33 +30,14 @@ public class ArticleController {
      * 글 작성
      * @param user
      * @param articleDTO
-     * @return 성공 시 작성된 글 번호
+     * @return 성공 시 작성된 글
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            // 요청 이용해 저장할 글 생성
-            Article article = Article.builder()
-                    .user(user)
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    .articleType(articleDTO.getArticleType())
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-
             // 서비스 이용해 글 저장
-            Article writtenArticle = articleService.writeArticle(article);
-
-            // 저장된 글 번호 반환 (이것만 반환해도 되겠지?ㅎㅎ)
-            Long articleSeq = writtenArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article article = articleService.writeArticle(user, articleDTO);
+            return ResponseEntity.ok().body(article);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
@@ -71,35 +52,13 @@ public class ArticleController {
      * 글 수정
      * @param user
      * @param articleDTO
-     * @return 성공 시 업데이트된 글 번호
+     * @return 성공 시 업데이트된 글
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            Article article = Article.builder()
-                    .user(user)
-                    .articleSeq(articleDTO.getArticleSeq())
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    //.articleType(articleDTO.getArticleType()) // 유형은 못 바꾸게 해야될거같음
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .editedDate(LocalDateTime.now())
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-            Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
-            if (updatedArticle==null) {
-                throw new RuntimeException("글 수정 실패");
-            }
-
-            // 업데이트된 글 번호 반환
-            Long articleSeq = updatedArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article updatedArticle = articleService.updateArticle(user, articleDTO);
+            return ResponseEntity.ok().body(updatedArticle);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
@@ -118,8 +77,8 @@ public class ArticleController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteArticle(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> articleSeqMap){
         try{
-            articleService.deleteArticle(user.getUserSeq(), articleSeqMap.get("articleSeq"));
-            return ResponseEntity.ok().body("success");
+            articleService.deleteArticle(user, articleSeqMap.get("articleSeq"));
+            return ResponseEntity.ok().body("delete success");
         }
         catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -130,7 +89,6 @@ public class ArticleController {
         }
     }
 
-    ////////// 상세 조회 ArticleResponseDTO 반환하기
     /**
      * 글 1개 조회
      * @param user
@@ -138,20 +96,9 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/detail")
-    public ResponseEntity<?> selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
+    public ResponseEntity<?> articleDetail(@AuthenticationPrincipal Users user, Long articleSeq){
         try{
-            // 보려는 글 가져오기
-            Article article = articleService.selectArticleById(articleSeq);
-            // 글에 대한 권한 확인
-            //if (article.getStatus()==2 && !맞팔체크){
-            //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
-            //}
-            //else
-            if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
-                throw new RuntimeException("비공개 글입니다.");
-            }
-            // ArticleResponseDTO 가져오기
-            ArticleResponseDTO articleResponseDTO = findArticleResponse(articleSeq);
+            ArticleResponseDTO articleResponseDTO = articleService.articleDetail(user, articleSeq);
             return ResponseEntity.ok().body(articleResponseDTO);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -162,22 +109,20 @@ public class ArticleController {
     }
 
     /**
-     * 글 전체 조회
+     * 피드 글 조회
      * @return
      */
     @GetMapping("/selectAll")
-    public ResponseDTO<?> selectArticleAll(@AuthenticationPrincipal Users user){
-        List<Article> list = articleService.selectAllArticle();
-        // 권한에 맞는 글번호 리스트 가져오기
-        // ArticleResponseDTO 가져오기
-        return null;
-    }
-
-    /**
-     * 글 하나에 대한 ArticleResponseDTO 가져오기
-     */
-    public ArticleResponseDTO findArticleResponse(Long articleSeq) {
-        return null;
+    public ResponseEntity<?> selectArticleAll(@AuthenticationPrincipal Users user){
+        try {
+            List<ArticleResponseDTO> articleResponseDTOList = articleService.feed(user);
+            return ResponseEntity.ok().body(articleResponseDTOList);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
@@ -237,32 +182,5 @@ public class ArticleController {
 
     }
 
-    /**
-     * 투표율 확인
-     * @param articleSeq
-     * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
-     */
-    public JSONObject voteRate(Long articleSeq){
-        int[] voteValue = articleService.voteCount(articleSeq);
-        JSONObject rate = new JSONObject();
-        rate.put("agree",voteValue[0]);
-        rate.put("disagree",voteValue[1]);
-        int agreeRate = 0;
-        int disagreeRate = 0;
-        if (voteValue[0]!=0 || voteValue[1]!=0) { // 투표수가 0이 아니라면
-            agreeRate = voteValue[0]/(voteValue[0]+voteValue[1]) * 100;
-            disagreeRate = 100 - agreeRate;
-        }
-        rate.put("agreeRate", agreeRate);
-        rate.put("disagreeRate", disagreeRate);
-        return rate;
-    }
 
-    /**
-     * 좋아요 수 확인
-     */
-    public int countLike(Long articleSeq){
-
-        return 0;
-    }
 }
