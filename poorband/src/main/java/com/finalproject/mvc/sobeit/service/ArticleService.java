@@ -1,12 +1,15 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
+import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,20 +39,29 @@ public interface ArticleService {
     public void deleteArticle(Long userSeq, Long articleSeq);
 
     /**
-     * 글 아이디로 조회
+     * 디테일 페이지
      * @param articleSeq
      * @return
+     */
+    public ArticleResponseDTO articleDetail(Users user, Long articleSeq);
+
+    /**
+     * 아이디로 글 조회
      */
     public Article selectArticleById(Long articleSeq);
 
     /**
-     * 글 전체 조회
-     * @return
+     * 글 하나에 대한 ArticleResponseDTO 가져오기
      */
-    public List<Article> selectAllArticle();
+    public ArticleResponseDTO findArticleResponse(Long articleSeq);
 
     /**
-     * 피드 글 조회
+     * 피드
+     */
+    public List<ArticleResponseDTO> feed(Users user);
+
+    /**
+     * 피드 글 번호 조회
      * @param userSeq
      * @return 유저가 볼 수 있는 피드 글 번호 리스트
      */
@@ -60,6 +72,16 @@ public interface ArticleService {
      * @param articleLike
      */
     public boolean likeArticle(ArticleLike articleLike);
+
+    /**
+     * 글 좋아요 여부 확인
+     */
+    public boolean isArticleLike(Long userSeq, Long articleSeq);
+
+    /**
+     * 글 좋아요 수 확인
+     */
+    public int countArticleLike(Long articleSeq);
 
     /**
      * 투표하기
@@ -82,4 +104,13 @@ public interface ArticleService {
      * @return v[0] 찬성표수, v[1] 반대표수
      */
     public int[] voteCount(Long articleSeq);
+
+    /**
+     * 투표율 확인
+     * @param articleSeq
+     * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
+     */
+    public JSONObject voteRate(Long articleSeq);
+
+
 }

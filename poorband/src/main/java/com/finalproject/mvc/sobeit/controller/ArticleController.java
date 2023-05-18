@@ -130,7 +130,6 @@ public class ArticleController {
         }
     }
 
-    ////////// 상세 조회 ArticleResponseDTO 반환하기
     /**
      * 글 1개 조회
      * @param user
@@ -138,20 +137,9 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/detail")
-    public ResponseEntity<?> selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
+    public ResponseEntity<?> articleDetail(@AuthenticationPrincipal Users user, Long articleSeq){
         try{
-            // 보려는 글 가져오기
-            Article article = articleService.selectArticleById(articleSeq);
-            // 글에 대한 권한 확인
-            //if (article.getStatus()==2 && !맞팔체크){
-            //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
-            //}
-            //else
-            if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
-                throw new RuntimeException("비공개 글입니다.");
-            }
-            // ArticleResponseDTO 가져오기
-            ArticleResponseDTO articleResponseDTO = findArticleResponse(articleSeq);
+            ArticleResponseDTO articleResponseDTO = articleService.articleDetail(user, articleSeq);
             return ResponseEntity.ok().body(articleResponseDTO);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -166,18 +154,16 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/selectAll")
-    public ResponseDTO<?> selectArticleAll(@AuthenticationPrincipal Users user){
-        List<Article> list = articleService.selectAllArticle();
-        // 권한에 맞는 글번호 리스트 가져오기
-        // ArticleResponseDTO 가져오기
-        return null;
-    }
-
-    /**
-     * 글 하나에 대한 ArticleResponseDTO 가져오기
-     */
-    public ArticleResponseDTO findArticleResponse(Long articleSeq) {
-        return null;
+    public ResponseEntity<?> selectArticleAll(@AuthenticationPrincipal Users user){
+        try {
+            List<ArticleResponseDTO> articleResponseDTOList = articleService.feed(user);
+            return ResponseEntity.ok().body(articleResponseDTOList);
+        } catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
@@ -237,32 +223,5 @@ public class ArticleController {
 
     }
 
-    /**
-     * 투표율 확인
-     * @param articleSeq
-     * @return {"agree": 찬성표수, "disagree": 반대표수, "agreeRate: 찬성표율, "disagreeRate": 반대표율}
-     */
-    public JSONObject voteRate(Long articleSeq){
-        int[] voteValue = articleService.voteCount(articleSeq);
-        JSONObject rate = new JSONObject();
-        rate.put("agree",voteValue[0]);
-        rate.put("disagree",voteValue[1]);
-        int agreeRate = 0;
-        int disagreeRate = 0;
-        if (voteValue[0]!=0 || voteValue[1]!=0) { // 투표수가 0이 아니라면
-            agreeRate = voteValue[0]/(voteValue[0]+voteValue[1]) * 100;
-            disagreeRate = 100 - agreeRate;
-        }
-        rate.put("agreeRate", agreeRate);
-        rate.put("disagreeRate", disagreeRate);
-        return rate;
-    }
 
-    /**
-     * 좋아요 수 확인
-     */
-    public int countLike(Long articleSeq){
-
-        return 0;
-    }
 }
