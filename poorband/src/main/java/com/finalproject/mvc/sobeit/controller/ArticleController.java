@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
+import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -29,7 +30,7 @@ public class ArticleController {
      * 글 작성
      * @param user
      * @param articleDTO
-     * @return
+     * @return 성공 시 작성된 글 번호
      */
     @PostMapping("/write")
     public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
@@ -70,7 +71,7 @@ public class ArticleController {
      * 글 수정
      * @param user
      * @param articleDTO
-     * @return
+     * @return 성공 시 업데이트된 글 번호
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
@@ -111,7 +112,7 @@ public class ArticleController {
     /**
      * 글 삭제
      * @param user
-     * @param articleSeq
+     * @param { "articleSeq": 삭제할 글번호}
      * @return
      */
     @PostMapping("/delete")
@@ -127,7 +128,6 @@ public class ArticleController {
                     .internalServerError() // Error 500
                     .body(responseDTO);
         }
-
     }
 
     ////////// 상세 조회 ArticleResponseDTO 반환하기
@@ -139,19 +139,8 @@ public class ArticleController {
      */
     @GetMapping("/detail")
     public JSONObject selectArticleById(@AuthenticationPrincipal Users user, Long articleSeq){
-        JSONObject articleData = new JSONObject();
-
-        // 글 조회
-        Article article = articleService.selectArticleById(user.getUserSeq(), articleSeq);
-        // 예외처리 추가
-        articleData.put("article", article);
-
-        // 작성자 여부 체크
-        boolean isMine = false;
-        if (user.getUserSeq() == article.getUser().getUserSeq()) isMine = true;
-        articleData.put("isMine", isMine);
-
-        return articleData;
+       // 다시 작성
+        return null;
     }
 
     /**
@@ -178,28 +167,47 @@ public class ArticleController {
 
     /**
      * 투표하기
-     * @param vote
+     * @param user
+     * @param voteDTO
+     * @return 투표 성공 시 "success"
      */
     @PostMapping("/vote")
-    public void vote(Vote vote){
-        if (articleService.voteCheck(vote)){
-            // throw Exception("이미 투표 완료했습니다.");
-            System.out.println("중복 투표");
-            return;
+    public ResponseEntity<?> vote(@AuthenticationPrincipal Users user, @RequestBody VoteDTO voteDTO){
+        try{
+            // 결재 글이 맞는 지 확인
+//            if (articleService.selectArticleById(voteDTO.getArticleSeq()).getArticleType()!=결재타입){
+//                throw new RuntimeException("투표가 가능한 글이 아닙니다.");
+//            }
+            System.out.println(1);
+            // 이 사용자가 이 글에 투표한 적이 있는 지 확인
+            if (articleService.voteCheck(user.getUserSeq(), voteDTO.getArticleSeq())){
+                throw new RuntimeException("이미 투표 완료했습니다.");
+            }
+            System.out.println(2);
+            // 투표 생성
+            Vote vote = Vote.builder()
+                    .article(articleService.selectArticleById(voteDTO.getArticleSeq()))
+                    .user(user)
+                    .vote(voteDTO.getVoteType())
+                    .build();
+            System.out.println(3);
+            // 서비스 이용해서 투표하기
+            Vote votedVote = articleService.voteArticle(vote);
+
+            if (votedVote == null) {
+                throw new RuntimeException("투표 실패");
+            }
+            System.out.println(4);
+            // 성공 여부 반환
+            return ResponseEntity.ok().body("success");
+        } catch(Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
         }
 
-        Vote votedVote = articleService.voteArticle(vote);
-        if (votedVote == null) {
-            //throw Exception("투표 실패");
-        }
-        // return ("redirect:/투표한 그 페이지.. 아니면 그냥 프론트에서 처리");
-    }
-
-    /**
-     * 투표 여부 확인
-     */
-    public boolean voteCheck(@AuthenticationPrincipal Users user, Long articleSeq){
-        return false;
     }
 
     /**
@@ -221,5 +229,13 @@ public class ArticleController {
         rate.put("agreeRate", agreeRate);
         rate.put("disagreeRate", disagreeRate);
         return rate;
+    }
+
+    /**
+     * 좋아요 수 확인
+     */
+    public int countLike(Long articleSeq){
+
+        return 0;
     }
 }

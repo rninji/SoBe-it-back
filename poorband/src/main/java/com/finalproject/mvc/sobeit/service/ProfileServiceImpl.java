@@ -1,6 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
@@ -11,11 +11,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +30,14 @@ public class ProfileServiceImpl implements ProfileService {
      * 프로필 유저 정보 가져오기
      * */
     @Override
-    public ProfileUserDTO selectUserInfo(String userId) {
-        Users user = userRepo.findByUserId(userId);
+    public ProfileUserDTO selectUserInfo(Users loggedInUser) {
+        Users user = userRepo.findByUserId(loggedInUser.getUserId());
 
         ProfileUserDTO profileUserDTO = new ProfileUserDTO();
 
         profileUserDTO.setProfileImg(user.getProfileImageUrl());
         profileUserDTO.setNickname(user.getNickname());
-        profileUserDTO.setUserId(userId);
+        profileUserDTO.setUserId(loggedInUser.getUserId());
         profileUserDTO.setIntroDetail(user.getIntroduction());
         profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user.getUserSeq()));
@@ -51,39 +49,17 @@ public class ProfileServiceImpl implements ProfileService {
      * 작성한 글 가져오기
      * */
     @Override
-    public ArticleDTO selectMyArticle(@RequestBody Map<String, String> userIdMap) {
+    public List<Article> selectMyArticle(Users user) {
+        List<Article> userArticles = articleRepo.findArticlesByUser(user.getUserId());
 
-//        List<Object[]> list = new ArrayList<>();
-//
-//        list.add("profileImg", user.getProfileImageUrl());
-//        list.add(user.getNickname());
-//
-//        List<Article[]> listArticle = articleRepo.getArticlesByUser(user);
-//
-//        return
-
-        ArticleDTO articleDTO = new ArticleDTO();
-        Users user = userRepo.findByUserId(userIdMap.get("userId"));
-        Article article = articleRepo.findByUserId(userIdMap.get("userId"));
-
-        articleDTO.setProfileImg(user.getProfileImageUrl());
-        articleDTO.setNickname(user.getNickname());
-        articleDTO.setWrittenDate(article.getWrittenDate());
-        articleDTO.setStatus(article.getStatus());
-        articleDTO.setArticleType(article.getArticleType());
-        articleDTO.setCategory(article.getExpenditureCategory());
-        articleDTO.setArticleText(article.getArticleText());
-        articleDTO.setAmount(article.getAmount());
-
-        return articleDTO;
+        return userArticles;
     }
 
     /**
      * 도전 과제 정보 가져오기
      * */
     @Override
-    public List<GoalAmount> selectChallenge(String userId) {
-
+    public List<GoalAmount> selectChallenge(Users user) {
 //        List<GoalAmount> goalAmountList = goalAmountRepo.findGoalAmountByUserId(userId);
 
         return null;
@@ -91,22 +67,34 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 유저 프로필 편집 저장
-     * */
+     *
+     * @return*/
     @Override
-    public void insertProfile(Users updateUser) {
+    public Users insertProfile(String userId, Users updateUser) {
         Users user = userRepo.findByUserId(updateUser.getUserId());
 
         user.setNickname(updateUser.getNickname());
         user.setIntroduction(updateUser.getIntroduction());
 
         userRepo.save(user);
+        return user;
     }
+
+    /**
+     * 팔로잉 / 팔로워 타이틀
+     * */
 
     /**
      * 팔로잉 정보 가져오기
      * */
     @Override
-    public List<Following> selectFollowing() {
+    public List<Users> selectFollowing(Users user) {
+
+/*        "profileImg" : String,
+        "nickname" : String,
+        "userId" : String*/
+
+
         return null;
     }
 
@@ -114,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
      * 팔로워 정보 가져오기
      * */
     @Override
-    public List<Following> selectFollower() {
+    public List<Users> selectFollower(Users user) {
         return null;
     }
 
@@ -122,7 +110,7 @@ public class ProfileServiceImpl implements ProfileService {
      * 팔로잉 해제
      * */
     @Override
-    public void unfollow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
+    public Following unfollow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
         Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
 
         // 팔로우하려는 사용자가 없음.
@@ -132,19 +120,21 @@ public class ProfileServiceImpl implements ProfileService {
 
         Following f = followingRepo.findByFollowingAndFollower(user, targetUser).orElse(null);
 
+
         // 서로 팔로잉 관계가 아닐 때
         if(f == null) {
             throw new Exception("User not following " + targetUser.getNickname());
         }
 
-        followingRepo.save(f);
+        return followingRepo.save(f);
     }
 
     /**
      * 팔로우 추가
-     * */
+     *
+     * @return*/
     @Override
-    public void follow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
+    public Following follow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
 
         Users loggedInUser = userRepo.findById(user.getUserSeq()).orElse(null);
         Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
@@ -159,8 +149,7 @@ public class ProfileServiceImpl implements ProfileService {
         f.setUser(user);
         f.setFollowingUserSeq(targetUser.getUserSeq());
 
-        followingRepo.save(f);
-
+        return followingRepo.save(f);
     }
 
     /**
@@ -169,14 +158,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void insertChallenge(String userId, GoalAmount challenge) {
 
-        /*data: {
-            "title": String,
-            "startDate": Date,
-            "endDate": Date,
-            "routine": String, // 반복 주기 설정 // 어떻게 구현할지 ..?
-            "goalAmount": int
-        }*/
-//        challenge.setUser(userRepo.findByUserId(userId));
     }
 
     /**
@@ -185,7 +166,5 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void deleteChallenge(String userId, Long challenge_seq) {
 
-
     }
-
 }
