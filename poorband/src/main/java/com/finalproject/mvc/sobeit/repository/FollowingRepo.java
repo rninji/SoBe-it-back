@@ -14,8 +14,11 @@ import java.util.Optional;
 @Repository
 public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslPredicateExecutor<Following> {
 
-    @Query(value = "select count(u) from Users u where u.userId = ?1")
-    int followingCnt(String userId);
+    @Query(value = "select count(f) from Following f join Users u on f.user = ?1")
+    int followingCnt(Users user);
+
+    @Query(value = "select count(f) from Following f join Users u on f.followingUserSeq = ?1")
+    int followerCnt(Long userSeq);
 
     @Query("select f from Following f where f.user = ?1")
     List<Following> findArticleThatUserFollows(Users user);
