@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 
@@ -17,7 +18,7 @@ public interface ProfileService {
     /**
      * 작성한 글 가져오기
      * */
-    ArticleDTO selectMyArticle(Map<String, String> userIdMap);
+    ArticleResponseDTO selectMyArticle(Map<String, String> userIdMap);
 
     /**
      * 도전 과제 정보 가져오기
