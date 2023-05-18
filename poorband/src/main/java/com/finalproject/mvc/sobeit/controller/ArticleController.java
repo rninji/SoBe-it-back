@@ -52,35 +52,13 @@ public class ArticleController {
      * 글 수정
      * @param user
      * @param articleDTO
-     * @return 성공 시 업데이트된 글 번호
+     * @return 성공 시 업데이트된 글
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
         try{
-            Article article = Article.builder()
-                    .user(user)
-                    .articleSeq(articleDTO.getArticleSeq())
-                    .status(articleDTO.getStatus())
-                    .imageUrl(articleDTO.getImageUrl())
-                    .expenditureCategory(articleDTO.getExpenditureCategory())
-                    .amount(articleDTO.getAmount())
-                    .financialText(articleDTO.getFinancialText())
-                    .articleText(articleDTO.getArticleText())
-                    .writtenDate(LocalDateTime.now())
-                    //.articleType(articleDTO.getArticleType()) // 유형은 못 바꾸게 해야될거같음
-                    //.consumptionDate(articleDTO.getConsumptionDate())
-                    .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
-                    .editedDate(LocalDateTime.now())
-                    .isAllowed(articleDTO.getIsAllowed())
-                    .build();
-            Article updatedArticle = articleService.updateArticle(user.getUserSeq(), article);
-            if (updatedArticle==null) {
-                throw new RuntimeException("글 수정 실패");
-            }
-
-            // 업데이트된 글 번호 반환
-            Long articleSeq = updatedArticle.getArticleSeq();
-            return ResponseEntity.ok().body(articleSeq);
+            Article updatedArticle = articleService.updateArticle(user, articleDTO);
+            return ResponseEntity.ok().body(updatedArticle);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 

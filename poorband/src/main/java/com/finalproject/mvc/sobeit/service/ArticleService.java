@@ -28,11 +28,11 @@ public interface ArticleService {
 
     /**
      * 글 수정
-     * @param userSeq
-     * @param article
-     * @return
+     * @param user
+     * @param articleDTO
+     * @return 수정된 글
      */
-    public Article updateArticle(Long userSeq, Article article);
+    public Article updateArticle(Users user, ArticleDTO articleDTO);
 
     /**
      * 글 삭제

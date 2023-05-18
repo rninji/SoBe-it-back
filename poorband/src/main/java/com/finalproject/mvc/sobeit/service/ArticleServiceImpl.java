@@ -31,7 +31,7 @@ public class ArticleServiceImpl implements ArticleService{
      * @return 저장된 글
      */
     @Override
-    public Article writeArticle(Users user, ArticleDTO articleDTO) {
+    public Article writeArticle(Users user, ArticleDTO articleDTO) throws RuntimeException{
         // 요청 이용해 저장할 글 생성
         Article article = Article.builder()
                 .user(user)
@@ -52,22 +52,37 @@ public class ArticleServiceImpl implements ArticleService{
 
     /**
      * 글 수정
-     * @param userSeq
-     * @param article
-     * @return
+     * @param user
+     * @param articleDTO
+     * @return 수정된 글
      */
-    public Article updateArticle(Long userSeq, Article article) {
-        Article existingArticle = articleRepo.findById(article.getArticleSeq()).orElse(null); // 기존 작성글 가져오기
-        if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
-            throw new RuntimeException("수정할 글이 없습니다.");
-        }
-        if (userSeq != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
-            throw new RuntimeException("글의 작성자가 아닙니다.");
-        }
+   @Override
+    public Article updateArticle(Users user, ArticleDTO articleDTO) throws RuntimeException{
+       Article existingArticle = articleRepo.findById(articleDTO.getArticleSeq()).orElse(null); // 수정할 글 가져오기
+       if (existingArticle==null) { // 수정할 글이 없는 경우 예외 발생
+           throw new RuntimeException("수정할 글이 없습니다.");
+       }
+       if (user.getUserSeq() != existingArticle.getUser().getUserSeq()){ // 기존 글의 작성자가 아니면 예외 발생
+           throw new RuntimeException("글의 작성자가 아닙니다.");
+       }
 
-        article.setWrittenDate(existingArticle.getWrittenDate()); // 작성시간 복사
-        article.setArticleType(existingArticle.getArticleType()); // 타입 복사
-        article.setEditedDate(LocalDateTime.now()); // 수정시간 등록
+       // 수정될 글
+       Article article = Article.builder()
+               .user(user)
+               .articleSeq(articleDTO.getArticleSeq())
+               .status(articleDTO.getStatus())
+               .imageUrl(articleDTO.getImageUrl())
+               .expenditureCategory(articleDTO.getExpenditureCategory())
+               .amount(articleDTO.getAmount())
+               .financialText(articleDTO.getFinancialText())
+               .articleText(articleDTO.getArticleText())
+               .writtenDate(existingArticle.getWrittenDate())
+               .articleType(existingArticle.getArticleType()) // 유형은 변경 불가
+               //.consumptionDate(articleDTO.getConsumptionDate())
+               .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+               .editedDate(LocalDateTime.now())
+               .isAllowed(articleDTO.getIsAllowed())
+               .build();
         return articleRepo.save(article);
     }
 
