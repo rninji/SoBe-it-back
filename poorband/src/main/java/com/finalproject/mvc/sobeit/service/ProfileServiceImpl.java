@@ -1,7 +1,7 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
-import com.finalproject.mvc.sobeit.dto.FollowDTO;
+import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
@@ -11,10 +11,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,25 +32,26 @@ public class ProfileServiceImpl implements ProfileService {
      * 프로필 유저 정보 가져오기
      * */
     @Override
-    public Users selectUserInfo(String userId) {
+    public ProfileUserDTO selectUserInfo(String userId) {
         Users user = userRepo.findByUserId(userId);
 
-        user.setProfileImageUrl(user.getProfileImageUrl());
-        user.setNickname(user.getNickname());
-        user.setUserId(userId);
-        user.setIntroduction(user.getIntroduction());
+        ProfileUserDTO profileUserDTO = new ProfileUserDTO();
 
-        // followingCnt
-        // followerCnt
+        profileUserDTO.setProfileImg(user.getProfileImageUrl());
+        profileUserDTO.setNickname(user.getNickname());
+        profileUserDTO.setUserId(userId);
+        profileUserDTO.setIntroDetail(user.getIntroduction());
+        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
+        profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user.getUserSeq()));
 
-        return user;
+        return profileUserDTO;
     }
 
     /**
      * 작성한 글 가져오기
      * */
     @Override
-    public ArticleDTO selectMyArticle(String userId) {
+    public ArticleDTO selectMyArticle(@RequestBody Map<String, String> userIdMap) {
 
 //        List<Object[]> list = new ArrayList<>();
 //
@@ -61,8 +63,8 @@ public class ProfileServiceImpl implements ProfileService {
 //        return
 
         ArticleDTO articleDTO = new ArticleDTO();
-        Users user = userRepo.findByUserId(userId);
-        Article article = articleRepo.findByUserId(userId);
+        Users user = userRepo.findByUserId(userIdMap.get("userId"));
+        Article article = articleRepo.findByUserId(userIdMap.get("userId"));
 
         articleDTO.setProfileImg(user.getProfileImageUrl());
         articleDTO.setNickname(user.getNickname());
@@ -82,9 +84,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public List<GoalAmount> selectChallenge(String userId) {
 
-        List<GoalAmount> goalAmountList = goalAmountRepo.findGoalAmountByUserId(userId);
+//        List<GoalAmount> goalAmountList = goalAmountRepo.findGoalAmountByUserId(userId);
 
-        return goalAmountList;
+        return null;
     }
 
     /**
