@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.ReplyDTO;
+import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Reply;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -97,10 +98,57 @@ public class ReplyController {
 
     /**
      * 댓글 삭제
-     * @param replySeq
+     * @param user
+     * @param replyDTO
      */
-    @RequestMapping("/delete")
-    public void deleteReply(Long replySeq){
-        replyService.deleteReply(replySeq);
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteReply(@AuthenticationPrincipal Users user, @RequestBody ReplyDTO replyDTO){
+        ReplyDTO deletedReplyDTO = replyService.deleteReply(user, replyDTO);
+
+        if (deletedReplyDTO != null) {
+            return ResponseEntity.ok().body(deletedReplyDTO);
+        }
+        else {
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("Delete failed.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
+    }
+
+    /**
+     * 댓글 좋아요
+     * @param user
+     * @param replyLikeDTO
+     * @return
+     */
+    @PostMapping("/like")
+    public ResponseEntity<?> likeReply(@AuthenticationPrincipal Users user, @RequestBody ReplyLikeDTO replyLikeDTO) {
+        try {
+            ReplyLikeDTO likedDTO = replyService.likeReply(user, replyLikeDTO);
+
+            if (likedDTO != null) {
+                return ResponseEntity.ok().body(likedDTO);
+            }
+            else {
+                ResponseDTO responseDTO = ResponseDTO.builder()
+                        .error("Cancel ReplyLike failed.")
+                        .build();
+
+                return ResponseEntity
+                        .internalServerError()
+                        .body(responseDTO);
+            }
+        }
+        catch (Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 }

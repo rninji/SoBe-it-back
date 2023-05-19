@@ -42,10 +42,10 @@ public interface ProfileService {
     /**
      * 팔로잉 해제
      * */
-    Following unfollow(Users user, Users targetUser) throws Exception;
+    Following unfollow(Users user, Long targetUserSeq) throws Exception;
 
     /**
      * 팔로우 추가
      * */
-    Following follow(Users user, Users targetUser) throws Exception;
+    Following follow(Users user, Long targetUserSeq) throws Exception;
 }
