@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,44 +25,64 @@ public class ProfileController {
     /**
      * 프로필 유저 정보 가져오기
      * : 로그인된 사용자, 다른 사용자 프로필 조회
-     * @param user
+     * -- parameter에 @AuthenticationPrincipal Users loggedInUser 추가 여부 생각해보기
+     * @param userIdMap
      * @return 프로필에 표시되는 사용자 정보
      * */
     @RequestMapping("/profileinfo")
-    public ProfileUserDTO profileinfo(Users user) {
-        ProfileUserDTO profileUserDTO = profileService.selectUserInfo(user);
-
-        return profileUserDTO;
+    public ResponseEntity<?> profileinfo(@RequestBody Map<String, String> userIdMap) {// @RequestBody Map<String, Long> userSeqMap) {
+        try {
+            ProfileUserDTO profileUserDTO = profileService.selectUserInfo(userIdMap.get("userId")); // userSeqMap.get("userSeq"));
+            return ResponseEntity.ok().body(profileUserDTO);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 작성한 글 목록 가져오기
      * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
      *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
-     * @param user
+     * @param userIdMap
      * @return 작성한 글 목록
      * */
     @RequestMapping("/myarticle")
-    public List<Article> articleList(Users user) {
-        List<Article> list = profileService.selectMyArticle(user);
-
-        return list;
+    public ResponseEntity<?> articleList(@RequestBody Map<String, String> userIdMap) {
+        try {
+            List<Article> list = profileService.selectArticles(userIdMap.get("userId"));
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 도전 과제 정보 가져오기
-     * @param user
+     * @param userIdMap
      * @return 도전 과제 목록
      * */
     @RequestMapping("/challenge")
-    public List<GoalAmount> challenge(Users user) {
-        List<GoalAmount> list = profileService.selectChallenge(user);
-
-        return list;
+    public ResponseEntity<?> challenge(@RequestBody Map<String, String> userIdMap) {
+        try {
+            List<GoalAmount> list = profileService.selectChallenge(userIdMap.get("userId"));
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 유저 프로필 편집 저장
+     * -- parameter dto로 변경
      * @param loggedInUser
      * @param profile
      * @return 성공 시 "success", 실패 시 Error message
@@ -91,38 +112,50 @@ public class ProfileController {
 
     /**
      * 팔로잉 정보 가져오기
-     * @param user
+     * @param userIdMap
      * @return 사용자의 팔로잉 목록
      * */
     @RequestMapping("/following")
-    public List<Users> following(Users user) {
-        List<Users> list = profileService.selectFollowing(user);
-
-        return list;
+    public ResponseEntity<?> following(@RequestBody Map<String, String> userIdMap) {
+        try {
+            List<Users> list = profileService.selectFollowing(userIdMap.get("userId"));
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 팔로워 정보 가져오기
-     * @param user
+     * @param userIdMap
      * @return 사용자의 팔로워 목록
      * */
     @RequestMapping("/follower")
-    public List<Users> follower(Users user) {
-        List<Users> list = profileService.selectFollower(user);
-
-        return list;
+    public ResponseEntity<?> follower(@RequestBody Map<String, String> userIdMap) {
+        try {
+            List<Users> list = profileService.selectFollower(userIdMap.get("userId"));
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**
      * 팔로잉 해제
      * @param user
-     * @param targetUserSeq
+     * @param targetUserIdMap
      * @return 성공 시 "success", 실패 시 Error message
      * */
     @RequestMapping("/deleteFollowing")
-    public ResponseEntity<?> deleteFollowing(@AuthenticationPrincipal Users user, Long targetUserSeq) throws Exception {
+    public ResponseEntity<?> deleteFollowing(@AuthenticationPrincipal Users user, @RequestBody Map<String, String> targetUserIdMap) {
         try {
-            profileService.unfollow(user, targetUserSeq);
+            profileService.unfollow(user, targetUserIdMap.get("userId"));
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -136,13 +169,13 @@ public class ProfileController {
     /**
      * 팔로우 추가
      * @param user
-     * @param targetUserSeq
+     * @param targetUserIdMap
      * @return 성공 시 "success", 실패 시 Error message
      * */
     @RequestMapping("/addFollow")
-    public ResponseEntity<?> addFollow(@AuthenticationPrincipal Users user, Long targetUserSeq) {
+    public ResponseEntity<?> addFollow(@AuthenticationPrincipal Users user, @RequestBody Map<String, String> targetUserIdMap) {
         try {
-            profileService.follow(user, targetUserSeq);
+            profileService.follow(user, targetUserIdMap.get("userId"));
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();

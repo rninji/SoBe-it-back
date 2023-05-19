@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.repository;
 
 import com.finalproject.mvc.sobeit.dto.FollowDTO;
+import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.Following;
 import com.finalproject.mvc.sobeit.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,8 +22,14 @@ public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslP
     @Query(value = "select count(f) from Following f where f.followingUserSeq = :#{#user.userSeq}")
     int followerCnt(@Param("user") Users user);
 
-    @Query("select u from Users u join Following f on u.userSeq = f.user.userSeq where f.user.userSeq = :#{#user.userSeq}")
-    List<Following> findArticleThatUserFollows(@Param("user") Users user);
+    @Query("select a from Following f join Article a on a.user.userSeq = f.followingUserSeq where f.user.userSeq = :#{#user.userSeq}")
+    List<Article> findArticleThatUserFollows(@Param("user") Users user);
+
+    @Query("select u from Following f join Users u on u.userSeq = f.user.userSeq where f.user.userSeq = :#{#user.userSeq}")
+    List<Users> findProfileThatUserFollows(@Param("user") Users user);
+
+    @Query("select u from Following f join Users u on u.userSeq = f.followingUserSeq where f.followingUserSeq = :#{#user.userSeq}")
+    List<Users> findProfileThatUserFollowing(@Param("user") Users user);
 
     @Query("select f from Following f where f.user.userSeq = :#{#user.userSeq} and f.followingUserSeq=:targetUserSeq")
     Optional<Following> findByFollowingAndFollower(@Param("user") Users user, Long targetUserSeq);
