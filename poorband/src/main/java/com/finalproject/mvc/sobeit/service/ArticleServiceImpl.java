@@ -150,8 +150,8 @@ public class ArticleServiceImpl implements ArticleService{
         boolean isMine = (userSeq==article.getUser().getUserSeq());
 
         // 댓글 수 가져오기
-        int replyCnt = 0;
-        // int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
+        //int replyCnt = 0;
+        int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
 
         // 좋아요 수 가져오기
         int likeCnt = countArticleLike(articleSeq);
