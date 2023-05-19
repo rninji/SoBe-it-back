@@ -7,6 +7,7 @@ import com.finalproject.mvc.sobeit.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/notification")
 public class NotificationController {
     private final NotificationService notificationService;
-    @PostMapping("/selectAll")
+    @GetMapping("/selectAll")
     public ResponseEntity<?> selectAllNotification(@AuthenticationPrincipal Users user) {
         try{
             List<NotificationDTO> notificationDTOList = notificationService.getAllNotification(user);

@@ -1,7 +1,8 @@
 package com.finalproject.mvc.sobeit.dto;
 
-import java.time.LocalDateTime;
+import lombok.Builder;
 
+import java.time.LocalDateTime;
 public interface NotificationDTO {
     LocalDateTime getTimestamp();
 }

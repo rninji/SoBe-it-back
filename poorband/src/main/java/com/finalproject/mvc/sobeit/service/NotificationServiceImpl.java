@@ -1,6 +1,10 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.FollowNotificationDTO;
 import com.finalproject.mvc.sobeit.dto.NotificationDTO;
+import com.finalproject.mvc.sobeit.entity.FollowNotification;
+import com.finalproject.mvc.sobeit.entity.LikeNotification;
+import com.finalproject.mvc.sobeit.entity.ReplyNotification;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.LikeNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.ReplyNotificationRepo;
@@ -17,6 +21,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDTO> getAllNotification(Users user) {
+        List<NotificationDTO> notifications;
         return null;
     }
 
@@ -44,6 +49,26 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void deleteAllNotice(Users user) {
+
+    }
+    public NotificationDTO toFollowNotificationDto(FollowNotification followNotification) {
+        NotificationDTO notificationDTO = FollowNotificationDTO.builder()
+                .followingUserId(followNotification.getFromUser().getUserId())
+                .followingUserNickName(followNotification.getFromUser().getNickname())
+                .content(followNotification.getFromUser().getUserId() + "님이 회원님을 팔로우 합니다.")
+                .notificationSeq(followNotification.getLikeNotificationSeq())
+                .imageUrl(followNotification.getFromUser().getProfileImageUrl())
+                .timestamp(followNotification.getNotificationDateTime())
+
+                .build();
+
+        return notificationDTO;
+    }
+    public NotificationDTO toLikeNotificationDto(LikeNotification likeNotification){
+
+    }
+
+    public NotificationDTO toReplyNotificationDto(ReplyNotification replyNotification) {
 
     }
 }

@@ -1,15 +1,13 @@
 package com.finalproject.mvc.sobeit.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReplyLikeNotificationDTO implements NotificationDTO {
     private Long notificationSeq;
     private int type;
