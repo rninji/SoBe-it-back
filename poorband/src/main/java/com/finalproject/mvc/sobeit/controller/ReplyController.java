@@ -98,11 +98,25 @@ public class ReplyController {
 
     /**
      * 댓글 삭제
-     * @param replySeq
+     * @param user
+     * @param replyDTO
      */
-    @RequestMapping("/delete")
-    public void deleteReply(Long replySeq){
-        replyService.deleteReply(replySeq);
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteReply(@AuthenticationPrincipal Users user, @RequestBody ReplyDTO replyDTO){
+        ReplyDTO deletedReplyDTO = replyService.deleteReply(user, replyDTO);
+
+        if (deletedReplyDTO != null) {
+            return ResponseEntity.ok().body(deletedReplyDTO);
+        }
+        else {
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("Delete failed.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseDTO);
+        }
     }
 
     /**

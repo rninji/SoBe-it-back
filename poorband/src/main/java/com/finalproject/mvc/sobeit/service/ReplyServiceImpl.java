@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ReplyDTO;
 import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.*;
@@ -80,12 +81,36 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 댓글 삭제
-     * @param id
+     * @param user
+     * @param replyDTO
      */
     @Override
-    public void deleteReply(Long id){
-        replyRepo.deleteById(id);
-        // 자식 댓글 다 삭제해야 댐ㅎㅎ
+    public ReplyDTO deleteReply(final Users user, ReplyDTO replyDTO){
+        if (user == null || replyDTO == null) {
+            throw new RuntimeException("Invalid arguments");
+        }
+
+        Long deletingReplySeq = replyDTO.getReply_seq();
+
+        if (replyRepo.existsByReplySeqAndUser(deletingReplySeq, user)) {
+            Reply deletingReply = replyRepo.findByReplySeqAndUser(deletingReplySeq, user); // 삭제하려는 댓글
+
+            deletingReply.setReplyText("삭제된 댓글입니다.");
+            deletingReply.setIsUpdated(-1);
+
+            Reply deletedReply = replyRepo.save(deletingReply);
+
+            ReplyDTO responseReplyDTO = ReplyDTO.builder()
+                    .reply_seq(deletedReply.getReplySeq())
+                    .reply_text(deletedReply.getReplyText())
+                    .is_updated(deletedReply.getIsUpdated())
+                    .build();
+
+            return responseReplyDTO;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
