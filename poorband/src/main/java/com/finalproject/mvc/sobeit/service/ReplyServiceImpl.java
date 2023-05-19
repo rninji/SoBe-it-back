@@ -68,7 +68,7 @@ public class ReplyServiceImpl implements ReplyService {
             throw new RuntimeException("Invalid arguments");
         }
 
-        Reply updatingReply = replyRepo.findReplyByReplySeq(reply.getReplySeq()); // 업데이트할 댓글
+        Reply updatingReply = replyRepo.findByReplySeq(reply.getReplySeq()); // 업데이트할 댓글
 
         updatingReply.setReplyText(reply.getReplyText()); // 댓글 수정 내용 반영
         updatingReply.setIsUpdated(updatingReply.getIsUpdated() + 1); // 수정 횟수 추가
