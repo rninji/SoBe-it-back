@@ -204,7 +204,6 @@ public class ArticleServiceImpl implements ArticleService{
 
         // 권한에 맞는 글번호 리스트 가져오기
         List<Long> feedSeqList = selectFeedArticleSeq(user.getUserSeq());
-        System.out.println("글번호 : "+feedSeqList);
         if (feedSeqList==null) { // 가져온 글이 없다면
             throw new RuntimeException("조회할 피드의 글이 없습니다.");
         }
