@@ -48,15 +48,4 @@ public interface ProfileService {
      * 팔로우 추가
      * */
     Following follow(Users user, Users targetUser) throws Exception;
-
-    /**
-     * 도전과제 추가
-     * */
-    void insertChallenge(String userId, GoalAmount challenge);
-
-    /**
-     * 도전과제 삭제
-     * */
-    void deleteChallenge(String userId, Long challengeSeq);
-
 }

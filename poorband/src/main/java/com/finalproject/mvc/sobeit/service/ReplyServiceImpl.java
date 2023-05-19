@@ -48,6 +48,9 @@ public class ReplyServiceImpl implements ReplyService {
          */
         Article replyArticle = reply.getArticle(); // 댓글을 달 Article
 
+        /**
+         * 댓글 쓴 유저랑 게시글을 쓴 유저가 같은 유저가 아닐때만 알림 생성
+         */
         if (!Objects.equals(user.getUserSeq(), replyArticle.getUser().getUserSeq())){
             Users userToSendNotification = replyArticle.getUser(); // 알림 등록할 유저
             String url = "http://localhost:3000/article/detail/" + replyArticle.getArticleSeq();
