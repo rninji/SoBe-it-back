@@ -111,7 +111,6 @@ public class ArticleServiceImpl implements ArticleService{
     @Override
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq) throws RuntimeException{
         Article article = selectArticleById(articleSeq);
-        System.out.println("맞팔 : "+followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq()));
         //글에 대한 권한 확인
         if (article.getStatus()==2 && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
             throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
@@ -398,10 +397,10 @@ public class ArticleServiceImpl implements ArticleService{
      * @return
      */
     public boolean followToFollowCheck(Long userSeq, Long targetUserSeq) {
-        if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(userSeq), targetUserSeq)==null){
+        if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(userSeq), targetUserSeq).orElse(null)==null){
             return false;
         }
-        else if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(targetUserSeq), userSeq)==null){
+        else if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(targetUserSeq), userSeq).orElse(null)==null){
             return false;
         }
         return true;
