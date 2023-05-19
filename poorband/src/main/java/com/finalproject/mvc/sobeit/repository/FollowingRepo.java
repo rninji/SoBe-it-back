@@ -26,7 +26,7 @@ public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslP
     @Query("select u from Users u join Following f where f.followingUserSeq = ?1")
     List<Users> findArticleThatUserFollowed(Long userSeq);
 
-    @Query("select f from Following f where f.user = ?1 and f.followingUserSeq=?2")
-    Optional<Following> findByFollowingAndFollower(Users followee, Users followingUser_seq);
+    @Query("select f from Following f where f.user.userSeq = ?1 and f.followingUserSeq=?2")
+    Optional<Following> findByFollowingAndFollower(Long userSeq, Long followingUserSeq);
 
 }
