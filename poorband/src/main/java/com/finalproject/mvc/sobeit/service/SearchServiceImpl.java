@@ -18,7 +18,7 @@ public class SearchServiceImpl implements SearchService{
 
     private final UserRepo userRep;
     private final ArticleRepo articleRep;
-    private  final ArticleService articleService;
+    private  final ArticleServiceImpl articleService;
 
     /**
      * 사용자(users) 검색
@@ -40,13 +40,13 @@ public class SearchServiceImpl implements SearchService{
      **/
     @Override
     public List<ArticleResponseDTO> articlesSearch(Long userSeq, String inputText) {
-        List<Long> searchArticleSeq = articleRep.findArticlesByArticleText(inputText);
+        List<Long> searchArticleSeqList = articleRep.findArticlesByArticleText(inputText);
         List<ArticleResponseDTO> searchArticleList = new ArrayList<>();
-        if (searchArticleSeq == null || searchArticleSeq.size() == 0){
+        if (searchArticleSeqList == null || searchArticleSeqList.size() == 0){
             throw new RuntimeException("검색어가 포함된 게시글이 존재하지 않습니다.");
         }
-        for (Long aLong : searchArticleSeq){
-            ArticleResponseDTO dto = articleService.findArticleResponse(userSeq, aLong);
+        for (Long searchArticleSeq: searchArticleSeqList){
+            ArticleResponseDTO dto = articleService.findArticleResponse(userSeq, searchArticleSeq);
             searchArticleList.add(dto);
         }
         return searchArticleList;
