@@ -50,29 +50,9 @@ public interface ArticleService {
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq);
 
     /**
-     * 아이디로 글 조회
-     */
-    public Article selectArticleById(Long articleSeq);
-
-    /**
-     * 글 하나에 대한 ArticleResponseDTO 가져오기
-     * @param userSeq 조회 요청한 유저 번호
-     * @param articleSeq 조회하려는 글 번호
-     * @return
-     */
-    public ArticleResponseDTO findArticleResponse(Long userSeq, Long articleSeq);
-
-    /**
      * 피드
      */
     public List<ArticleResponseDTO> feed(Users user);
-
-    /**
-     * 피드 글 번호 조회
-     * @param userSeq
-     * @return 유저가 볼 수 있는 피드 글 번호 리스트
-     */
-    public List<Long> selectFeedArticleSeq(Long userSeq);
 
     /**
      * 글 좋아요
@@ -81,41 +61,4 @@ public interface ArticleService {
      * @return true : 좋아요, false : 좋아요 취소
      */
     public boolean likeArticle(Users user, Long articleSeq);
-
-    /**
-     * 기존 좋아요 확인
-     * @param userSeq
-     * @param articleSeq
-     * @return
-     */
-    public ArticleLike findArticleLike(Long userSeq, Long articleSeq);
-
-    /**
-     * 글 좋아요 수 확인
-     */
-    public int countArticleLike(Long articleSeq);
-
-    /**
-     * 투표하기
-     * @param voteDTO
-     * @return 생성된 투표
-     */
-    public Vote voteArticle(Users user, VoteDTO voteDTO);
-
-    /**
-     * 해당 사용자의 해당 글에 대한 투표 여부 확인
-     * @param userSeq
-     * @param articleSeq
-     * @return true면 투표한 적 있음 / false면 투표한 적 없음
-     */
-    public boolean voteCheck(Long userSeq, Long articleSeq);
-
-    /**
-     * 투표수, 투표율 확인
-     * @param articleSeq
-     * @return [0] : 찬성표수, [1] : 반대표수, [2] : 찬성표율, [3] : 반대표율
-     */
-    public int[] findVoteInfo(Long articleSeq);
-
-
 }

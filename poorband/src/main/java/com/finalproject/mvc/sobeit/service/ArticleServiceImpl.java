@@ -4,11 +4,7 @@ import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.VoteDTO;
-import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
-import com.finalproject.mvc.sobeit.repository.ArticleRepo;
-import com.finalproject.mvc.sobeit.repository.LikeNotificationRepo;
-import com.finalproject.mvc.sobeit.repository.ReplyRepo;
-import com.finalproject.mvc.sobeit.repository.VoteRepo;
+import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -25,6 +21,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final VoteRepo voteRepo;
     private final LikeNotificationRepo likeNotificationRepo;
     private final ReplyRepo replyRepo;
+    private final FollowingRepo followingRepo;
 
     /**
      * 글 작성
@@ -114,12 +111,11 @@ public class ArticleServiceImpl implements ArticleService{
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq) throws RuntimeException{
         Article article = selectArticleById(articleSeq);
 
-        // 글에 대한 권한 확인
-        //if (article.getStatus()==2 && !맞팔체크(user.getUserSeq(), article.getUser()){
-        //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
-        //}
-        //else
-        if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
+        //글에 대한 권한 확인
+        if (article.getStatus()==2 && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
+            throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
+        }
+        else if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
             throw new RuntimeException("비공개 글입니다.");
         }
 
@@ -132,7 +128,6 @@ public class ArticleServiceImpl implements ArticleService{
      * @param articleSeq
      * @return 해당 번호 글
      */
-    @Override
     public Article selectArticleById(Long articleSeq) {
         return articleRepo.findById(articleSeq).orElse(null);
     }
@@ -143,7 +138,6 @@ public class ArticleServiceImpl implements ArticleService{
      * @param articleSeq 조회하려는 글 번호
      * @return
      */
-    @Override
     public ArticleResponseDTO findArticleResponse(Long userSeq, Long articleSeq) {
         // 보려는 글 가져오기
         Article article = selectArticleById(articleSeq);
@@ -211,7 +205,6 @@ public class ArticleServiceImpl implements ArticleService{
      * @param userSeq
      * @return 유저가 볼 수 있는 권한의 글번호 리스트 최신순
      */
-    @Override
     public List<Long> selectFeedArticleSeq(Long userSeq) {
         //
         return null;
@@ -224,6 +217,7 @@ public class ArticleServiceImpl implements ArticleService{
      * @return
      * @throws RuntimeException
      */
+    @Override
     public boolean likeArticle(Users user, Long articleSeq) throws RuntimeException{
         if (selectArticleById(articleSeq) == null){ // 글이 없는 경우 예외 발생
             throw new RuntimeException("좋아요할 글이 존재하지 않습니다.");
@@ -299,7 +293,6 @@ public class ArticleServiceImpl implements ArticleService{
      * @param articleSeq
      * @return
      */
-    @Override
     public ArticleLike findArticleLike(Long userSeq, Long articleSeq) {
         return articleLikeRepo.findArticleLikeByUserSeqAndArticleSeq(userSeq, articleSeq).orElse(null);
     }
@@ -309,7 +302,6 @@ public class ArticleServiceImpl implements ArticleService{
      * @param articleSeq
      * @return 좋아요 수
      */
-    @Override
     public int countArticleLike(Long articleSeq){
         return articleLikeRepo.findCountArticleLikeByArticleSeq(articleSeq);
     }
@@ -382,5 +374,20 @@ public class ArticleServiceImpl implements ArticleService{
         return voteInfo;
     }
 
-
+    /**
+     * 맞팔 확인
+     * @param userSeq 요청 유저 번호
+     * @param targetUserSeq 상대 유저 번호
+     * @return
+     */
+    public boolean followToFollowCheck(Long userSeq, Long targetUserSeq) {
+//        if (followingRepo.findByFollowingAndFollower(userSeq, targetUserSeq)==null){
+//            return false;
+//        }
+//        else if (followingRepo.findByFollowingAndFollower(targetUserSeq, userSeq)==null){
+//            return false;
+//        }
+//        return true;
+        return false;
+    }
 }
