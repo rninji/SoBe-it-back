@@ -111,20 +111,20 @@ public class ProfileServiceImpl implements ProfileService {
      * 팔로잉 해제
      * */
     @Override
-    public Following unfollow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
-        Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
+    public Following unfollow(Users user, Long targetUserSeq) throws Exception {
+        Users followingUser = userRepo.findById(targetUserSeq).orElse(null);
 
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
             throw new Exception("User not found");
         }
 
-        Following f = followingRepo.findByFollowingAndFollower(user, targetUser).orElse(null);
+        Following f = followingRepo.findByFollowingAndFollower(user, targetUserSeq).orElse(null);
 
 
         // 서로 팔로잉 관계가 아닐 때
         if(f == null) {
-            throw new Exception("User not following " + targetUser.getNickname());
+            throw new Exception("User not following " + followingUser.getNickname());
         }
 
         return followingRepo.save(f);
@@ -132,13 +132,11 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 팔로우 추가
-     *
-     * @return*/
+     * */
     @Override
-    public Following follow(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
-
+    public Following follow(Users user, Long targetUserSeq) throws Exception {
         Users loggedInUser = userRepo.findById(user.getUserSeq()).orElse(null);
-        Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
+        Users followingUser = userRepo.findById(targetUserSeq).orElse(null);
 
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
@@ -146,8 +144,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         Following f = new Following();
-        f.setUser(user);
-        f.setFollowingUserSeq(targetUser.getUserSeq());
+        f.setUser(loggedInUser);
+        f.setFollowingUserSeq(followingUser.getUserSeq());
 
         return followingRepo.save(f);
     }
