@@ -1,20 +1,20 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.VoteDTO;
-import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleLikeRepo;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
+import com.finalproject.mvc.sobeit.repository.LikeNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.ReplyRepo;
 import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final ArticleRepo articleRepo;
     private final ArticleLikeRepo articleLikeRepo;
     private final VoteRepo voteRepo;
+    private final LikeNotificationRepo likeNotificationRepo;
     private final ReplyRepo replyRepo;
 
     /**
@@ -227,6 +228,7 @@ public class ArticleServiceImpl implements ArticleService{
         if (selectArticleById(articleSeq) == null){ // 글이 없는 경우 예외 발생
             throw new RuntimeException("좋아요할 글이 존재하지 않습니다.");
         }
+
         ArticleLike existingLike = findArticleLike(user.getUserSeq(), articleSeq); // 기존 좋아요가 있는 지 확인
         if (existingLike==null){ // 좋아요한 적 없으면 좋아요 생성
             ArticleLike articleLike = ArticleLike.builder()
@@ -234,6 +236,55 @@ public class ArticleServiceImpl implements ArticleService{
                     .user(user)
                     .build();
             articleLikeRepo.save(articleLike);
+
+            /**
+             * 좋아요 반영되고 나서 좋아요 수에 따라 알림 발생
+             * type = 1 : 좋아요 10개
+             * type = 2 : 좋아요 50개
+             * type = 3 : 좋아요 100개
+             * type = 4 : 좋아요 1000개
+             */
+
+            Article likedArticle = articleLike.getArticle();
+
+            Optional<Long> countByArticle = articleLikeRepo.countByArticle(likedArticle);
+            if (countByArticle.isPresent()){
+                long articleLikeCnt = countByArticle.get();
+                Users userToSendNotification = likedArticle.getUser();
+                String url = "http://localhost:3000/article/detail/" + likedArticle.getArticleSeq();
+                if (articleLikeCnt == 10) {
+                    // 좋아요 수가 10개라면
+                    LikeNotification likeNotification = LikeNotification.builder().type(1)
+                            .user(userToSendNotification)
+                            .url(url).notArticleSeq(likedArticle)
+                            .notificationDateTime(LocalDateTime.now()).build();
+                    likeNotificationRepo.save(likeNotification);
+                }
+                else if (articleLikeCnt == 50){
+                    // 좋아요 수가 50개라면
+                    LikeNotification likeNotification = LikeNotification.builder().type(2)
+                            .user(userToSendNotification)
+                            .url(url).notArticleSeq(likedArticle)
+                            .notificationDateTime(LocalDateTime.now()).build();
+                    likeNotificationRepo.save(likeNotification);
+                } else if (articleLikeCnt == 100) {
+                    // 좋아요 수가 100개라면
+                    LikeNotification likeNotification = LikeNotification.builder().type(3)
+                            .user(userToSendNotification)
+                            .url(url).notArticleSeq(likedArticle)
+                            .notificationDateTime(LocalDateTime.now()).build();
+                    likeNotificationRepo.save(likeNotification);
+
+                } else if (articleLikeCnt == 1000) {
+                    // 좋아요 수가 1000개라면
+                    LikeNotification likeNotification = LikeNotification.builder().type(4)
+                            .user(userToSendNotification)
+                            .url(url).notArticleSeq(likedArticle)
+                            .notificationDateTime(LocalDateTime.now()).build();
+                    likeNotificationRepo.save(likeNotification);
+                }
+            }
+
             return true;
         }
         else { // 좋아요한 적 있으면 좋아요 취소(삭제)
