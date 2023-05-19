@@ -11,16 +11,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CommentLike {
+public class ReplyLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long replyLikeSeq;
 
     @ManyToOne
-    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq")
-    private Reply replySeq;
+    @JoinColumn(name = "replySeq", referencedColumnName = "replySeq", nullable = false)
+    private Reply reply;
 
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
+    private Users user;
 }

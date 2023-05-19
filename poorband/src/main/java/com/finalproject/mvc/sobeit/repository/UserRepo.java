@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateExecutor<Users> {
 
         Users findByUserSeq(Long userSeq);
@@ -29,6 +29,7 @@ public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateE
         @Query(value = "select u from Users u where u.userId like %?1%")
         List<Users> findAllByUserId(String userId);
 
+        Users findByUserNameAndPhoneNumber(String userName, String phoneNumber);
 
 //        @Query(value = "select u from Users u where u.userId like %?1%")
 //        List<Users> followingCnt(String userId);

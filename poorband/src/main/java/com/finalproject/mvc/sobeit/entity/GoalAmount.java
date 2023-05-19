@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -21,9 +20,12 @@ public class GoalAmount {
     @Column(nullable = false)
     private Long goalAmount;
 
+    @Column(nullable = false)
+    private String title;
+
     @ManyToOne
-    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq")
-    private Users userSeq;
+    @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
+    private Users user;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
