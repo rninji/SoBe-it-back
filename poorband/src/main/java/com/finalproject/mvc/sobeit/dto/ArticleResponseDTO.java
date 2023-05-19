@@ -25,6 +25,8 @@ public class ArticleResponseDTO {
     private LocalDateTime writtenDate;
     private String isAllowed;
 
+    // 내 글인지 여부
+    private boolean isMine;
     // 댓글 수
     private int commentCnt;
     // 좋아요 수
