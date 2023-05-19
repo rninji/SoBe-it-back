@@ -1,8 +1,11 @@
 package com.finalproject.mvc.sobeit.repository;
 
+import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 import java.util.Optional;
 
@@ -13,4 +16,5 @@ public interface ArticleLikeRepo extends JpaRepository<ArticleLike, Long> {
 
     @Query("select count(*) from ArticleLike  a where a.article.articleSeq = ?1")
     public int findCountArticleLikeByArticleSeq(Long articleSeq);
+    Optional<Long> countByArticle(Article article);
 }

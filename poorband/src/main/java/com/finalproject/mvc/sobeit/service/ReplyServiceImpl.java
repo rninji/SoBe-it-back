@@ -51,7 +51,10 @@ public class ReplyServiceImpl implements ReplyService {
         if (!Objects.equals(user.getUserSeq(), replyArticle.getUser().getUserSeq())){
             Users userToSendNotification = replyArticle.getUser(); // 알림 등록할 유저
             String url = "http://localhost:3000/article/detail/" + replyArticle.getArticleSeq();
-            ReplyNotification replyNotification = ReplyNotification.builder().user(userToSendNotification).article(replyArticle).notificationDateTime(LocalDateTime.now()).url(url).build();
+            ReplyNotification replyNotification = ReplyNotification.builder().user(userToSendNotification)
+                    .article(replyArticle)
+                    .notificationDateTime(LocalDateTime.now())
+                    .url(url).build();
             replyNotificationRepo.save(replyNotification);
         }
         return savedReply;
