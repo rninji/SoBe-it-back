@@ -39,8 +39,8 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setNickname(user.getNickname());
         profileUserDTO.setUserId(loggedInUser.getUserId());
         profileUserDTO.setIntroDetail(user.getIntroduction());
-        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user.getUserSeq()));
-        profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user.getUserSeq()));
+        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
+        profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
 
         return profileUserDTO;
     }
@@ -90,9 +90,10 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollowing(Users user) {
-        List<Users> followingList = followingRepo.findArticleThatUserFollows(user.getUserSeq());
-
-        return followingList;
+//        List<Users> followingList = followingRepo.findArticleThatUserFollows(user);
+//
+//        return followingList;
+        return null;
     }
 
     /**
@@ -100,9 +101,10 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollower(Users user) {
-        List<Users> followerList = followingRepo.findArticleThatUserFollowed(user.getUserSeq());
-
-        return followerList;
+//        List<Users> followerList = followingRepo.findArticleThatUserFollowed(user);
+//
+//        return followerList;
+        return null;
     }
 
     /**
@@ -117,7 +119,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new Exception("User not found");
         }
 
-        Following f = followingRepo.findByFollowingAndFollower(user.getUserSeq(), targetUser.getUserSeq()).orElse(null);
+        Following f = followingRepo.findByFollowingAndFollower(user, targetUser).orElse(null);
 
 
         // 서로 팔로잉 관계가 아닐 때
