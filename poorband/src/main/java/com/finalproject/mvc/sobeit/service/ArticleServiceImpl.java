@@ -151,6 +151,9 @@ public class ArticleServiceImpl implements ArticleService{
             throw new RuntimeException("글이 존재하지 않습니다.");
         }
 
+        // 내 글인지 확인
+        boolean isMine = (userSeq==article.getUser().getUserSeq());
+
         // 댓글 수 가져오기
         int replyCnt = 0;
         // int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
@@ -180,6 +183,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
                 .isAllowed(article.getIsAllowed())
+                .isMine(isMine)
                 .commentCnt(replyCnt)
                 .likeCnt(likeCnt)
                 .isLiked(isLiked)
