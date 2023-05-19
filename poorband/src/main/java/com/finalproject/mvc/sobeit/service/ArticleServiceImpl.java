@@ -116,7 +116,7 @@ public class ArticleServiceImpl implements ArticleService{
         //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
         //}
         //else
-        if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
+        if(article.getStatus()==3 && user.getUserSeq() != article.getUser().getUserSeq()){
             throw new RuntimeException("비공개 글입니다.");
         }
 
