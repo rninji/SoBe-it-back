@@ -17,14 +17,16 @@ public class ArticleResponseDTO {
     private Users user;
     private int status;
     private String imageUrl;
-    private String expenditureCategory;
+    private int expenditureCategory;
     private Long amount;
     private String articleText;
-    private String articleType;
+    private int articleType;
     private LocalDate consumptionDate;
     private LocalDateTime writtenDate;
     private String isAllowed;
 
+    // 내 글인지 여부
+    private boolean isMine;
     // 댓글 수
     private int commentCnt;
     // 좋아요 수
