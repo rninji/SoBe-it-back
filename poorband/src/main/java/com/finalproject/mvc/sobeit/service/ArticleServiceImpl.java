@@ -44,8 +44,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .articleText(articleDTO.getArticleText())
                 .writtenDate(LocalDateTime.now())
                 .articleType(articleDTO.getArticleType())
-                //.consumptionDate(articleDTO.getConsumptionDate())
-                .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                .consumptionDate(articleDTO.getConsumptionDate())
                 .isAllowed(articleDTO.getIsAllowed())
                 .build();
         return articleRepo.save(article);
@@ -79,8 +78,7 @@ public class ArticleServiceImpl implements ArticleService{
                .articleText(articleDTO.getArticleText())
                .writtenDate(existingArticle.getWrittenDate())
                .articleType(existingArticle.getArticleType()) // 유형은 변경 불가
-               //.consumptionDate(articleDTO.getConsumptionDate())
-               .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+               .consumptionDate(articleDTO.getConsumptionDate())
                .editedDate(LocalDateTime.now())
                .isAllowed(articleDTO.getIsAllowed())
                .build();
