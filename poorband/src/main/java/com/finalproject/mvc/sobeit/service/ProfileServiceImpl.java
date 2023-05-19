@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setNickname(user.getNickname());
         profileUserDTO.setUserId(loggedInUser.getUserId());
         profileUserDTO.setIntroDetail(user.getIntroduction());
-        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
+        profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user.getUserSeq()));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user.getUserSeq()));
 
         return profileUserDTO;
@@ -90,13 +90,9 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollowing(Users user) {
+        List<Users> followingList = followingRepo.findArticleThatUserFollows(user.getUserSeq());
 
-/*        "profileImg" : String,
-        "nickname" : String,
-        "userId" : String*/
-
-
-        return null;
+        return followingList;
     }
 
     /**
@@ -104,7 +100,9 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public List<Users> selectFollower(Users user) {
-        return null;
+        List<Users> followerList = followingRepo.findArticleThatUserFollowed(user.getUserSeq());
+
+        return followerList;
     }
 
     /**
@@ -119,7 +117,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new Exception("User not found");
         }
 
-        Following f = followingRepo.findByFollowingAndFollower(user, targetUser).orElse(null);
+        Following f = followingRepo.findByFollowingAndFollower(user.getUserSeq(), targetUser.getUserSeq()).orElse(null);
 
 
         // 서로 팔로잉 관계가 아닐 때
@@ -140,7 +138,6 @@ public class ProfileServiceImpl implements ProfileService {
         Users loggedInUser = userRepo.findById(user.getUserSeq()).orElse(null);
         Users followingUser = userRepo.findById(targetUser.getUserSeq()).orElse(null);
 
-
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
             throw new Exception("User not found!");
@@ -151,21 +148,5 @@ public class ProfileServiceImpl implements ProfileService {
         f.setFollowingUserSeq(targetUser.getUserSeq());
 
         return followingRepo.save(f);
-    }
-
-    /**
-     * 도전과제 추가
-     * */
-    @Override
-    public void insertChallenge(String userId, GoalAmount challenge) {
-
-    }
-
-    /**
-     * 도전과제 삭제
-     * */
-    @Override
-    public void deleteChallenge(String userId, Long challenge_seq) {
-
     }
 }
