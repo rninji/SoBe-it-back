@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
 import com.finalproject.mvc.sobeit.entity.Reply;
 import com.finalproject.mvc.sobeit.entity.Users;
 
@@ -9,4 +10,6 @@ public interface ReplyService {
     public Reply updateReply(Reply reply);
 
     public void deleteReply(Long id);
+
+    public ReplyLikeDTO likeReply(final Users users, ReplyLikeDTO replyLikeDTO);
 }

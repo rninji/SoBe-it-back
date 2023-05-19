@@ -116,13 +116,13 @@ public class ProfileController {
     /**
      * 팔로잉 해제
      * @param user
-     * @param targetUser
+     * @param targetUserSeq
      * @return 성공 시 "success", 실패 시 Error message
      * */
     @RequestMapping("/deleteFollowing")
-    public ResponseEntity<?> deleteFollowing(@AuthenticationPrincipal Users user, Users targetUser) throws Exception {
+    public ResponseEntity<?> deleteFollowing(@AuthenticationPrincipal Users user, Long targetUserSeq) throws Exception {
         try {
-            profileService.unfollow(user, targetUser);
+            profileService.unfollow(user, targetUserSeq);
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -136,13 +136,13 @@ public class ProfileController {
     /**
      * 팔로우 추가
      * @param user
-     * @param targetUser
+     * @param targetUserSeq
      * @return 성공 시 "success", 실패 시 Error message
      * */
     @RequestMapping("/addFollow")
-    public ResponseEntity<?> addFollow(@AuthenticationPrincipal Users user, Users targetUser) {
+    public ResponseEntity<?> addFollow(@AuthenticationPrincipal Users user, Long targetUserSeq) {
         try {
-            profileService.follow(user, targetUser);
+            profileService.follow(user, targetUserSeq);
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -151,20 +151,5 @@ public class ProfileController {
                     .internalServerError() // Error 500
                     .body(responseDTO);
         }
-    }
-
-    /**
-     * 도전과제 추가
-     * */
-    @RequestMapping("/challenge/add")
-    public void addChallenge(GoalAmount goalAmount) {
-    }
-
-    /**
-     * 도전과제 삭제
-     * */
-    @RequestMapping("/challenge/delete")
-    public void deleteChallenge(String goalAmountSeq) {
-
     }
 }
