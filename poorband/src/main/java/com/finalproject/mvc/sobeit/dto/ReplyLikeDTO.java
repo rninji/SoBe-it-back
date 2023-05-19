@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReplyLikeDTO {
-    private Long replyLikeSeq;
-    private Long replySeq;
-    private Long userSeq;
+    private Long reply_like_seq;
+    private Long reply_seq;
+    private Long user_seq;
+    private Boolean is_liked;
 }
