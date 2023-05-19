@@ -49,6 +49,7 @@ public class ProfileServiceImpl implements ProfileService {
      * 작성한 글 가져오기
      * */
     @Override
+
     public List<Article> selectMyArticle(Users user) {
         List<Article> userArticles = articleRepo.findArticlesByUser(user.getUserId());
 
