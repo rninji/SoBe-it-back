@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final LikeNotificationRepo likeNotificationRepo;
     private final ReplyRepo replyRepo;
     private final FollowingRepo followingRepo;
+    private final UserRepo userRepo;
 
     /**
      * 글 작성
@@ -109,7 +111,7 @@ public class ArticleServiceImpl implements ArticleService{
     @Override
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq) throws RuntimeException{
         Article article = selectArticleById(articleSeq);
-
+        System.out.println("맞팔 : "+followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq()));
         //글에 대한 권한 확인
         if (article.getStatus()==2 && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
             throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
@@ -194,13 +196,23 @@ public class ArticleServiceImpl implements ArticleService{
     /**
      * 피드
      * @param user
-     * @return
+     * @return 피드에 보여줄 글 반환
      */
     @Override
-    public List<ArticleResponseDTO> feed(Users user){
+    public List<ArticleResponseDTO> feed(Users user) throws RuntimeException{
+        Long userSeq = user.getUserSeq(); // 요청한 유저 번호
+
         // 권한에 맞는 글번호 리스트 가져오기
+        List<Long> feedSeqList = selectFeedArticleSeq(user.getUserSeq());
+        System.out.println("글번호 : "+feedSeqList);
+        if (feedSeqList==null) { // 가져온 글이 없다면
+            throw new RuntimeException("조회할 피드의 글이 없습니다.");
+        }
+
         // ArticleResponseDTO 가져오기
-        return null;
+        List<ArticleResponseDTO> feedList = new ArrayList<>();
+        feedSeqList.forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
+        return feedList;
     }
 
     /**
@@ -209,8 +221,7 @@ public class ArticleServiceImpl implements ArticleService{
      * @return 유저가 볼 수 있는 권한의 글번호 리스트 최신순
      */
     public List<Long> selectFeedArticleSeq(Long userSeq) {
-        //
-        return null;
+        return  articleRepo.getArticleSeqListInFeed(userSeq);
     }
 
     /**
@@ -387,13 +398,12 @@ public class ArticleServiceImpl implements ArticleService{
      * @return
      */
     public boolean followToFollowCheck(Long userSeq, Long targetUserSeq) {
-//        if (followingRepo.findByFollowingAndFollower(userSeq, targetUserSeq)==null){
-//            return false;
-//        }
-//        else if (followingRepo.findByFollowingAndFollower(targetUserSeq, userSeq)==null){
-//            return false;
-//        }
-//        return true;
-        return false;
+        if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(userSeq), targetUserSeq)==null){
+            return false;
+        }
+        else if (followingRepo.findByFollowingAndFollower(userRepo.findByUserSeq(targetUserSeq), userSeq)==null){
+            return false;
+        }
+        return true;
     }
 }

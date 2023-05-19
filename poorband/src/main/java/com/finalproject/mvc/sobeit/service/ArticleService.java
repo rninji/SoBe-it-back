@@ -51,6 +51,8 @@ public interface ArticleService {
 
     /**
      * 피드
+     * @param user
+     * @return
      */
     public List<ArticleResponseDTO> feed(Users user);
 
