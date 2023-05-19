@@ -1,13 +1,9 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.entity.Article;
-import com.finalproject.mvc.sobeit.entity.Reply;
-import com.finalproject.mvc.sobeit.entity.ReplyNotification;
-import com.finalproject.mvc.sobeit.entity.Users;
-import com.finalproject.mvc.sobeit.repository.ReplyNotificationRepo;
-import com.finalproject.mvc.sobeit.repository.ArticleRepo;
-import com.finalproject.mvc.sobeit.repository.ReplyRepo;
-import com.finalproject.mvc.sobeit.repository.UserRepo;
+import com.finalproject.mvc.sobeit.dto.ReplyDTO;
+import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
+import com.finalproject.mvc.sobeit.entity.*;
+import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +19,7 @@ import java.util.Objects;
 public class ReplyServiceImpl implements ReplyService {
     private final ArticleRepo articleRepo;
     private final ReplyRepo replyRepo;
+    private final ReplyLikeRepo replyLikeRepo;
     private final UserRepo userRepo;
     private final ReplyNotificationRepo replyNotificationRepo;
 
@@ -74,7 +71,7 @@ public class ReplyServiceImpl implements ReplyService {
             throw new RuntimeException("Invalid arguments");
         }
 
-        Reply updatingReply = replyRepo.findReplyByReplySeq(reply.getReplySeq()); // 업데이트할 댓글
+        Reply updatingReply = replyRepo.findByReplySeq(reply.getReplySeq()); // 업데이트할 댓글
 
         updatingReply.setReplyText(reply.getReplyText()); // 댓글 수정 내용 반영
         updatingReply.setIsUpdated(updatingReply.getIsUpdated() + 1); // 수정 횟수 추가
@@ -84,11 +81,79 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 댓글 삭제
-     * @param id
+     * @param user
+     * @param replyDTO
      */
     @Override
-    public void deleteReply(Long id){
-        replyRepo.deleteById(id);
-        // 자식 댓글 다 삭제해야 댐ㅎㅎ
+    public ReplyDTO deleteReply(final Users user, ReplyDTO replyDTO){
+        if (user == null || replyDTO == null) {
+            throw new RuntimeException("Invalid arguments");
+        }
+
+        Long deletingReplySeq = replyDTO.getReply_seq();
+
+        if (replyRepo.existsByReplySeqAndUser(deletingReplySeq, user)) {
+            Reply deletingReply = replyRepo.findByReplySeqAndUser(deletingReplySeq, user); // 삭제하려는 댓글
+
+            deletingReply.setReplyText("삭제된 댓글입니다.");
+            deletingReply.setIsUpdated(-1);
+
+            Reply deletedReply = replyRepo.save(deletingReply);
+
+            ReplyDTO responseReplyDTO = ReplyDTO.builder()
+                    .reply_seq(deletedReply.getReplySeq())
+                    .reply_text(deletedReply.getReplyText())
+                    .is_updated(deletedReply.getIsUpdated())
+                    .build();
+
+            return responseReplyDTO;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * 댓글 좋아요
+     * @param user
+     * @param replyLikeDTO
+     * @return
+     */
+    @Override
+    public ReplyLikeDTO likeReply(final Users user, ReplyLikeDTO replyLikeDTO) {
+        if (user == null || replyLikeDTO == null) {
+            throw new RuntimeException("Invalid arguments");
+        }
+
+        if (!replyLikeDTO.getIs_liked()) { // 댓글 좋아요가 눌려 있지 않은 경우, 댓글 좋아요 생성
+            ReplyLike replyLike = ReplyLike.builder()
+                    .reply(replyRepo.findByReplySeq(replyLikeDTO.getReply_seq()))
+                    .user(userRepo.findByUserSeq(user.getUserSeq()))
+                    .build();
+
+            replyLikeRepo.save(replyLike);
+
+            ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
+                    .reply_like_seq(replyLike.getReplyLikeSeq())
+                    .reply_seq(replyLike.getReply().getReplySeq())
+                    .user_seq(replyLike.getUser().getUserSeq())
+                    .build();
+
+            return responseReplyLikeDTO;
+        }
+        else { // 댓글 좋아요가 눌려 있는 경우, 댓글 좋아요 삭제
+            Reply reply = replyRepo.findByReplySeq(replyLikeDTO.getReply_seq());
+
+            ReplyLike existingReplyLike = replyLikeRepo.findByReplyAndUser(reply, user); // 현재 로그인한 사용자와 좋아요를 누른 사용자가 같은 댓글 좋아요
+
+            replyLikeRepo.delete(existingReplyLike);
+
+            ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
+                    .reply_seq(replyLikeDTO.getReply_seq())
+                    .user_seq(user.getUserSeq())
+                    .build();
+
+            return responseReplyLikeDTO;
+        }
     }
 }
