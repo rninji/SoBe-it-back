@@ -11,17 +11,17 @@ public interface ProfileService {
     /**
      * 프로필 유저 정보 가져오기
      * */
-    ProfileUserDTO selectUserInfo(Users user);
+    ProfileUserDTO selectUserInfo(String userId) throws Exception;
 
     /**
      * 작성한 글 가져오기
      * */
-    List<Article> selectMyArticle(Users user);
+    List<Article> selectArticles(String userId) throws Exception;
 
     /**
      * 도전 과제 정보 가져오기
      * */
-    List<GoalAmount> selectChallenge(Users user);
+    List<GoalAmount> selectChallenge(String userId);
 
     /**
      * 유저 프로필 편집 저장
@@ -32,20 +32,20 @@ public interface ProfileService {
     /**
      * 팔로잉 정보 가져오기
      * */
-    List<Users> selectFollowing(Users user);
+    List<Users> selectFollowing(String userId);
 
     /**
      * 팔로워 정보 가져오기
      * */
-    List<Users> selectFollower(Users user);
+    List<Users> selectFollower(String userId);
 
     /**
      * 팔로잉 해제
      * */
-    Following unfollow(Users user, Long targetUserSeq) throws Exception;
+    Following unfollow(Users user, String targetUserId) throws Exception;
 
     /**
      * 팔로우 추가
      * */
-    Following follow(Users user, Long targetUserSeq) throws Exception;
+    Following follow(Users user, String targetUserId) throws Exception;
 }
