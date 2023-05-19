@@ -1,6 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.entity.Article;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
@@ -18,6 +18,7 @@ public class SearchServiceImpl implements SearchService{
 
     private final UserRepo userRep;
     private final ArticleRepo articleRep;
+    private  final ArticleService articleService;
 
     /**
      * 사용자(users) 검색
@@ -38,13 +39,17 @@ public class SearchServiceImpl implements SearchService{
      * 게시글(Articles) 검색
      **/
     @Override
-    public List<Article>  articlesSearch(String inputText) {
-        List<Article> articleSearchResult;
-        try {
-            articleSearchResult = articleRep.findArticlesByArticleText(inputText);
-        } catch (NullPointerException exception) {
-            throw new RuntimeException("검색어가 포함된 게시글이 없습니다.");
+    public List<ArticleResponseDTO> articlesSearch(Long userSeq, String inputText) {
+        List<Long> searchArticleSeq = articleRep.findArticlesByArticleText(inputText);
+        List<ArticleResponseDTO> searchArticleList = new ArrayList<>();
+        if (searchArticleSeq == null || searchArticleSeq.size() == 0){
+            throw new RuntimeException("검색어가 포함된 게시글이 존재하지 않습니다.");
         }
-        return articleSearchResult;
+        for (Long aLong : searchArticleSeq){
+            ArticleResponseDTO dto = articleService.findArticleResponse(userSeq, aLong);
+            searchArticleList.add(dto);
+        }
+        return searchArticleList;
     }
+
 }
