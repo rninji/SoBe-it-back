@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface NotificationService {
     List<NotificationDTO> getAllNotification(Users user);
-    void deleteOneNotice(Users user, Long notificationSeq);
-    void deleteAllNotice(Users user);
+    void deleteOneNotice(Users user, Long notificationSeq, int type) throws Exception;
+    void deleteAllNotice(Users user) throws Exception;
 }

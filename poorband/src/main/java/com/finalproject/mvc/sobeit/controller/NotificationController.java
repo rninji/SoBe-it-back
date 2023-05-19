@@ -32,9 +32,9 @@ public class NotificationController {
     }
 
     @PostMapping("/deleteone")
-    public ResponseEntity<?> deleteOneNotification(@AuthenticationPrincipal Users user, Long notificationSeq) {
+    public ResponseEntity<?> deleteOneNotification(@AuthenticationPrincipal Users user, Long notificationSeq, int type) {
         try{
-            notificationService.deleteOneNotice(user, notificationSeq);
+            notificationService.deleteOneNotice(user, notificationSeq, type);
             return ResponseEntity.ok().body(true);
         }catch (Exception e) {
             ResponseDTO<Object> responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
