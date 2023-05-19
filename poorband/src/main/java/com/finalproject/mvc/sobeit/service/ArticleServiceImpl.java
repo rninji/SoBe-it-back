@@ -174,6 +174,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .imageUrl(article.getImageUrl())
                 .expenditureCategory(article.getExpenditureCategory())
                 .amount(article.getAmount())
+                .articleText(article.getArticleText())
                 .articleType(article.getArticleType())
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
