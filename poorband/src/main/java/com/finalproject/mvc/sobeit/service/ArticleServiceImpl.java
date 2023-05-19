@@ -45,8 +45,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .articleText(articleDTO.getArticleText())
                 .writtenDate(LocalDateTime.now())
                 .articleType(articleDTO.getArticleType())
-                //.consumptionDate(articleDTO.getConsumptionDate())
-                .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+                .consumptionDate(articleDTO.getConsumptionDate())
                 .isAllowed(articleDTO.getIsAllowed())
                 .build();
         return articleRepo.save(article);
@@ -80,8 +79,7 @@ public class ArticleServiceImpl implements ArticleService{
                .articleText(articleDTO.getArticleText())
                .writtenDate(existingArticle.getWrittenDate())
                .articleType(existingArticle.getArticleType()) // 유형은 변경 불가
-               //.consumptionDate(articleDTO.getConsumptionDate())
-               .consumptionDate(LocalDate.now()) // 나중에 위에꺼로 바꾸기
+               .consumptionDate(articleDTO.getConsumptionDate())
                .editedDate(LocalDateTime.now())
                .isAllowed(articleDTO.getIsAllowed())
                .build();
@@ -119,7 +117,7 @@ public class ArticleServiceImpl implements ArticleService{
         //    throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
         //}
         //else
-        if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
+        if(article.getStatus()==3 && user.getUserSeq() != article.getUser().getUserSeq()){
             throw new RuntimeException("비공개 글입니다.");
         }
 
@@ -152,6 +150,9 @@ public class ArticleServiceImpl implements ArticleService{
             throw new RuntimeException("글이 존재하지 않습니다.");
         }
 
+        // 내 글인지 확인
+        boolean isMine = (userSeq==article.getUser().getUserSeq());
+
         // 댓글 수 가져오기
         int replyCnt = 0;
         // int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
@@ -181,6 +182,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
                 .isAllowed(article.getIsAllowed())
+                .isMine(isMine)
                 .commentCnt(replyCnt)
                 .likeCnt(likeCnt)
                 .isLiked(isLiked)
