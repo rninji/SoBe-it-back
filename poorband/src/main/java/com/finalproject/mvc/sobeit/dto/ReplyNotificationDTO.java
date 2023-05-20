@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 public class ReplyNotificationDTO implements NotificationDTO {
     private Long notificationSeq;
+    /**
+     * 알림의 타입
+     */
     private int type;
     private String content;
     private String articleContent;
