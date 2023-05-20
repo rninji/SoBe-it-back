@@ -28,6 +28,10 @@ public class ReplyNotification {
 
     @ManyToOne
     @JoinColumn
+    private Reply reply;
+
+    @ManyToOne
+    @JoinColumn
     private Article article;
 
     @Column(nullable = false)
