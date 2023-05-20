@@ -1,6 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.entity.Article;
+import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 
 import java.util.List;
@@ -14,6 +14,6 @@ public interface SearchService {
     /**
      * 게시글(Articles) 검색
      **/
-    List<Article> articlesSearch(String inputText);
+    List<ArticleResponseDTO> articlesSearch(Long userSeq, String inputText);
 
 }

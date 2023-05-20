@@ -7,7 +7,7 @@ import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,8 +150,8 @@ public class ArticleServiceImpl implements ArticleService{
         boolean isMine = (userSeq==article.getUser().getUserSeq());
 
         // 댓글 수 가져오기
-        int replyCnt = 0;
-        // int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
+        //int replyCnt = 0;
+        int replyCnt = replyRepo.findReplyCountByArticleSeq(articleSeq);
 
         // 좋아요 수 가져오기
         int likeCnt = countArticleLike(articleSeq);
@@ -264,34 +264,34 @@ public class ArticleServiceImpl implements ArticleService{
                     String url = "http://localhost:3000/article/detail/" + likedArticle.getArticleSeq();
                     if (articleLikeCnt == 10) {
                         // 좋아요 수가 10개라면
-                        LikeNotification likeNotification = LikeNotification.builder().type(1)
+                        ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(1)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(likeNotification);
+                        likeNotificationRepo.save(articleLikeNotification);
                     }
                     else if (articleLikeCnt == 50){
                         // 좋아요 수가 50개라면
-                        LikeNotification likeNotification = LikeNotification.builder().type(2)
+                        ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(2)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(likeNotification);
+                        likeNotificationRepo.save(articleLikeNotification);
                     } else if (articleLikeCnt == 100) {
                         // 좋아요 수가 100개라면
-                        LikeNotification likeNotification = LikeNotification.builder().type(3)
+                        ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(3)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(likeNotification);
+                        likeNotificationRepo.save(articleLikeNotification);
 
                     } else if (articleLikeCnt == 1000) {
                         // 좋아요 수가 1000개라면
-                        LikeNotification likeNotification = LikeNotification.builder().type(4)
+                        ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(4)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(likeNotification);
+                        likeNotificationRepo.save(articleLikeNotification);
                     }
                 }
             }
