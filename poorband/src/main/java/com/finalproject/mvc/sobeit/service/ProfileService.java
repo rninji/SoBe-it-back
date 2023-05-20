@@ -1,8 +1,10 @@
 package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
+import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -29,10 +31,15 @@ public interface ProfileService {
      * */
     Users insertProfile(String userId, Users updateUser);
 
+    List<Long> selectFollowingUserSeq(Long userSeq);
+
+    ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq);
+
+
     /**
      * 팔로잉 정보 가져오기
      * */
-    List<Users> selectFollowing(String userId);
+    List<ProfileDTO> selectFollowing(@AuthenticationPrincipal Users loggedInUser, String userId);
 
     /**
      * 팔로워 정보 가져오기
