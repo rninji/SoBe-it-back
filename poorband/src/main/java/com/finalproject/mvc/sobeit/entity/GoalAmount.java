@@ -34,7 +34,7 @@ public class GoalAmount {
     private LocalDateTime endDate; // 도전과제 종료일
 
     @Column(nullable = false, length = 4)
-    private String isSuccess; // 도전과제 성공 여부(성공 or 실패)
+    private String isSuccess; // 도전과제 성공 여부(진행중 or 성공 or 실패)
 
     @Column(nullable = false)
     private String routine; // 도전과제 반복 주기(매일 or 전체기간)
