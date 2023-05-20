@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileDTO {
-    private int userSeq;
+    private Long userSeq;
     private String userId;
     private String nickname;
     private String userTier;
-    private int introduction;
-    private int profileImgUrl;
-    private int status; // 전체 공개, 맞팔 공개, 비공개
+    private String introduction;
+    private String profileImgUrl;
+    private int status; // 0 : 팔로우 하지 않는 사람, 1 : 본인, 2 : 팔로우 중인 사람
 }
