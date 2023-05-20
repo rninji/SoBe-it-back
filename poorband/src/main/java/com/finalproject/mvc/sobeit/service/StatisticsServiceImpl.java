@@ -106,7 +106,15 @@ public class StatisticsServiceImpl implements StatisticsService{
      */
     @Override
     public Map<Integer, Long> getCalendar(Users user, int year, int month) {
-        return null;
+        Long userSeq = user.getUserSeq();
+
+        Map<Integer, Long> calMap = new HashMap<>();
+        // 1일~31일 일별 지출 가져오기
+        for(int i=1; i<32;i++) {
+            LocalDate date = LocalDate.of(year, month, i); // 날짜 생성
+            calMap.put(i, articleRepo.findSumAmountByConsumptionDate(userSeq, date));
+        }
+        return calMap;
     }
 
     /**

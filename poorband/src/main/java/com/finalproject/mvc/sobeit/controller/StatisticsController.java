@@ -76,7 +76,11 @@ public class StatisticsController {
     @PostMapping("/calendar")
     public ResponseEntity<?> getCalendar(@AuthenticationPrincipal Users user, @RequestBody Map<String, Integer> date) {
         try {
-            return ResponseEntity.ok().body("ok");
+            ChartResponseDTO responseDTO = ChartResponseDTO.builder()
+                    .monthAmount(statisticsService.getSumAmount(user.getUserSeq(), date.get("year"), date.get("month"))) // 월 지출 금액
+                    .data(statisticsService.getCalendar(user, date.get("year"), date.get("month"))) // 일별 지출 금액
+                    .build();
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
