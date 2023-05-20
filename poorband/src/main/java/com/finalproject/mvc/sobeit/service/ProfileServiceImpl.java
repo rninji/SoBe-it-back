@@ -140,6 +140,8 @@ public class ProfileServiceImpl implements ProfileService {
         f.setUser(user);
         f.setFollowingUserSeq(followingUser.getUserSeq());
 
+        // 팔로우 알림 로직 추가 필요
+
         return followingRepo.save(f);
     }
 }

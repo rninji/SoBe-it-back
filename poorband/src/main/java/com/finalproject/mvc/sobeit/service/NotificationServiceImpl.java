@@ -1,15 +1,10 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.dto.FollowNotificationDTO;
-import com.finalproject.mvc.sobeit.dto.LikeNotificationDTO;
-import com.finalproject.mvc.sobeit.dto.NotificationDTO;
-import com.finalproject.mvc.sobeit.dto.ReplyNotificationDTO;
-import com.finalproject.mvc.sobeit.entity.FollowNotification;
-import com.finalproject.mvc.sobeit.entity.ArticleLikeNotification;
-import com.finalproject.mvc.sobeit.entity.ReplyNotification;
-import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.dto.*;
+import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.FollowNotificationRepo;
-import com.finalproject.mvc.sobeit.repository.LikeNotificationRepo;
+import com.finalproject.mvc.sobeit.repository.ArticleLikeNotificationRepo;
+import com.finalproject.mvc.sobeit.repository.ReplyLikeNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.ReplyNotificationRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,17 +16,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
-    private final LikeNotificationRepo likeNotificationRepo; // 게시글 좋아요
+    private final ArticleLikeNotificationRepo articleLikeNotificationRepo; // 게시글 좋아요
     private final ReplyNotificationRepo replyNotificationRepo; // 댓글 알림
     private final FollowNotificationRepo followNotificationRepo; // 팔로우 알림
+    private final ReplyLikeNotificationRepo replyLikeNotificationRepo; // 댓글 좋아요 알림
     private final ArticleServiceImpl articleService;
 
 
     @Override
     public List<NotificationDTO> getAllNotification(Users user) throws Exception {
         List<NotificationDTO> notifications = new ArrayList<>();
-        List<FollowNotification> followNotificationList = followNotificationRepo.findByUser(user).orElse(null);
 
+        // 팔로우 알림들
+        List<FollowNotification> followNotificationList = followNotificationRepo.findByUser(user).orElse(null);
         if (followNotificationList != null) {
             for (FollowNotification followNotification : followNotificationList) {
                 // 맞팔 체크 로직 필요
@@ -40,15 +37,15 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
 
-        List<ArticleLikeNotification> articleLikeNotificationList = likeNotificationRepo.findByUser(user).orElse(null);
-
+        // 게시글 좋아요 알림들
+        List<ArticleLikeNotification> articleLikeNotificationList = articleLikeNotificationRepo.findByUser(user).orElse(null);
         if (articleLikeNotificationList != null) {
             for (ArticleLikeNotification articleLikeNotification : articleLikeNotificationList) {
-                notifications.add(toLikeNotificationDto(articleLikeNotification));
+                notifications.add(toArticleLikeNotificationDto(articleLikeNotification));
             }
         }
 
-        //reply알림
+        //댓글 알림
         List<ReplyNotification> replyNotificationList = replyNotificationRepo.findByUser(user).orElse(null);
         if (replyNotificationList != null) {
             for (ReplyNotification replyNotification : replyNotificationList) {
@@ -57,6 +54,12 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         //댓글 좋아요 알림
+        List<ReplyLikeNotification> replyLikeNotificationList = replyLikeNotificationRepo.findByUser(user).orElse(null);
+        if (replyLikeNotificationList != null) {
+            for (ReplyLikeNotification replyLikeNotification : replyLikeNotificationList) {
+                notifications.add(toReplyLikeNotificationDto(replyLikeNotification));
+            }
+        }
 
         if (notifications.size() == 0) throw new Exception("알림이 없습니다.");
         return notifications;
@@ -77,9 +80,9 @@ public class NotificationServiceImpl implements NotificationService {
             } else if (type == 2) {
                 followNotificationRepo.deleteById(notificationSeq);
             } else if (type == 3) {
-
+                replyLikeNotificationRepo.deleteById(notificationSeq);
             } else if (type == 4) {
-                likeNotificationRepo.deleteById(notificationSeq);
+                articleLikeNotificationRepo.deleteById(notificationSeq);
             }
         }
     }
@@ -92,6 +95,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public boolean deleteAllNotice(Users user) throws Exception {
         // 4개의 알림 Repo에 전부 삭제쿼리 날려주기.
+        replyNotificationRepo.deleteAllByUser(user);
+        followNotificationRepo.deleteAllByUser(user);
+        replyLikeNotificationRepo.deleteAllByUser(user);
+        articleLikeNotificationRepo.deleteAllByUser(user);
 
         return true;
     }
@@ -116,11 +123,11 @@ public class NotificationServiceImpl implements NotificationService {
 
         return notificationDTO;
     }
-    public NotificationDTO toLikeNotificationDto(ArticleLikeNotification articleLikeNotification){
+    public NotificationDTO toArticleLikeNotificationDto(ArticleLikeNotification articleLikeNotification){
         NotificationDTO notificationDTO = null;
         if (articleLikeNotification.getType() == 1) {
-            notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+            notificationDTO = ArticleLikeNotificationDTO.builder()
+                    .notificationSeq(articleLikeNotification.getArticleLikeNotificationSeq())
                     .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
@@ -129,8 +136,8 @@ public class NotificationServiceImpl implements NotificationService {
                     .type(4)
                     .build();
         } else if (articleLikeNotification.getType() == 2) {
-            notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+            notificationDTO = ArticleLikeNotificationDTO.builder()
+                    .notificationSeq(articleLikeNotification.getArticleLikeNotificationSeq())
                     .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
@@ -139,8 +146,8 @@ public class NotificationServiceImpl implements NotificationService {
                     .type(4)
                     .build();
         } else if (articleLikeNotification.getType() == 3) {
-            notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+            notificationDTO = ArticleLikeNotificationDTO.builder()
+                    .notificationSeq(articleLikeNotification.getArticleLikeNotificationSeq())
                     .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
@@ -163,6 +170,43 @@ public class NotificationServiceImpl implements NotificationService {
                 .url(replyNotification.getUrl())
                 .type(1)
                 .build();
+
+        return notificationDTO;
+    }
+
+    public NotificationDTO toReplyLikeNotificationDto(ReplyLikeNotification replyLikeNotification) {
+        NotificationDTO notificationDTO = null;
+        if (replyLikeNotification.getType() == 1) {
+            notificationDTO = ReplyLikeNotificationDTO.builder()
+                    .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
+                    .content("댓글의 좋아요 수가 1개 이상입니다.")
+                    .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
+                    .url(replyLikeNotification.getUrl())
+                    .timestamp(replyLikeNotification.getNotificationDateTime())
+                    .type(3)
+//                    .imageUrl() 이미지 url 넣어야함
+                    .build();
+        } else if (replyLikeNotification.getType() == 2) {
+            notificationDTO = ReplyLikeNotificationDTO.builder()
+                    .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
+                    .content("댓글의 좋아요 수가 10개 이상입니다.")
+                    .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
+                    .url(replyLikeNotification.getUrl())
+                    .timestamp(replyLikeNotification.getNotificationDateTime())
+                    .type(3)
+//                    .imageUrl() 이미지 url 넣어야함
+                    .build();
+        } else if (replyLikeNotification.getType() == 3) {
+            notificationDTO = ReplyLikeNotificationDTO.builder()
+                    .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
+                    .content("댓글의 좋아요 수가 100개 이상입니다.")
+                    .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
+                    .url(replyLikeNotification.getUrl())
+                    .timestamp(replyLikeNotification.getNotificationDateTime())
+                    .type(3)
+//                    .imageUrl() 이미지 url 넣어야함
+                    .build();
+        }
 
         return notificationDTO;
     }
