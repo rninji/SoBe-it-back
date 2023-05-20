@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ArticleLikeNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long likeNotificationSeq;
+    private Long ArticleLikeNotificationSeq;
     @ManyToOne
     @JoinColumn(name = "userSeq")
     private Users user;

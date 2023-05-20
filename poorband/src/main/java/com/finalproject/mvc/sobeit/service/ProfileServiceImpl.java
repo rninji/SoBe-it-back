@@ -5,6 +5,7 @@ import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
+import com.finalproject.mvc.sobeit.repository.FollowNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRepo userRepo;
     private final ArticleRepo articleRepo;
     private final FollowingRepo followingRepo;
+    private final FollowNotificationRepo followNotificationRepo;
 
     /**
      * 프로필 유저 정보 가져오기
@@ -197,6 +200,16 @@ public class ProfileServiceImpl implements ProfileService {
         Following f = new Following();
         f.setUser(user);
         f.setFollowingUserSeq(followingUser.getUserSeq());
+
+        // 팔로우 알림 로직
+        FollowNotification followNotification = FollowNotification.builder()
+                .user(followingUser)
+                .fromUser(user)
+                .url("http://localhost:3000/profile/profileinfo/" + user.getUserId())
+                .notificationDateTime(LocalDateTime.now())
+                .build();
+
+        followNotificationRepo.save(followNotification);
 
         return followingRepo.save(f);
     }
