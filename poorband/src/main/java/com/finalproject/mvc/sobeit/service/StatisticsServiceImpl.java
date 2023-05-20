@@ -82,17 +82,13 @@ public class StatisticsServiceImpl implements StatisticsService{
     @Override
     public Map<Integer, Long> getChart(Users user, int year, int month) {
         // 이번달 1일 ~ 다음달 1일 범위 지정
-        LocalDate start = LocalDate.parse(year+"-"+month+"-01");
-        LocalDate end = LocalDate.parse(year+"-"+(month+1)+"-01");
-        if (month==12){
-            end = LocalDate.parse((year+1) +"-01-01");
-        }
+        LocalDate[] date = parseDate(year, month);
 
         Map<Integer, Long> amountMap= new HashMap<>();
 
         // 카테고리 1번부터 6번까지 지출 금액 담기
         for(int i=1; i<7; i++){
-            amountMap.put(i, articleRepo.findSumAmountByUserSeqAndCategory(user.getUserSeq(), i, start, end));
+            amountMap.put(i, articleRepo.findSumAmountByUserSeqAndCategory(user.getUserSeq(), i, date[0], date[1]));
         }
         return amountMap;
     }
@@ -127,14 +123,36 @@ public class StatisticsServiceImpl implements StatisticsService{
     @Override
     public Long getSumAmount(Long userSeq, int year, int month){
         // 이번달 1일 ~ 다음달 1일 범위 지정
-        LocalDate start = LocalDate.parse(year+"-"+month+"-01");
-        LocalDate end = LocalDate.parse(year+"-"+(month+1)+"-01");
-        if (month==12){ // 12월인 경우 다음달은 내년 1월1일
-            end = LocalDate.parse((year+1) +"-01-01");
-        }
+        LocalDate[] date = parseDate(year, month);
 
         // 이 달 쓴 전체 지출 금액 가져오기
-        return articleRepo.findSumAmountByUserSeq(userSeq, start, end);
+        return articleRepo.findSumAmountByUserSeqAndDate(userSeq, date[0], date[1]);
+    }
+
+    /**
+     * 날짜 받아서 시작점, 끝점 LocalDate로 parsing
+     * @param year
+     * @param month
+     * @return [0]:시작점, [1]:끝점
+     */
+    public LocalDate[] parseDate(int year, int month){
+        LocalDate start;
+        LocalDate end;
+        if (month<9){ // 1월~8월
+            start = LocalDate.parse(year+"-0"+month+"-01");
+            end = LocalDate.parse(year+"-0"+(month+1)+"-01");
+        } else if (month ==9){ // 9월은 end에 0 안 붙임
+            start = LocalDate.parse(year+"-0"+month+"-01");
+            end = LocalDate.parse(year+"-"+(month+1)+"-01");
+        }
+        else if (month==12){ // 12월은 end가 내년 1월1일
+            start = LocalDate.parse(year+"-"+month+"-01");
+            end = LocalDate.parse((year+1) +"-01-01");
+        } else { // 10월, 11월
+            start = LocalDate.parse(year+"-0"+month+"-01");
+            end = LocalDate.parse(year+"-"+(month+1)+"-01");
+        }
+        return new LocalDate[]{start, end};
     }
 
 }
