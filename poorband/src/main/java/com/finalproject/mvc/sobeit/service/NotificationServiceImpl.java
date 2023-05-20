@@ -71,20 +71,23 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void deleteOneNotice(Users user, Long notificationSeq, int type) throws Exception {
-        if (!replyNotificationRepo.existsById(notificationSeq)) {
-            throw new Exception("존재하지 않는 알림입니다");
+        System.out.println("댓글좋아요알림삭제테스트");
+        System.out.println("notificationSeq:" + notificationSeq);
+        System.out.println("type:"+type);
+        if (type == 1){
+            if (!replyNotificationRepo.existsById(notificationSeq)) throw new Exception("존재하지 않는 알림입니다.");
+            replyNotificationRepo.deleteById(notificationSeq);
+        } else if (type == 2) {
+            if (!followNotificationRepo.existsById(notificationSeq)) throw new Exception("존재하지 않는 알림입니다.");
+            followNotificationRepo.deleteById(notificationSeq);
+        } else if (type == 3) {
+            if (!replyLikeNotificationRepo.existsById(notificationSeq)) throw new Exception("존재하지 않는 알림입니다.");
+            replyLikeNotificationRepo.deleteById(notificationSeq);
+        } else if (type == 4) {
+            if (!articleLikeNotificationRepo.existsById(notificationSeq)) throw new Exception("존재하지 않는 알림입니다.");
+            articleLikeNotificationRepo.deleteById(notificationSeq);
         }
-        else{
-            if (type == 1){
-                replyNotificationRepo.deleteById(notificationSeq);
-            } else if (type == 2) {
-                followNotificationRepo.deleteById(notificationSeq);
-            } else if (type == 3) {
-                replyLikeNotificationRepo.deleteById(notificationSeq);
-            } else if (type == 4) {
-                articleLikeNotificationRepo.deleteById(notificationSeq);
-            }
-        }
+
     }
 
     /**

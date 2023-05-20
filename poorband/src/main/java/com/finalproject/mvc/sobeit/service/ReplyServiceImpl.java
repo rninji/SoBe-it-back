@@ -154,7 +154,7 @@ public class ReplyServiceImpl implements ReplyService {
                             .type(1)
                             .notificationDateTime(LocalDateTime.now())
                             .url(url)
-                            .user(user)
+                            .user(userToSendNotification)
                             .build();
                     replyLikeNotificationRepo.save(replyLikeNotification);
                 } else if (replyLikeCnt == 10) {
@@ -163,7 +163,7 @@ public class ReplyServiceImpl implements ReplyService {
                             .type(2)
                             .notificationDateTime(LocalDateTime.now())
                             .url(url)
-                            .user(user)
+                            .user(userToSendNotification)
                             .build();
                     replyLikeNotificationRepo.save(replyLikeNotification);
                 } else if (replyLikeCnt == 100) {
@@ -172,7 +172,7 @@ public class ReplyServiceImpl implements ReplyService {
                             .type(3)
                             .notificationDateTime(LocalDateTime.now())
                             .url(url)
-                            .user(user)
+                            .user(userToSendNotification)
                             .build();
                     replyLikeNotificationRepo.save(replyLikeNotification);
                 }
