@@ -28,6 +28,12 @@ public interface FollowingRepo extends JpaRepository<Following, Long>, QuerydslP
     @Query("select u from Following f join Users u on u.userSeq = f.user.userSeq where f.user.userSeq = :#{#user.userSeq}")
     List<Users> findProfileThatUserFollows(@Param("user") Users user);
 
+//    @Query("select f from Following f where f.user.userSeq = :#{#user.userSeq} and f.followingUserSeq = :targetUserId")
+//    Optional<Following> isFollowing(@Param("user") Users user, Long targetUserSeq);
+
+    @Query("select f.followingUserSeq from Following f join Users u on u.userSeq = f.user.userSeq where f.user.userSeq = :#{#user.userSeq}")
+    List<Long> findUserSeqThatUserFollows(@Param("user") Users user);
+
     @Query("select u from Following f join Users u on u.userSeq = f.followingUserSeq where f.followingUserSeq = :#{#user.userSeq}")
     List<Users> findProfileThatUserFollowing(@Param("user") Users user);
 
