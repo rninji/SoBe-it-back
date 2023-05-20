@@ -5,7 +5,7 @@ import com.finalproject.mvc.sobeit.dto.LikeNotificationDTO;
 import com.finalproject.mvc.sobeit.dto.NotificationDTO;
 import com.finalproject.mvc.sobeit.dto.ReplyNotificationDTO;
 import com.finalproject.mvc.sobeit.entity.FollowNotification;
-import com.finalproject.mvc.sobeit.entity.LikeNotification;
+import com.finalproject.mvc.sobeit.entity.ArticleLikeNotification;
 import com.finalproject.mvc.sobeit.entity.ReplyNotification;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.FollowNotificationRepo;
@@ -40,11 +40,11 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
 
-        List<LikeNotification> likeNotificationList = likeNotificationRepo.findByUser(user).orElse(null);
+        List<ArticleLikeNotification> articleLikeNotificationList = likeNotificationRepo.findByUser(user).orElse(null);
 
-        if (likeNotificationList != null) {
-            for (LikeNotification likeNotification : likeNotificationList) {
-                notifications.add(toLikeNotificationDto(likeNotification));
+        if (articleLikeNotificationList != null) {
+            for (ArticleLikeNotification articleLikeNotification : articleLikeNotificationList) {
+                notifications.add(toLikeNotificationDto(articleLikeNotification));
             }
         }
 
@@ -57,8 +57,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         //댓글 좋아요 알림
-
-
 
         if (notifications.size() == 0) throw new Exception("알림이 없습니다.");
         return notifications;
@@ -118,36 +116,36 @@ public class NotificationServiceImpl implements NotificationService {
 
         return notificationDTO;
     }
-    public NotificationDTO toLikeNotificationDto(LikeNotification likeNotification){
+    public NotificationDTO toLikeNotificationDto(ArticleLikeNotification articleLikeNotification){
         NotificationDTO notificationDTO = null;
-        if (likeNotification.getType() == 1) {
+        if (articleLikeNotification.getType() == 1) {
             notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(likeNotification.getLikeNotificationSeq())
-                    .timestamp(likeNotification.getNotificationDateTime())
+                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+                    .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
-                    .articleContent(likeNotification.getNotArticleSeq().getArticleText())
+                    .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 10개 이상입니다.")
-                    .url(likeNotification.getUrl())
+                    .url(articleLikeNotification.getUrl())
                     .type(4)
                     .build();
-        } else if (likeNotification.getType() == 2) {
+        } else if (articleLikeNotification.getType() == 2) {
             notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(likeNotification.getLikeNotificationSeq())
-                    .timestamp(likeNotification.getNotificationDateTime())
+                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+                    .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
-                    .articleContent(likeNotification.getNotArticleSeq().getArticleText())
+                    .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 50개 이상입니다.")
-                    .url(likeNotification.getUrl())
+                    .url(articleLikeNotification.getUrl())
                     .type(4)
                     .build();
-        } else if (likeNotification.getType() == 3) {
+        } else if (articleLikeNotification.getType() == 3) {
             notificationDTO = LikeNotificationDTO.builder()
-                    .notificationSeq(likeNotification.getLikeNotificationSeq())
-                    .timestamp(likeNotification.getNotificationDateTime())
+                    .notificationSeq(articleLikeNotification.getLikeNotificationSeq())
+                    .timestamp(articleLikeNotification.getNotificationDateTime())
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
-                    .articleContent(likeNotification.getNotArticleSeq().getArticleText())
+                    .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 100개 이상입니다.")
-                    .url(likeNotification.getUrl())
+                    .url(articleLikeNotification.getUrl())
                     .type(4)
                     .build();
         }
