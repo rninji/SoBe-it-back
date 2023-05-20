@@ -33,4 +33,12 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
     // 유저가 해당 날짜에 쓴 지출 글 전부 가져오기
     @Query("SELECT a FROM Article a WHERE a.user.userSeq=?1 AND a.consumptionDate=?2 AND a.articleType=1")
     List<Article> findExpenditureArticlesByConsumptionDate(Long userSeq, LocalDate date);
+
+    //유저가 해당 달에 쓴 지출 내역의 가격 합계
+    @Query ("SELECT SUM(a.amount) FROM Article a WHERE a.user.userSeq=?1 AND a.articleType=1 AND a.consumptionDate>=?3 AND a.consumptionDate<?4")
+    Long findSumAmountByUserSeq(Long userSeq, LocalDate start, LocalDate end);
+
+    // 유저가 해당 달에 쓴 특정 카테고리 지출 내역의 가격 합계
+    @Query("SELECT SUM(a.amount) FROM Article a WHERE a.user.userSeq=?1 AND a.articleType=1 AND a.expenditureCategory=?2 AND a.consumptionDate>=?3 AND a.consumptionDate<?4")
+    Long findSumAmountByUserSeqAndCategory(Long userSeq, int category, LocalDate start, LocalDate end);
 }

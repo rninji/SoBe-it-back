@@ -14,7 +14,12 @@ public interface StatisticsService {
     /**
      * 월별 차트
      */
-    public List<Long> getChart(Users user, int year, int month);
+    public Map<Integer, Long> getChart(Users user, int year, int month);
+
+    /**
+     * 월별 캘린더
+     */
+    public Map<Integer, Long> getCalendar(Users user, int year, int month);
 
     /**
      * 월별 지출 금액 가져오기

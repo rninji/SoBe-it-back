@@ -52,7 +52,11 @@ public class StatisticsController {
     @PostMapping("/chart")
     public ResponseEntity<?> getChart(@AuthenticationPrincipal Users user, @RequestBody Map<String, Integer> date) {
         try {
-            return ResponseEntity.ok().body("ok");
+            ChartResponseDTO responseDTO = ChartResponseDTO.builder()
+                    .monthAmount(statisticsService.getSumAmount(user.getUserSeq(), date.get("year"), date.get("month"))) // 월 지출 금액
+                    .data(statisticsService.getChart(user, date.get("year"), date.get("month"))) // 일별 지출 내역
+                    .build();
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
