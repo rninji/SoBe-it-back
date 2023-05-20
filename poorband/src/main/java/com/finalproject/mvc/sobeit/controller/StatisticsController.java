@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.controller;
 
+import com.finalproject.mvc.sobeit.dto.ChartResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ExpenditureResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -27,8 +28,11 @@ public class StatisticsController {
     @PostMapping("/getExpenditure")
     public ResponseEntity<?> getExpenditure(@AuthenticationPrincipal Users user, @RequestBody Map<String, Integer> date) {
         try {
-            List<ExpenditureResponseDTO>[] expenditure = statisticsService.getExpenditure(user, date.get("year"), date.get("month"));
-            return ResponseEntity.ok().body(expenditure);
+            ChartResponseDTO responseDTO = ChartResponseDTO.builder()
+                    .monthAmount(statisticsService.getSumAmount(user.getUserSeq(), date.get("year"), date.get("month"))) // 월 지출 금액
+                    .data(statisticsService.getExpenditure(user, date.get("year"), date.get("month"))) // 일별 지출 내역
+                    .build();
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 

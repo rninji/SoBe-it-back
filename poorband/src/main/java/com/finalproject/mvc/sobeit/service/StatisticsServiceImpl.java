@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,20 +19,21 @@ public class StatisticsServiceImpl implements StatisticsService{
     private final ArticleRepo articleRepo;
     /**
      * 월별 지출 내역 가져오기
+     *
      * @param user
      * @param year
      * @param month
      * @return
      */
     @Override
-    public List<ExpenditureResponseDTO>[] getExpenditure(Users user, int year, int month) {
+    public Map<Integer, List<?>> getExpenditure(Users user, int year, int month) {
         Long userSeq = user.getUserSeq();
-        List<ExpenditureResponseDTO>[] expList = new List[32];
+        Map<Integer, List<?>> expMap = new HashMap<>();
         // 1일~31일 일별 지출 가져오기
         for(int i=1; i<32;i++) {
-            expList[i] = getExpenditureDay(userSeq, year, month, i);
+            expMap.put(i,getExpenditureDay(userSeq, year, month, i));
         }
-        return expList;
+        return expMap;
     }
 
     /**

@@ -220,7 +220,7 @@ public class ArticleServiceImpl implements ArticleService{
      * @return 유저가 볼 수 있는 권한의 글번호 리스트 최신순
      */
     public List<Long> selectFeedArticleSeq(Long userSeq) {
-        return  articleRepo.getArticleSeqListInFeed(userSeq);
+        return  articleRepo.findArticleSeqListInFeed(userSeq);
     }
 
     /**
