@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -113,6 +115,36 @@ public class ReplyServiceImpl implements ReplyService {
         else {
             return null;
         }
+    }
+
+    /**
+     * 해당 글의 댓글 전체 조회
+     * @param articleSeq
+     * @return
+     */
+    @Override
+    public List<ReplyDTO> selectAllReply(Long articleSeq) {
+        List<Reply> writtenReplyList = replyRepo.findReplyByArticleSeq(articleSeq);
+
+        List<ReplyDTO> responseReplyDTOList = new ArrayList<>();
+        for (Reply writtenReply : writtenReplyList) {
+            int replyLikeCount = countReplyLike(writtenReply.getReplySeq());
+            UserDTO replyWriter = selectReplyWriter(writtenReply.getUser().getUserSeq());
+
+            responseReplyDTOList.add(
+                    ReplyDTO.builder()
+                            .reply_seq(writtenReply.getReplySeq())
+                            .reply_text(writtenReply.getReplyText())
+                            .parent_reply_seq(writtenReply.getParentReplySeq())
+                            .written_date(writtenReply.getWrittenDate())
+                            .reply_like_cnt(replyLikeCount)
+                            .nickname(replyWriter.getNickname())
+                            .profile_image_url(replyWriter.getProfile_image_url())
+                            .build()
+            );
+        }
+
+        return responseReplyDTOList;
     }
 
     /**
