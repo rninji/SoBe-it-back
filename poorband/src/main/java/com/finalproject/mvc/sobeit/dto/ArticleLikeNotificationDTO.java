@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LikeNotificationDTO implements NotificationDTO {
+public class ArticleLikeNotificationDTO implements NotificationDTO {
     private Long notificationSeq;
     private int type;
     private String content;

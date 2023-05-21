@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,6 +26,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final ReplyLikeRepo replyLikeRepo;
     private final UserRepo userRepo;
     private final ReplyNotificationRepo replyNotificationRepo;
+    private final ReplyLikeNotificationRepo replyLikeNotificationRepo;
 
     /**
      * 댓글 작성
@@ -218,6 +220,43 @@ public class ReplyServiceImpl implements ReplyService {
                     .user_seq(replyLike.getUser().getUserSeq())
                     .is_liked(true)
                     .build();
+
+            Optional<Long> countByReply = replyLikeRepo.countByReply(replyLike.getReply()); // 해당 댓글의 좋아요 수
+            if (countByReply.isPresent()) {
+                Long replyLikeCnt = countByReply.get();
+                Users userToSendNotification = replyLike.getReply().getUser();
+                String url = "http://localhost:3000/article/detail/" + replyLike.getReply().getArticle().getArticleSeq();
+
+                if (replyLikeCnt == 1) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(1)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                } else if (replyLikeCnt == 10) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(2)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                } else if (replyLikeCnt == 100) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(3)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                }
+            }
+
 
             return responseReplyLikeDTO;
         }
