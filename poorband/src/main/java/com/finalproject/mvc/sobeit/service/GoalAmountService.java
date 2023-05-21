@@ -1,10 +1,28 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
+import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 
+import java.util.List;
+
 public interface GoalAmountService {
+    /**
+     * 도전과제 정보 가져오기(성공한 도전과제 갯수,도전과제 갯수)
+     * @param userId
+     * @return 성공한 도전과제 갯수&도전과제 갯수
+     **/
+    public GoalAmountCntDTO goalAmountCnt(String userId);
+
+    /**
+     * 도전과제 정보 가져오기(도전과제 리스트)
+     * @param userId
+     * @return 도전과제 목록
+     **/
+    public List<GoalAmount> selectGoalAmount(String userId);
+
     /**
      * 도전과제 작성
      * @param user

@@ -1,17 +1,41 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
+import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GoalAmountServiceImpl implements GoalAmountService{
 
     private final GoalAmountRepo goalAmountRep;
+
+    @Override
+    public GoalAmountCntDTO goalAmountCnt(String userId) {
+        int successCnt = goalAmountRep.findGoalAmountSeqSuccess(userId).size();
+        int AllCnt = goalAmountRep.findGoalAmountSeq(userId).size();
+
+        GoalAmountCntDTO cntDTO = GoalAmountCntDTO.builder()
+                .successGoalAmountCnt(successCnt)
+                .goalAmountCnt(AllCnt)
+                .build();
+
+        return cntDTO;
+    }
+
+    @Override
+    public List<GoalAmount> selectGoalAmount(String userId) {
+       List<GoalAmount> goalAmountList = goalAmountRep.findGoalAmountByUserId(userId);
+       if (goalAmountList == null) throw new RuntimeException("도전과제가 없습니다.");
+        return goalAmountList;
+    }
 
     @Override
     public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
