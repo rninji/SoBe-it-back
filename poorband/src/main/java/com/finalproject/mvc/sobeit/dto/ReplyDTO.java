@@ -19,4 +19,7 @@ public class ReplyDTO {
     private Long parent_reply_seq;
     private LocalDateTime written_date;
     private int is_updated;
+    private String nickname;
+    private String profile_image_url;
+    private int reply_like_cnt;
 }
