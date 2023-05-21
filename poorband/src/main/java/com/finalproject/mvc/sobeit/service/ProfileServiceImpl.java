@@ -1,14 +1,17 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,9 +25,11 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
+     * @param userId
+     * @return profileUserDTO
      * */
     @Override
-    public ProfileUserDTO selectUserInfo(String userId) throws Exception {
+    public ProfileUserDTO selectUserInfo(String userId) {
         Users user = userRepo.findByUserId(userId);
 
         if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
@@ -43,10 +48,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 작성한 글 가져오기
+     * @param userId
+     * @return userArticles
      * */
     @Override
 
-    public List<Article> selectArticles(String userId) throws Exception {
+    public List<Article> selectArticles(String userId) {
         List<Article> userArticles = articleRepo.findArticlesByUser(userId);
 
         if(userArticles.size() == 0) throw new RuntimeException("게시물이 없습니다.");
@@ -56,6 +63,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 도전 과제 정보 가져오기
+     * @param userId
+     * @return goalAmountList
      * */
     @Override
     public List<GoalAmount> selectChallenge(String userId) {
@@ -68,9 +77,12 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * 유저 프로필 편집 저장
      * 두 번째 parameter dto로 변경
+     * @param loggedInUser
+     * @param updateUser
+     * @return Users : 프로필 편집한 후 update된 유저
      * */
     @Override
-    public Users insertProfile(String userId, Users updateUser) {
+    public Users insertProfile(@AuthenticationPrincipal Users loggedInUser, Users updateUser) {
         Users user = userRepo.findByUserId(updateUser.getUserId());
 
         user.setNickname(updateUser.getNickname());
@@ -80,25 +92,111 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     /**
-     * 팔로잉 정보 가져오기
+     * userSeq에 따른 Users 정보를 profileDTO로 가져오기
+     * : selectFollowing(), selectFollower()에서 사용됨.
+     * : status는 추후 팔로잉/팔로우 버튼 구분에 필요.
+     * @param loggedInUser
+     * @param userId
+     * @param targetUserSeq
+     * @return profileDTO
      * */
     @Override
-    public List<Users> selectFollowing(String userId) {
+    public ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq) {
         Users user = userRepo.findByUserId(userId);
-        List<Users> followingList = followingRepo.findProfileThatUserFollows(user);
+        Users targetUser = userRepo.findById(targetUserSeq).orElse(null);
 
-        return followingList;
+        int status = 0; // loggedInUser가 targetUser를 팔로우하지 않은 상태
+
+        if(loggedInUser.getUserSeq() == targetUser.getUserSeq()) {
+            status = 1; // 본인
+        } else {
+            Following following = followingRepo.findByFollowingAndFollower(loggedInUser, targetUser.getUserSeq()).orElse(null);
+            System.out.println("****\nfollowing\n*****" + following);
+            if(following != null) status = 2; //  loggedInUser가 targetUser를 팔로우 중인 상태
+        }
+
+        ProfileDTO profileDTO = ProfileDTO.builder()
+                .userSeq(targetUser.getUserSeq())
+                .userId(targetUser.getUserId())
+                .nickname(targetUser.getNickname())
+                .userTier(targetUser.getUserTier())
+                .introduction(targetUser.getIntroduction())
+                .profileImgUrl(targetUser.getProfileImageUrl())
+                .status(status)
+                .build();
+
+        return profileDTO;
     }
 
     /**
-     * 팔로워 정보 가져오기
+     * 팔로잉 정보(userSeq) 가져오기
+     * : selectFollowing()에서 사용됨.
+     * : @param이 팔로잉하고 있는 사용자들의 userSeq를 list로 반환
+     * @param userSeq
+     * @return userSeqList
      * */
     @Override
-    public List<Users> selectFollower(String userId) {
-        Users user = userRepo.findByUserId(userId);
-        List<Users> followerList = followingRepo.findProfileThatUserFollowing(user);
+    public List<Long> selectFollowingUserSeq(Long userSeq) {
+        Users user = userRepo.findById(userSeq).orElse(null);
+        List<Long> userSeqList = followingRepo.findUserSeqThatUserFollows(user);
 
-        return followerList;
+        return userSeqList;
+    }
+
+    /**
+     * 팔로잉 정보(List) 가져오기
+     * @param loggedInUser // 로그인 된 사용자
+     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @return userList
+     * */
+    @Override
+    public List<ProfileDTO> selectFollowing(@AuthenticationPrincipal Users loggedInUser, String userId) {
+        Users user = userRepo.findByUserId(userId);
+
+        List<Long> userSeqList = selectFollowingUserSeq(user.getUserSeq());
+        if (userSeqList == null) {
+            throw new RuntimeException("팔로잉 중인 사용자가 없습니다.");
+        }
+
+        List<ProfileDTO> userList = new ArrayList<>();
+        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, userId, u)));
+
+        return userList;
+    }
+
+    /**
+     * 팔로워 정보(userSeq) 가져오기
+     * : selectFollower()에서 사용됨.
+     * : @param을 팔로우하고 있는 사용자들의 userSeq를 list로 반환
+     * @param userSeq
+     * @return userSeqList
+     * */
+    @Override
+    public List<Long> selectFollowerUserSeq(Long userSeq) {
+        Users user = userRepo.findById(userSeq).orElse(null);
+        List<Long> userSeqList = followingRepo.findUserSeqThatUserFollowing(user);
+
+        return userSeqList;
+    }
+
+    /**
+     * 팔로워 정보(List) 가져오기
+     * @param loggedInUser // 로그인 된 사용자
+     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @return userList
+     * */
+    @Override
+    public List<ProfileDTO> selectFollower(@AuthenticationPrincipal Users loggedInUser, String userId) {
+        Users user = userRepo.findByUserId(userId);
+        List<Long> userSeqList = selectFollowerUserSeq(user.getUserSeq());
+
+        if (userSeqList == null) {
+            throw new RuntimeException("팔로잉 중인 사용자가 없습니다.");
+        }
+
+        List<ProfileDTO> userList = new ArrayList<>();
+        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, userId, u)));
+        return userList;
     }
 
     /**
@@ -129,6 +227,8 @@ public class ProfileServiceImpl implements ProfileService {
      * */
     @Override
     public Following follow(Users user, String targetUserId) throws Exception {
+        // issue
+        // following에서 userseq랑 followingseq unique 체크
         Users followingUser = userRepo.findByUserId(targetUserId);
 
         // 팔로우하려는 사용자가 없음.

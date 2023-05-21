@@ -32,6 +32,8 @@ public class ProfileController {
     @RequestMapping("/profileinfo")
     public ResponseEntity<?> profileinfo(@RequestBody Map<String, String> userIdMap) {// @RequestBody Map<String, Long> userSeqMap) {
         try {
+            System.out.println("profileinfo");
+
             ProfileUserDTO profileUserDTO = profileService.selectUserInfo(userIdMap.get("userId")); // userSeqMap.get("userSeq"));
             return ResponseEntity.ok().body(profileUserDTO);
         } catch(Exception e) {
@@ -52,6 +54,7 @@ public class ProfileController {
     @RequestMapping("/myarticle")
     public ResponseEntity<?> articleList(@RequestBody Map<String, String> userIdMap) {
         try {
+            System.out.println("articleList");
             List<Article> list = profileService.selectArticles(userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
@@ -95,7 +98,8 @@ public class ProfileController {
                     .nickname(profile.getNickname())
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
                     .build();
-            Users updatedUser = profileService.insertProfile(loggedInUser.getUserId(), user);
+            System.out.println("user = "+user);
+            Users updatedUser = profileService.insertProfile(loggedInUser, user);
             if (updatedUser==null) {
                 throw new RuntimeException("프로필 수정 실패");
             }
@@ -116,9 +120,9 @@ public class ProfileController {
      * @return 사용자의 팔로잉 목록
      * */
     @RequestMapping("/following")
-    public ResponseEntity<?> following(@RequestBody Map<String, String> userIdMap) {
+    public ResponseEntity<?> following(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            List<Users> list = profileService.selectFollowing(userIdMap.get("userId"));
+            List<ProfileDTO> list = profileService.selectFollowing(loggedInUser, userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -134,9 +138,9 @@ public class ProfileController {
      * @return 사용자의 팔로워 목록
      * */
     @RequestMapping("/follower")
-    public ResponseEntity<?> follower(@RequestBody Map<String, String> userIdMap) {
+    public ResponseEntity<?> follower(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            List<Users> list = profileService.selectFollower(userIdMap.get("userId"));
+            List<ProfileDTO > list = profileService.selectFollower(loggedInUser, userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
