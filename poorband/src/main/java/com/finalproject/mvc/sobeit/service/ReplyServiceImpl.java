@@ -158,6 +158,7 @@ public class ReplyServiceImpl implements ReplyService {
         UserDTO responseUserDTO = UserDTO.builder()
                 .user_id(writer.getUserId())
                 .nickname(writer.getNickname())
+                .user_tier(writer.getUserTier())
                 .profile_image_url(writer.getProfileImageUrl())
                 .build();
 
