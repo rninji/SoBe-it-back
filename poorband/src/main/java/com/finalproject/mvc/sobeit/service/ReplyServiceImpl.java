@@ -188,6 +188,7 @@ public class ReplyServiceImpl implements ReplyService {
                     .reply_like_seq(replyLike.getReplyLikeSeq())
                     .reply_seq(replyLike.getReply().getReplySeq())
                     .user_seq(replyLike.getUser().getUserSeq())
+                    .is_liked(true)
                     .build();
 
             return responseReplyLikeDTO;
@@ -202,6 +203,7 @@ public class ReplyServiceImpl implements ReplyService {
             ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
                     .reply_seq(replyLikeDTO.getReply_seq())
                     .user_seq(user.getUserSeq())
+                    .is_liked(false)
                     .build();
 
             return responseReplyLikeDTO;
