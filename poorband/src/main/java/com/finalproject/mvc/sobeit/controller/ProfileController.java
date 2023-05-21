@@ -99,7 +99,7 @@ public class ProfileController {
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
                     .build();
             System.out.println("user = "+user);
-            Users updatedUser = profileService.insertProfile(loggedInUser.getUserId(), user);
+            Users updatedUser = profileService.insertProfile(loggedInUser, user);
             if (updatedUser==null) {
                 throw new RuntimeException("프로필 수정 실패");
             }
@@ -138,9 +138,9 @@ public class ProfileController {
      * @return 사용자의 팔로워 목록
      * */
     @RequestMapping("/follower")
-    public ResponseEntity<?> follower(@RequestBody Map<String, String> userIdMap) {
+    public ResponseEntity<?> follower(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            List<Users> list = profileService.selectFollower(userIdMap.get("userId"));
+            List<ProfileDTO > list = profileService.selectFollower(loggedInUser, userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
