@@ -21,7 +21,7 @@ public class ArticleServiceImpl implements ArticleService{
     private final ArticleRepo articleRepo;
     private final ArticleLikeRepo articleLikeRepo;
     private final VoteRepo voteRepo;
-    private final LikeNotificationRepo likeNotificationRepo;
+    private final ArticleLikeNotificationRepo articleLikeNotificationRepo;
     private final ReplyRepo replyRepo;
     private final FollowingRepo followingRepo;
     private final UserRepo userRepo;
@@ -268,7 +268,7 @@ public class ArticleServiceImpl implements ArticleService{
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(articleLikeNotification);
+                        articleLikeNotificationRepo.save(articleLikeNotification);
                     }
                     else if (articleLikeCnt == 50){
                         // 좋아요 수가 50개라면
@@ -276,14 +276,14 @@ public class ArticleServiceImpl implements ArticleService{
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(articleLikeNotification);
+                        articleLikeNotificationRepo.save(articleLikeNotification);
                     } else if (articleLikeCnt == 100) {
                         // 좋아요 수가 100개라면
                         ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(3)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(articleLikeNotification);
+                        articleLikeNotificationRepo.save(articleLikeNotification);
 
                     } else if (articleLikeCnt == 1000) {
                         // 좋아요 수가 1000개라면
@@ -291,7 +291,7 @@ public class ArticleServiceImpl implements ArticleService{
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
-                        likeNotificationRepo.save(articleLikeNotification);
+                        articleLikeNotificationRepo.save(articleLikeNotification);
                     }
                 }
             }

@@ -1,16 +1,14 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.NotificationDTO;
+import com.finalproject.mvc.sobeit.dto.NotificationDeleteDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,9 +31,10 @@ public class NotificationController {
     }
 
     @PostMapping("/deleteone")
-    public ResponseEntity<?> deleteOneNotification(@AuthenticationPrincipal Users user, Long notificationSeq, int type) {
+    public ResponseEntity<?> deleteOneNotification(@AuthenticationPrincipal Users user, @RequestBody NotificationDeleteDTO notificationDeleteDTO) {
         try{
-            notificationService.deleteOneNotice(user, notificationSeq, type);
+            Long nSeq = Long.parseLong(notificationDeleteDTO.getNotificationSeq());
+            notificationService.deleteOneNotice(user, nSeq, notificationDeleteDTO.getType());
             return ResponseEntity.ok().body(true);
         }catch (Exception e) {
             ResponseDTO<Object> responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
