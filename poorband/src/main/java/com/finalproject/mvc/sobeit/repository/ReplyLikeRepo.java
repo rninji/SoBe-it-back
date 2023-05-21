@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReplyLikeRepo extends JpaRepository<ReplyLike, Long> {
     ReplyLike findByReplyAndUser(Reply reply, Users user);
 
+    boolean existsByReplyAndUser(Reply reply, Users user);
+
     @Query("select count(*) from ReplyLike r where r.reply.replySeq = ?1")
     int findCountReplyLikeByReplySeq(Long replySeq);
 }
