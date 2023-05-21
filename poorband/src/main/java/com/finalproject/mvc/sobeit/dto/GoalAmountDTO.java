@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -20,10 +20,10 @@ public class GoalAmountDTO {
     private Users user;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private String isSuccess;
     private String routine;
 
