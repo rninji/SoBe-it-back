@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -117,6 +118,19 @@ public class ReplyController {
                     .internalServerError()
                     .body(responseDTO);
         }
+    }
+
+    /**
+     * 해당 글의 댓글 전체 조회
+     * @param articleSeq
+     * @return
+     */
+    @GetMapping("/selectAll")
+    public ResponseEntity<?> selectAllReply(Long articleSeq) {
+        List<ReplyDTO> selectedReplyDTO = replyService.selectAllReply(articleSeq);
+        ResponseDTO<ReplyDTO> responseDTO = ResponseDTO.<ReplyDTO>builder().data(selectedReplyDTO).build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     /**
