@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -45,6 +46,9 @@ public class ReplyController {
                     .parent_reply_seq(writtenReply.getParentReplySeq())
                     .written_date(writtenReply.getWrittenDate())
                     .is_updated(writtenReply.getIsUpdated())
+                    .nickname(writtenReply.getUser().getNickname())
+                    .user_tier(writtenReply.getUser().getUserTier())
+                    .profile_image_url(writtenReply.getUser().getProfileImageUrl())
                     .build();
 
             return ResponseEntity.ok().body(responseReplyDTO);
@@ -117,6 +121,19 @@ public class ReplyController {
                     .internalServerError()
                     .body(responseDTO);
         }
+    }
+
+    /**
+     * 해당 글의 댓글 전체 조회
+     * @param articleSeq
+     * @return
+     */
+    @GetMapping("/selectAll")
+    public ResponseEntity<?> selectAllReply(@AuthenticationPrincipal Users user, Long articleSeq) {
+        List<ReplyDTO> selectedReplyDTO = replyService.selectAllReply(user, articleSeq);
+        ResponseDTO<ReplyDTO> responseDTO = ResponseDTO.<ReplyDTO>builder().data(selectedReplyDTO).build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     /**
