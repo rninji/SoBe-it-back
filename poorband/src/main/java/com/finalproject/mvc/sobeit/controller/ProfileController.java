@@ -66,24 +66,6 @@ public class ProfileController {
     }
 
     /**
-     * 도전 과제 정보 가져오기
-     * @param userIdMap
-     * @return 도전 과제 목록
-     * */
-    @RequestMapping("/challenge")
-    public ResponseEntity<?> challenge(@RequestBody Map<String, String> userIdMap) {
-        try {
-            List<GoalAmount> list = profileService.selectChallenge(userIdMap.get("userId"));
-            return ResponseEntity.ok().body(list);
-        } catch(Exception e) {
-            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-            return ResponseEntity
-                    .internalServerError() // Error 500
-                    .body(responseDTO);
-        }
-    }
-
-    /**
      * 유저 프로필 편집 저장
      * -- parameter dto로 변경
      * @param loggedInUser
