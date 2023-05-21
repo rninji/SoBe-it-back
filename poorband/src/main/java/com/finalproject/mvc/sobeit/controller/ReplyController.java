@@ -129,8 +129,8 @@ public class ReplyController {
      * @return
      */
     @GetMapping("/selectAll")
-    public ResponseEntity<?> selectAllReply(Long articleSeq) {
-        List<ReplyDTO> selectedReplyDTO = replyService.selectAllReply(articleSeq);
+    public ResponseEntity<?> selectAllReply(@AuthenticationPrincipal Users user, Long articleSeq) {
+        List<ReplyDTO> selectedReplyDTO = replyService.selectAllReply(user, articleSeq);
         ResponseDTO<ReplyDTO> responseDTO = ResponseDTO.<ReplyDTO>builder().data(selectedReplyDTO).build();
 
         return ResponseEntity.ok().body(responseDTO);
