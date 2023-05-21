@@ -14,7 +14,7 @@ public interface ReplyService {
 
     public ReplyDTO deleteReply(final Users user, ReplyDTO replyDTO);
 
-    public List<ReplyDTO> selectAllReply(Long articleSeq);
+    public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq);
 
     public ReplyLikeDTO likeReply(final Users user, ReplyLikeDTO replyLikeDTO);
 }

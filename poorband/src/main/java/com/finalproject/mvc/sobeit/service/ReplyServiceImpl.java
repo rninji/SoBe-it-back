@@ -123,23 +123,50 @@ public class ReplyServiceImpl implements ReplyService {
      * @return
      */
     @Override
-    public List<ReplyDTO> selectAllReply(Long articleSeq) {
+    public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq) {
         List<Reply> writtenReplyList = replyRepo.findReplyByArticleSeq(articleSeq);
+        Long articleUserSeq = articleRepo.findByArticleSeq(articleSeq).getUser().getUserSeq();
 
         List<ReplyDTO> responseReplyDTOList = new ArrayList<>();
         for (Reply writtenReply : writtenReplyList) {
             int replyLikeCount = countReplyLike(writtenReply.getReplySeq());
             UserDTO replyWriter = selectReplyWriter(writtenReply.getUser().getUserSeq());
+            boolean is_article_writer = false;
+            boolean is_reply_writer = false;
+
+            if (Objects.equals(writtenReply.getUser().getUserSeq(), articleUserSeq)) {
+                is_article_writer = true;
+            }
+
+            if (Objects.equals(user.getUserSeq(), writtenReply.getUser().getUserSeq())) {
+                is_reply_writer = true;
+            }
+
+            ReplyLike replyLike;
+            boolean is_clicked_like = false;
+            if (replyLikeRepo.existsByReplyAndUser(writtenReply, user)) {
+                replyLike = replyLikeRepo.findByReplyAndUser(writtenReply, user);
+
+                if (Objects.equals(user.getUserSeq(), replyLike.getUser().getUserSeq())) {
+                    is_clicked_like = true;
+                }
+            }
 
             responseReplyDTOList.add(
                     ReplyDTO.builder()
                             .reply_seq(writtenReply.getReplySeq())
+                            .article_seq(articleSeq)
+                            .user_seq(writtenReply.getUser().getUserSeq())
                             .reply_text(writtenReply.getReplyText())
                             .parent_reply_seq(writtenReply.getParentReplySeq())
                             .written_date(writtenReply.getWrittenDate())
                             .reply_like_cnt(replyLikeCount)
                             .nickname(replyWriter.getNickname())
+                            .user_tier(replyWriter.getUser_tier())
                             .profile_image_url(replyWriter.getProfile_image_url())
+                            .is_article_writer(is_article_writer)
+                            .is_reply_writer(is_reply_writer)
+                            .is_clicked_like(is_clicked_like)
                             .build()
             );
         }
