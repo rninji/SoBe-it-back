@@ -5,6 +5,7 @@ import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
+import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRepo userRepo;
     private final ArticleRepo articleRepo;
     private final FollowingRepo followingRepo;
+    private final GoalAmountRepo goalAmountRepo;
 
     /**
      * 프로필 유저 정보 가져오기
@@ -59,19 +62,6 @@ public class ProfileServiceImpl implements ProfileService {
         if(userArticles.size() == 0) throw new RuntimeException("게시물이 없습니다.");
 
         return userArticles;
-    }
-
-    /**
-     * 도전 과제 정보 가져오기
-     * @param userId
-     * @return goalAmountList
-     * */
-    @Override
-    public List<GoalAmount> selectChallenge(String userId) {
-//        Optional<GoalAmount> goalAmountList = goalAmountRepo.findById(user.getUserSeq()).orElse(null);
-//
-//        return goalAmountList;
-        return null;
     }
 
     /**
@@ -201,39 +191,47 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 팔로잉 해제
+     * @param user
+     * @param targetUserId
      * */
     @Override
-    public Following unfollow(Users user, String targetUserId) throws Exception {
+    public void unfollow(Users user, String targetUserId) {
         Users followingUser = userRepo.findByUserId(targetUserId);
 
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
         Following f = followingRepo.findByFollowingAndFollower(user, followingUser.getUserSeq()).orElse(null);
-
 
         // 서로 팔로잉 관계가 아닐 때
         if(f == null) {
             throw new RuntimeException("User not following " + followingUser.getNickname());
         }
-
-        return followingRepo.save(f);
+        followingRepo.delete(f);
     }
 
     /**
      * 팔로우 추가
+     * @param user
+     * @param targetUserId
+     * @return following
      * */
     @Override
-    public Following follow(Users user, String targetUserId) throws Exception {
-        // issue
-        // following에서 userseq랑 followingseq unique 체크
+    public Following follow(Users user, String targetUserId) {
         Users followingUser = userRepo.findByUserId(targetUserId);
 
         // 팔로우하려는 사용자가 없음.
         if(followingUser == null) {
-            throw new RuntimeException("User not found!");
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+
+        Following isFollowing = followingRepo.findByFollowingAndFollower(user, followingUser.getUserSeq()).orElse(null);
+
+        // user가 targetUser를 이미 팔로우하고 있을 때
+        if(isFollowing != null) {
+            throw new RuntimeException("이미 팔로우 중입니다.");
         }
 
         Following f = new Following();

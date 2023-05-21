@@ -24,13 +24,6 @@ public interface ProfileService {
     List<Article> selectArticles(String userId);
 
     /**
-     * 도전 과제 정보 가져오기
-     * @param userId
-     * @return goalAmountList
-     */
-    List<GoalAmount> selectChallenge(String userId);
-
-    /**
      * 유저 프로필 편집 저장
      * @param loggedInUser
      * @param updateUser
@@ -80,11 +73,16 @@ public interface ProfileService {
 
     /**
      * 팔로잉 해제
+     * @param user
+     * @param targetUserId
      */
-    Following unfollow(Users user, String targetUserId) throws Exception;
+    void unfollow(Users user, String targetUserId);
 
     /**
      * 팔로우 추가
+     * @param user
+     * @param targetUserId
+     * @return following
      */
-    Following follow(Users user, String targetUserId) throws Exception;
+    Following follow(Users user, String targetUserId);
 }
