@@ -66,24 +66,6 @@ public class ProfileController {
     }
 
     /**
-     * 도전 과제 정보 가져오기
-     * @param userIdMap
-     * @return 도전 과제 목록
-     * */
-    @RequestMapping("/challenge")
-    public ResponseEntity<?> challenge(@RequestBody Map<String, String> userIdMap) {
-        try {
-            List<GoalAmount> list = profileService.selectChallenge(userIdMap.get("userId"));
-            return ResponseEntity.ok().body(list);
-        } catch(Exception e) {
-            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-            return ResponseEntity
-                    .internalServerError() // Error 500
-                    .body(responseDTO);
-        }
-    }
-
-    /**
      * 유저 프로필 편집 저장
      * -- parameter dto로 변경
      * @param loggedInUser
@@ -99,7 +81,7 @@ public class ProfileController {
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
                     .build();
             System.out.println("user = "+user);
-            Users updatedUser = profileService.insertProfile(loggedInUser.getUserId(), user);
+            Users updatedUser = profileService.insertProfile(loggedInUser, user);
             if (updatedUser==null) {
                 throw new RuntimeException("프로필 수정 실패");
             }
@@ -138,9 +120,9 @@ public class ProfileController {
      * @return 사용자의 팔로워 목록
      * */
     @RequestMapping("/follower")
-    public ResponseEntity<?> follower(@RequestBody Map<String, String> userIdMap) {
+    public ResponseEntity<?> follower(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            List<Users> list = profileService.selectFollower(userIdMap.get("userId"));
+            List<ProfileDTO > list = profileService.selectFollower(loggedInUser, userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();

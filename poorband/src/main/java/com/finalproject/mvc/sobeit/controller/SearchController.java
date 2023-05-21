@@ -1,6 +1,7 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
+import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.SearchService;
@@ -10,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,10 +24,16 @@ public class SearchController {
      * 사용자(users) 검색
      **/
     @RequestMapping("/users")
-    public List<Users> usersSearch(String inputText){
-        List<Users> usersList = searchService.usersSearch(inputText);
-
-        return usersList;
+    public ResponseEntity<?> usersSearch(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap, String inputText){
+        try {
+            List<ProfileDTO> userList = searchService.usersSearch(loggedInUser, userIdMap.get("userId"), inputText);
+            return ResponseEntity.ok().body(userList);
+        } catch (Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
     }
 
     /**

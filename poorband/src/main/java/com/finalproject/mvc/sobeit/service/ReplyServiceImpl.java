@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ReplyDTO;
 import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
+import com.finalproject.mvc.sobeit.dto.UserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -117,6 +118,23 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     /**
+     * 댓글 작성자 찾기
+     * @param userSeq
+     * @return
+     */
+    public UserDTO selectReplyWriter(Long userSeq) {
+        Users writer = replyRepo.findReplyUsersByUserSeq(userSeq);
+
+        UserDTO responseUserDTO = UserDTO.builder()
+                .user_id(writer.getUserId())
+                .nickname(writer.getNickname())
+                .profile_image_url(writer.getProfileImageUrl())
+                .build();
+
+        return responseUserDTO;
+    }
+
+    /**
      * 댓글 좋아요
      * @param user
      * @param replyLikeDTO
@@ -195,5 +213,14 @@ public class ReplyServiceImpl implements ReplyService {
 
             return responseReplyLikeDTO;
         }
+    }
+
+    /**
+     * 댓글 좋아요 개수 확인
+     * @param replySeq
+     * @return
+     */
+    public int countReplyLike(Long replySeq) {
+        return replyLikeRepo.findCountReplyLikeByReplySeq(replySeq);
     }
 }

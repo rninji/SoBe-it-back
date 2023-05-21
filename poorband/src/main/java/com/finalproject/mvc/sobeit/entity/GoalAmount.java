@@ -3,7 +3,7 @@ package com.finalproject.mvc.sobeit.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -28,13 +28,13 @@ public class GoalAmount {
     private Users user; // 해당하는 도전과제를 도전하는 사용자
 
     @Column(nullable = false)
-    private LocalDateTime startDate; // 도전과제 시작일
+    private LocalDate startDate; // 도전과제 시작일
 
     @Column(nullable = false)
-    private LocalDateTime endDate; // 도전과제 종료일
+    private LocalDate endDate; // 도전과제 종료일
 
     @Column(nullable = false, length = 4)
-    private String isSuccess; // 도전과제 성공 여부(성공 or 실패)
+    private String isSuccess; // 도전과제 성공 여부(진행중 or 성공 or 실패)
 
     @Column(nullable = false)
     private String routine; // 도전과제 반복 주기(매일 or 전체기간)

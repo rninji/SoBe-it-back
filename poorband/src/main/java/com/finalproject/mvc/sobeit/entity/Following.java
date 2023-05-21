@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class Following {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
