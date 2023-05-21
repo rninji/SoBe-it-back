@@ -26,8 +26,8 @@ public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateE
 
         Boolean existsByPhoneNumber(String phone_number);
 
-        @Query(value = "select u from Users u where u.userId like %?1%")
-        List<Users> findAllByUserId(String userId);
+        @Query(value = "select u.userSeq from Users u where u.userId like %?1%")
+        List<Long> findAllByUserId(String userId);
 
         Users findByUserNameAndPhoneNumber(String userName, String phoneNumber);
 
