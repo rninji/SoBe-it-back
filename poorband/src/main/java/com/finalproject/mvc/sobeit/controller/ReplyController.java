@@ -46,6 +46,9 @@ public class ReplyController {
                     .parent_reply_seq(writtenReply.getParentReplySeq())
                     .written_date(writtenReply.getWrittenDate())
                     .is_updated(writtenReply.getIsUpdated())
+                    .nickname(writtenReply.getUser().getNickname())
+                    .user_tier(writtenReply.getUser().getUserTier())
+                    .profile_image_url(writtenReply.getUser().getProfileImageUrl())
                     .build();
 
             return ResponseEntity.ok().body(responseReplyDTO);
