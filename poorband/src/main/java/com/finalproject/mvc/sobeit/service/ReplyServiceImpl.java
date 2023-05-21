@@ -157,4 +157,13 @@ public class ReplyServiceImpl implements ReplyService {
             return responseReplyLikeDTO;
         }
     }
+
+    /**
+     * 댓글 좋아요 개수 확인
+     * @param replySeq
+     * @return
+     */
+    public int countReplyLike(Long replySeq) {
+        return replyLikeRepo.findCountReplyLikeByReplySeq(replySeq);
+    }
 }
