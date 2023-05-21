@@ -1,6 +1,5 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
@@ -12,47 +11,80 @@ public interface ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
-     * */
-    ProfileUserDTO selectUserInfo(String userId) throws Exception;
+     * @param userId
+     * @return profileUserDTO
+     */
+    ProfileUserDTO selectUserInfo(String userId);
 
     /**
      * 작성한 글 가져오기
-     * */
-    List<Article> selectArticles(String userId) throws Exception;
+     * @param userId
+     * @return userArticles
+     */
+    List<Article> selectArticles(String userId);
 
     /**
      * 도전 과제 정보 가져오기
-     * */
+     * @param userId
+     * @return goalAmountList
+     */
     List<GoalAmount> selectChallenge(String userId);
 
     /**
      * 유저 프로필 편집 저장
-     *
-     * */
-    Users insertProfile(String userId, Users updateUser);
-
-    List<Long> selectFollowingUserSeq(Long userSeq);
-
-    ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq);
-
+     * @param loggedInUser
+     * @param updateUser
+     * @return Users : 프로필 편집한 후 update 된 유저
+     */
+    Users insertProfile(@AuthenticationPrincipal Users loggedInUser, Users updateUser);
 
     /**
-     * 팔로잉 정보 가져오기
+     * userSeq에 따른 Users 정보를 profileDTO로 가져오기
+     * @param loggedInUser
+     * @param userId
+     * @param targetUserSeq
+     * @return profileDTO
+     * */
+    ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq);
+
+    /**
+     * 팔로잉 정보(userSeq) 가져오기
+     * @param userSeq
+     * @return userSeqList
+     * */
+    List<Long> selectFollowingUserSeq(Long userSeq);
+
+    /**
+     * 팔로잉 정보(List) 가져오기
+     * @param loggedInUser // 로그인 된 사용자
+     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @return userList
      * */
     List<ProfileDTO> selectFollowing(@AuthenticationPrincipal Users loggedInUser, String userId);
 
     /**
-     * 팔로워 정보 가져오기
+     * 팔로워 정보(userSeq) 가져오기
+     * @param userSeq
+     * @return userSeqList
      * */
-    List<Users> selectFollower(String userId);
+    List<Long> selectFollowerUserSeq(Long userSeq);
+
+
+    /**
+     * 팔로워 정보(List) 가져오기
+     * @param loggedInUser // 로그인 된 사용자
+     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @return userList
+     * */
+    List<ProfileDTO> selectFollower(@AuthenticationPrincipal Users loggedInUser, String userId);
 
     /**
      * 팔로잉 해제
-     * */
+     */
     Following unfollow(Users user, String targetUserId) throws Exception;
 
     /**
      * 팔로우 추가
-     * */
+     */
     Following follow(Users user, String targetUserId) throws Exception;
 }
