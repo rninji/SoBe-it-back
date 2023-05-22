@@ -10,6 +10,12 @@ import java.util.List;
 
 
 public interface GoalAmountRepo extends JpaRepository<GoalAmount, Long> {
-    @Query("select a from GoalAmount a where a.user = ?1 order by a.startDate desc")
+    @Query("select a from GoalAmount a where a.user.userId = ?1 order by a.startDate desc")
     List<GoalAmount> findGoalAmountByUserId(String userId);
+
+    @Query("select a.goalAmountSeq from GoalAmount a where a.user.userId = ?1 and a.isSuccess = '성공'")
+    List<Long> findGoalAmountSeqSuccess(String userId);
+
+    @Query("select a.goalAmountSeq from GoalAmount a where a.user.userId = ?1")
+    List<Long> findGoalAmountSeq(String userId);
 }
