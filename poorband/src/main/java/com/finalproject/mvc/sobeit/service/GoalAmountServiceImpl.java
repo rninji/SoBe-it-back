@@ -3,12 +3,17 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
+import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
+import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
+import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,7 +21,14 @@ import java.util.List;
 public class GoalAmountServiceImpl implements GoalAmountService{
 
     private final GoalAmountRepo goalAmountRep;
+    private final UserRepo userRep;
+    private final ArticleRepo articleRep;
 
+    /**
+     * 유저에 대한 성공한 도전과제 개수&도전과제 개수
+     * @param userId
+     * @return 성공한 도전과제 개수&도전과제 개수
+     */
     @Override
     public GoalAmountCntDTO goalAmountCnt(String userId) {
         int successCnt = goalAmountRep.findGoalAmountSeqSuccess(userId).size();
@@ -30,15 +42,51 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         return cntDTO;
     }
 
+    public GoalAmount selectGoalAmountById(Long goalAmountSeq){
+        return goalAmountRep.findById(goalAmountSeq).orElse(null);
+    }
+
+    public GoalAmountResponseDTO findGoalAmountResponse(Users user, Long goalAmountSeq){
+        //보려는 도전과제 가져오기
+        GoalAmount goalAmount = selectGoalAmountById(goalAmountSeq);
+
+        Long consumption = 0L;// 기간동안 소비된 비용
+        List<Article> articleList = articleRep.findArticlesByUser(user.getUserId());
+        if (articleList == null){ // 게시글이 없는 경우
+            throw new RuntimeException("소비한 비용이 없습니다.");
+        }
+        for (Article article : articleList){
+            if (goalAmount.getStartDate().isAfter(article.getConsumptionDate()) && goalAmount.getEndDate().isBefore(article.getConsumptionDate())){
+                consumption += article.getAmount();
+            }
+        }
+
+        GoalAmountResponseDTO goalAmountResponseDTO = GoalAmountResponseDTO.builder()
+                .goalAmount(goalAmount.getGoalAmount())
+                .title(goalAmount.getTitle())
+                .user(user)
+                .startDate(goalAmount.getStartDate())
+                .endDate(goalAmount.getEndDate())
+                .isSuccess(goalAmount.getIsSuccess())
+                .routine(goalAmount.getRoutine())
+                .consumption(consumption)
+                .build();
+
+        return goalAmountResponseDTO;
+    }
+
     @Override
-    public List<GoalAmount> selectGoalAmount(String userId) {
-       List<GoalAmount> goalAmountList = goalAmountRep.findGoalAmountByUserId(userId);
-       if (goalAmountList == null) throw new RuntimeException("도전과제가 없습니다.");
+    public List<GoalAmountResponseDTO> selectGoalAmount(Users user) {
+        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(user.getUserId());
+        if (goalAmountSeqList == null) throw new RuntimeException("도전과제가 없습니다.");
+
+        List<GoalAmountResponseDTO> goalAmountList = new ArrayList<>();
+        goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, g)));
         return goalAmountList;
     }
 
     @Override
-    public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
+    public GoalAmount insertGoalAmount(@AuthenticationPrincipal Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
         // 요청 이용해 저장할 도전과제 생성
         GoalAmount goalAmount = GoalAmount.builder()
                 .user(user)

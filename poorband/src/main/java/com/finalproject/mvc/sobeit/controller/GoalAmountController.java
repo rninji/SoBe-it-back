@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
+import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -43,13 +44,13 @@ public class GoalAmountController {
 
     /**
      * 도전 과제 정보 가져오기
-     * @param userIdMap
+     * @param user
      * @return 도전 과제 목록
      * */
-    @RequestMapping("")
-    public ResponseEntity<?> selectGoalAmount(@RequestBody Map<String, String> userIdMap) {
+    @PostMapping("/list")
+    public ResponseEntity<?> selectGoalAmount(@AuthenticationPrincipal Users user) {
         try {
-            List<GoalAmount> list = goalAmountService.selectGoalAmount(userIdMap.get("userId"));
+            List<GoalAmountResponseDTO> list = goalAmountService.selectGoalAmount(user);
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
