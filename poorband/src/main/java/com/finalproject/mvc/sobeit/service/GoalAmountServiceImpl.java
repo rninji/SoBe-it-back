@@ -56,7 +56,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
             throw new RuntimeException("소비한 비용이 없습니다.");
         }
         for (Article article : articleList){
-            if (goalAmount.getStartDate().isAfter(article.getConsumptionDate()) && goalAmount.getEndDate().isBefore(article.getConsumptionDate())){
+            if (article.getConsumptionDate().isAfter(goalAmount.getStartDate()) && article.getConsumptionDate().isBefore(goalAmount.getEndDate())){
                 consumption += article.getAmount();
             }
         }
