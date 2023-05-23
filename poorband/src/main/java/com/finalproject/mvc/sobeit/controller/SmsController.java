@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
@@ -53,8 +52,8 @@ public class SmsController {
     }
 
     @PostMapping("/sms/smsAuthOk")
-    public Boolean phoneAuthOk(@RequestParam String code) {
-        String savedAuthCode = (String) session.getAttribute("rand");
+    public Boolean phoneAuthOk(@RequestBody String code) {
+        String savedAuthCode = session.getAttribute("rand").toString();
 
         System.out.println(savedAuthCode + " : " + code);
 
