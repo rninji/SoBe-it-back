@@ -7,14 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExpenditureResponseDTO {
-    private int expenditureCategory;
-    private String context;
-    private Long amount;
-    private Long articleSeq;
+public class ExpenditureListResponseDTO {
+    private LocalDate date;
+    private List<ExpenditureResponseDTO> list;
 }
