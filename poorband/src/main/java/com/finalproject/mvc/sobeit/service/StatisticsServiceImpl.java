@@ -127,10 +127,14 @@ public class StatisticsServiceImpl implements StatisticsService{
     @Override
     public List<StatisticsResponseDTO> getCalendar(Users user, int year, int month) {
         Long userSeq = user.getUserSeq();
-
         List<StatisticsResponseDTO> list = new ArrayList<>();
+
         // 1일~31일 일별 지출 가져오기
-        for(int i=1; i<32;i++) {
+        int lastday = 31;
+        if(new ArrayList<>(Arrays.asList(4,6,9,11)).contains(month)) lastday = 30;
+        else if(month==2) lastday=28;
+
+        for(int i=1; i<lastday+1;i++) {
             LocalDate date = LocalDate.of(year, month, i); // 날짜 생성
             StatisticsResponseDTO dto = StatisticsResponseDTO.builder()
                     .id(i)
