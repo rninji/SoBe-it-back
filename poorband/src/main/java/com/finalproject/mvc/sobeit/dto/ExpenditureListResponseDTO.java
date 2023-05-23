@@ -15,5 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ExpenditureListResponseDTO {
     private LocalDate date;
+    private Long amount;
     private List<ExpenditureResponseDTO> list;
 }
