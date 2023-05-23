@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +28,26 @@ public class StatisticsServiceImpl implements StatisticsService{
     public List<ExpenditureListResponseDTO> getExpenditure(Users user, int year, int month) {
         Long userSeq = user.getUserSeq();
         List<ExpenditureListResponseDTO> expList = new ArrayList<>();
+        int lastday = 30;
+        //if (new ArrayList<>(Arrays.asList(1,3,5,7,8,10,12)).contains(month)) lastday = 31;
         // 1일~31일 일별 지출 가져오기
         for(int i=1; i<32;i++) {
             // 일별 지출 목록 생성
             List<ExpenditureResponseDTO> list = getExpenditureDay(userSeq, year, month, i);
             // 지출 목록이 없는 날이면 패스
             if (list==null || list.size()==0) continue;
+
+            Long amount = new Long(0);
+            // 오늘 쓴 지출 금액 가져오기
+            for(ExpenditureResponseDTO dto : list){
+                amount+=dto.getAmount();
+            }
+
             // 날짜 + 지출목록 리스트를 가진 Response 객체 생성 후 리스트에 추가
             LocalDate date = LocalDate.of(year, month, i);
             ExpenditureListResponseDTO resp = ExpenditureListResponseDTO.builder()
                     .date(date)
+                    .amount(amount)
                     .list(list)
                     .build();
             expList.add(resp);
@@ -57,6 +64,8 @@ public class StatisticsServiceImpl implements StatisticsService{
      * @return 해당 날짜에 쓴 지출 내역 리스트
      */
     List<ExpenditureResponseDTO> getExpenditureDay(Long userSeq, int year, int month, int day){
+        if(new ArrayList<>(Arrays.asList(4,6,9,11)).contains(month)) return null;
+        else if (month==2 && new ArrayList<>(Arrays.asList(29, 30,31)).contains(day)) return null;
         LocalDate date = LocalDate.of(year, month, day);
         // 유저가 그 날 쓴 지출 글 가져오기
         List<Article> articleList = articleRepo.findExpenditureArticlesByConsumptionDate(userSeq, date);
