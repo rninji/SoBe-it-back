@@ -177,7 +177,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             start = LocalDate.parse(year+"-"+month+"-01");
             end = LocalDate.parse((year+1) +"-01-01");
         } else { // 10월, 11월
-            start = LocalDate.parse(year+"-0"+month+"-01");
+            start = LocalDate.parse(year+"-"+month+"-01");
             end = LocalDate.parse(year+"-"+(month+1)+"-01");
         }
         return new LocalDate[]{start, end};
