@@ -44,13 +44,13 @@ public class GoalAmountController {
 
     /**
      * 도전 과제 정보 가져오기
-     * @param user
+     * @param userIdMap
      * @return 도전 과제 목록
      * */
     @PostMapping("/list")
-    public ResponseEntity<?> selectGoalAmount(@AuthenticationPrincipal Users user) {
+    public ResponseEntity<?> selectGoalAmount(@RequestBody Map<String, String> userIdMap) {
         try {
-            List<GoalAmountResponseDTO> list = goalAmountService.selectGoalAmount(user);
+            List<GoalAmountResponseDTO> list = goalAmountService.selectGoalAmount(userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
