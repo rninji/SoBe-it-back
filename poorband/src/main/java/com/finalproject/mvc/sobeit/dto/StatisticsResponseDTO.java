@@ -9,7 +9,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChartResponseDTO {
-    private Long monthAmount; // 이번달 지출금액
-    private List<?> data;
+public class StatisticsResponseDTO {
+    private int id;
+    private Long amount;
 }

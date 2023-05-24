@@ -1,5 +1,7 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ExpenditureListResponseDTO;
+import com.finalproject.mvc.sobeit.dto.StatisticsResponseDTO;
 import com.finalproject.mvc.sobeit.entity.Users;
 
 import java.util.List;
@@ -9,17 +11,17 @@ public interface StatisticsService {
     /**
      * 월별 지출 내역
      */
-    public Map<Integer, List<?>> getExpenditure(Users user, int year, int month);
+    public List<ExpenditureListResponseDTO> getExpenditure(Users user, int year, int month);
 
     /**
      * 월별 차트
      */
-    public Map<Integer, Long> getChart(Users user, int year, int month);
+    public List<StatisticsResponseDTO> getChart(Users user, int year, int month);
 
     /**
      * 월별 캘린더
      */
-    public Map<Integer, Long> getCalendar(Users user, int year, int month);
+    public List<StatisticsResponseDTO> getCalendar(Users user, int year, int month);
 
     /**
      * 월별 지출 금액 가져오기

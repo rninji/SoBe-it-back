@@ -19,10 +19,10 @@ public interface GoalAmountService {
 
     /**
      * 도전과제 정보 가져오기(도전과제 리스트)
-     * @param user
+     * @param userId
      * @return 도전과제 목록
      **/
-    public List<GoalAmountResponseDTO> selectGoalAmount(Users user);
+    public List<GoalAmountResponseDTO> selectGoalAmount(String userId);
 
     /**
      * 도전과제 작성

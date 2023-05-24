@@ -6,13 +6,16 @@ import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,8 @@ public class ArticleServiceImpl implements ArticleService{
     private final ReplyRepo replyRepo;
     private final FollowingRepo followingRepo;
     private final UserRepo userRepo;
+
+    private final ProfileService profileService;
 
     /**
      * 글 작성
@@ -112,10 +117,10 @@ public class ArticleServiceImpl implements ArticleService{
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq) throws RuntimeException{
         Article article = selectArticleById(articleSeq);
         //글에 대한 권한 확인
-        if (article.getStatus()==2 && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
+        if (article.getStatus()==2 && user.getUserSeq()!=article.getUser().getUserSeq() && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
             throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
         }
-        else if(article.getStatus()==3 && user.getUserId() != article.getUser().getUserId()){
+        else if(article.getStatus()==3 && user.getUserSeq() != article.getUser().getUserSeq()){
             throw new RuntimeException("비공개 글입니다.");
         }
 
@@ -169,6 +174,7 @@ public class ArticleServiceImpl implements ArticleService{
 
         // ArticleResponseDTO 반환
         ArticleResponseDTO articleResponseDTO = ArticleResponseDTO.builder()
+                .articleSeq(articleSeq)
                 .user(article.getUser())
                 .status(article.getStatus())
                 .imageUrl(article.getImageUrl())
@@ -199,28 +205,60 @@ public class ArticleServiceImpl implements ArticleService{
      * @return 피드에 보여줄 글 반환
      */
     @Override
-    public List<ArticleResponseDTO> feed(Users user) throws RuntimeException{
+    public List<ArticleResponseDTO> feed(Users user, int size, Long lastArticleId) throws RuntimeException{
         Long userSeq = user.getUserSeq(); // 요청한 유저 번호
 
+
         // 권한에 맞는 글번호 리스트 가져오기
-        List<Long> feedSeqList = selectFeedArticleSeq(user.getUserSeq());
-        if (feedSeqList==null) { // 가져온 글이 없다면
+        Page<Long> feedSeqList = selectFeedArticleSeq(user.getUserSeq(), size, lastArticleId);
+        if (feedSeqList.isEmpty()) { // 가져온 글이 없다면
             throw new RuntimeException("조회할 피드의 글이 없습니다.");
         }
 
         // ArticleResponseDTO 가져오기
         List<ArticleResponseDTO> feedList = new ArrayList<>();
-        feedSeqList.forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
+        feedSeqList.getContent().forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
+        System.out.println("서비스 ㅎㅇ");
         return feedList;
+
+//        // 로그인 한 유저가 팔로우 한 유저들 목록
+//        List<Long> followingList = profileService.selectFollowingUserSeq(user.getUserSeq());
+//
+//        // 내 글 전체 가져오기
+//        List<Article> myArticle = articleRepo.findArticlesByUser(user.getUserId());
+//
+//        // 팔로우한 유저의 글 중 전체공개인 글 가져오기.
+//        List<Article> followUserPublishedArticle = articleRepo.findByUserSeqsAndStatus(followingList);
+//
+//        // 맞팔 상태인 유저의 글 중 맞팔 공개인 글 가져오기
+//        List<Long> mutualFollowers = followingRepo.findMutualFollowers(user);
+//        List<Article> mutualArticleList = articleRepo.findByMutualUserSeq(mutualFollowers);
+//
+//        // 각 리스트를 Stream으로 변환하고 하나의 Stream으로 합침
+//        Stream<Article> allPostsStream = Stream.of(myArticle, followUserPublishedArticle, mutualArticleList).flatMap(List::stream);
+//        // Stream의 모든 게시글을 LocalDateTime 기준으로 정렬하고 새로운 리스트에 저장
+//        List<Article> sortedArticles = allPostsStream.sorted(Comparator.comparing(Article::getWrittenDate)).collect(Collectors.toList());
     }
+
+
 
     /**
      * 피드 글 번호 조회
      * @param userSeq
      * @return 유저가 볼 수 있는 권한의 글번호 리스트 최신순
      */
-    public List<Long> selectFeedArticleSeq(Long userSeq) {
-        return  articleRepo.findArticleSeqListInFeed(userSeq);
+    public Page<Long> selectFeedArticleSeq(Long userSeq, int size, Long lastArticleId) {
+        Pageable pageable = PageRequest.of(0, size);
+        Page<Long> articleSeqs;
+        if (lastArticleId == null) {
+            System.out.println("---테스트---");
+            articleSeqs = articleRepo.findArticleSeqListInFeedFirst(userSeq, pageable);
+            return articleSeqs;
+        }
+        else {
+            articleSeqs = articleRepo.findArticleSeqListInFeed(userSeq, lastArticleId, pageable);
+            return articleSeqs;
+        }
     }
 
     /**
