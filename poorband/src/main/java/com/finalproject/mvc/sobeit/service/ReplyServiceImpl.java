@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ReplyDTO;
 import com.finalproject.mvc.sobeit.dto.ReplyLikeDTO;
+import com.finalproject.mvc.sobeit.dto.UserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,6 +26,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final ReplyLikeRepo replyLikeRepo;
     private final UserRepo userRepo;
     private final ReplyNotificationRepo replyNotificationRepo;
+    private final ReplyLikeNotificationRepo replyLikeNotificationRepo;
 
     /**
      * 댓글 작성
@@ -115,6 +120,81 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     /**
+     * 해당 글의 댓글 전체 조회
+     * @param articleSeq
+     * @return
+     */
+    @Override
+    public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq) {
+        List<Reply> writtenReplyList = replyRepo.findReplyByArticleSeq(articleSeq);
+        Long articleUserSeq = articleRepo.findByArticleSeq(articleSeq).getUser().getUserSeq();
+
+        List<ReplyDTO> responseReplyDTOList = new ArrayList<>();
+        for (Reply writtenReply : writtenReplyList) {
+            int replyLikeCount = countReplyLike(writtenReply.getReplySeq());
+            UserDTO replyWriter = selectReplyWriter(writtenReply.getUser().getUserSeq());
+            boolean is_article_writer = false;
+            boolean is_reply_writer = false;
+
+            if (Objects.equals(writtenReply.getUser().getUserSeq(), articleUserSeq)) {
+                is_article_writer = true;
+            }
+
+            if (Objects.equals(user.getUserSeq(), writtenReply.getUser().getUserSeq())) {
+                is_reply_writer = true;
+            }
+
+            ReplyLike replyLike;
+            boolean is_clicked_like = false;
+            if (replyLikeRepo.existsByReplyAndUser(writtenReply, user)) {
+                replyLike = replyLikeRepo.findByReplyAndUser(writtenReply, user);
+
+                if (Objects.equals(user.getUserSeq(), replyLike.getUser().getUserSeq())) {
+                    is_clicked_like = true;
+                }
+            }
+
+            responseReplyDTOList.add(
+                    ReplyDTO.builder()
+                            .reply_seq(writtenReply.getReplySeq())
+                            .article_seq(articleSeq)
+                            .user_seq(writtenReply.getUser().getUserSeq())
+                            .reply_text(writtenReply.getReplyText())
+                            .parent_reply_seq(writtenReply.getParentReplySeq())
+                            .written_date(writtenReply.getWrittenDate())
+                            .reply_like_cnt(replyLikeCount)
+                            .nickname(replyWriter.getNickname())
+                            .user_tier(replyWriter.getUser_tier())
+                            .profile_image_url(replyWriter.getProfile_image_url())
+                            .is_article_writer(is_article_writer)
+                            .is_reply_writer(is_reply_writer)
+                            .is_clicked_like(is_clicked_like)
+                            .build()
+            );
+        }
+
+        return responseReplyDTOList;
+    }
+
+    /**
+     * 댓글 작성자 찾기
+     * @param userSeq
+     * @return
+     */
+    public UserDTO selectReplyWriter(Long userSeq) {
+        Users writer = replyRepo.findReplyUsersByUserSeq(userSeq);
+
+        UserDTO responseUserDTO = UserDTO.builder()
+                .user_id(writer.getUserId())
+                .nickname(writer.getNickname())
+                .user_tier(writer.getUserTier())
+                .profile_image_url(writer.getProfileImageUrl())
+                .build();
+
+        return responseUserDTO;
+    }
+
+    /**
      * 댓글 좋아요
      * @param user
      * @param replyLikeDTO
@@ -138,7 +218,45 @@ public class ReplyServiceImpl implements ReplyService {
                     .reply_like_seq(replyLike.getReplyLikeSeq())
                     .reply_seq(replyLike.getReply().getReplySeq())
                     .user_seq(replyLike.getUser().getUserSeq())
+                    .is_liked(true)
                     .build();
+
+            Optional<Long> countByReply = replyLikeRepo.countByReply(replyLike.getReply()); // 해당 댓글의 좋아요 수
+            if (countByReply.isPresent()) {
+                Long replyLikeCnt = countByReply.get();
+                Users userToSendNotification = replyLike.getReply().getUser();
+                String url = "http://localhost:3000/article/detail/" + replyLike.getReply().getArticle().getArticleSeq();
+
+                if (replyLikeCnt == 1) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(1)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                } else if (replyLikeCnt == 10) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(2)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                } else if (replyLikeCnt == 100) {
+                    ReplyLikeNotification replyLikeNotification = ReplyLikeNotification.builder()
+                            .reply(replyLike.getReply())
+                            .type(3)
+                            .notificationDateTime(LocalDateTime.now())
+                            .url(url)
+                            .user(userToSendNotification)
+                            .build();
+                    replyLikeNotificationRepo.save(replyLikeNotification);
+                }
+            }
+
 
             return responseReplyLikeDTO;
         }
@@ -152,9 +270,19 @@ public class ReplyServiceImpl implements ReplyService {
             ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
                     .reply_seq(replyLikeDTO.getReply_seq())
                     .user_seq(user.getUserSeq())
+                    .is_liked(false)
                     .build();
 
             return responseReplyLikeDTO;
         }
+    }
+
+    /**
+     * 댓글 좋아요 개수 확인
+     * @param replySeq
+     * @return
+     */
+    public int countReplyLike(Long replySeq) {
+        return replyLikeRepo.findCountReplyLikeByReplySeq(replySeq);
     }
 }

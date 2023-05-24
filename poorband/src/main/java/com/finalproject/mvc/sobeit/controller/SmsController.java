@@ -6,7 +6,7 @@ import com.finalproject.mvc.sobeit.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
@@ -25,8 +25,8 @@ public class SmsController {
     private final SmsService smsService;
     private final HttpSession session;
 
-    @PostMapping("sms/smsAuthRequset")
-    public Boolean phoneAuth(String tel) throws JSONException, UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    @PostMapping("/sms/smsAuthRequest")
+    public Boolean phoneAuth(@RequestBody String tel) throws JSONException, UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
 
 //        try { // 이미 가입된 전화번호가 있으면
 //            if(memberService.memberTelCount(tel) > 0)
@@ -51,9 +51,9 @@ public class SmsController {
         return true;
     }
 
-    @PostMapping("sms/smsAuthOk")
-    public Boolean phoneAuthOk(@RequestParam String code) {
-        String savedAuthCode = (String) session.getAttribute("rand");
+    @PostMapping("/sms/smsAuthOk")
+    public Boolean phoneAuthOk(@RequestBody String code) {
+        String savedAuthCode = session.getAttribute("rand").toString();
 
         System.out.println(savedAuthCode + " : " + code);
 
@@ -64,6 +64,4 @@ public class SmsController {
 
         return false;  // Auth failed
     }
-
-
 }
