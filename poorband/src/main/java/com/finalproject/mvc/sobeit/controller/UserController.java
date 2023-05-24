@@ -129,6 +129,32 @@ public class UserController {
     }
 
     /**
+     * @param userDTO : 사용자가 입력한 사용자 아이디
+     * @return - 사용자가 입력한 사용자 아이디가 존재하지 않을 경우 : { "is_id_verified": true }
+     * @return - 사용자가 입력한 사용자 아이디가 존재할 경우 : 500 Error
+     */
+    @PostMapping("/checkid")
+    public ResponseEntity<?> checkUserId(@RequestBody UserDTO userDTO) {
+        Boolean isUserIdVerified = userService.checkUserId(userDTO.getUser_id());
+
+        if (isUserIdVerified) {
+            UserDTO responseUserDTO = UserDTO.builder()
+                    .is_id_verified(true)
+                    .build();
+            return ResponseEntity.ok().body(responseUserDTO);
+        }
+        else {
+            ResponseDTO responseCheckUserIdDTO = ResponseDTO.builder()
+                    .error("아이디가 중복됩니다.")
+                    .build();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(responseCheckUserIdDTO);
+        }
+    }
+
+    /**
      * @param findIdDTO : 유저가 입력한 이름, 핸드폰 번호
      * @return null일 경우 : 500으로 응답해주고 에러리스폰스 보내주기
      * @return null 아닐 경우 : JSON으로 { "userId" : userId } 보내주기

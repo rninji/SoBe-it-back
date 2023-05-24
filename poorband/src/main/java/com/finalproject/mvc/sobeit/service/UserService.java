@@ -8,5 +8,7 @@ public interface UserService {
 
     public Users getByCredentials(final String user_id, final String password, final PasswordEncoder encoder);
 
+    public Boolean checkUserId(final String user_id);
+
     public Users findUserId(String inputUserId, String inputUserPassword);
 }
