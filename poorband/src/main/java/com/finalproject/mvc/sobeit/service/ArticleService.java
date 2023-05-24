@@ -54,7 +54,7 @@ public interface ArticleService {
      * @param user
      * @return
      */
-    public List<ArticleResponseDTO> feed(Users user);
+    public List<ArticleResponseDTO> feed(Users user, int size, Long lastArticleId);
 
     /**
      * 글 좋아요

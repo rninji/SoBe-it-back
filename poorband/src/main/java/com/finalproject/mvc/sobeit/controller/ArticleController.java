@@ -113,15 +113,17 @@ public class ArticleController {
      * @return
      */
     @GetMapping("/selectAll")
-    public ResponseEntity<?> selectArticleAll(@AuthenticationPrincipal Users user){
+    public ResponseEntity<?> selectArticleAll(@AuthenticationPrincipal Users user, @RequestParam(required = false) Long lastArticleId, @RequestParam int size){
         try {
-            List<ArticleResponseDTO> articleResponseDTOList = articleService.feed(user);
+            List<ArticleResponseDTO> articleResponseDTOList = articleService.feed(user, size, lastArticleId);
+            System.out.println("컨트롤러ㅎㅇ");
+            System.out.println(articleResponseDTOList);
+
             return ResponseEntity.ok().body(articleResponseDTOList);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity
-                    .internalServerError() // Error 500
-                    .body(responseDTO);
+                    .noContent().build(); // Error 500
         }
     }
 
