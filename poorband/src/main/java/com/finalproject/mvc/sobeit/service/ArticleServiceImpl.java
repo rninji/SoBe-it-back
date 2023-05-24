@@ -169,6 +169,7 @@ public class ArticleServiceImpl implements ArticleService{
 
         // ArticleResponseDTO 반환
         ArticleResponseDTO articleResponseDTO = ArticleResponseDTO.builder()
+                .articleSeq(article.getArticleSeq())
                 .user(article.getUser())
                 .status(article.getStatus())
                 .imageUrl(article.getImageUrl())
