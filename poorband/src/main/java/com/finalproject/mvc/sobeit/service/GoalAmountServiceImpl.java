@@ -46,12 +46,12 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         return goalAmountRep.findById(goalAmountSeq).orElse(null);
     }
 
-    public GoalAmountResponseDTO findGoalAmountResponse(Users user, Long goalAmountSeq){
+    public GoalAmountResponseDTO findGoalAmountResponse(String userId, Long goalAmountSeq){
         //보려는 도전과제 가져오기
         GoalAmount goalAmount = selectGoalAmountById(goalAmountSeq);
 
         Long consumption = 0L;// 기간동안 소비된 비용
-        List<Article> articleList = articleRep.findArticlesByUser(user.getUserId());
+        List<Article> articleList = articleRep.findArticlesByUser(userId);
         if (articleList == null){ // 게시글이 없는 경우
             throw new RuntimeException("소비한 비용이 없습니다.");
         }
@@ -64,7 +64,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         GoalAmountResponseDTO goalAmountResponseDTO = GoalAmountResponseDTO.builder()
                 .goalAmount(goalAmount.getGoalAmount())
                 .title(goalAmount.getTitle())
-                .user(user)
+                .userId(userId)
                 .startDate(goalAmount.getStartDate())
                 .endDate(goalAmount.getEndDate())
                 .isSuccess(goalAmount.getIsSuccess())
@@ -76,12 +76,12 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     }
 
     @Override
-    public List<GoalAmountResponseDTO> selectGoalAmount(Users user) {
-        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(user.getUserId());
+    public List<GoalAmountResponseDTO> selectGoalAmount(String userId) {
+        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(userId);
         if (goalAmountSeqList == null) throw new RuntimeException("도전과제가 없습니다.");
 
         List<GoalAmountResponseDTO> goalAmountList = new ArrayList<>();
-        goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, g)));
+        goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(userId, g)));
         return goalAmountList;
     }
 
