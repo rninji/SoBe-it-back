@@ -64,6 +64,4 @@ public class SmsController {
 
         return false;  // Auth failed
     }
-
-
 }

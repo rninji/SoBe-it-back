@@ -27,7 +27,7 @@ public class Article {
 
     private String imageUrl;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private int expenditureCategory; // 1 ~ 6까지 뭘로 할 지 정하기
 
     @Column(nullable = false)
