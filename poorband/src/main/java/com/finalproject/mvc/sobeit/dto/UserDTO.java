@@ -22,4 +22,5 @@ public class UserDTO {
     private Long challenge_count;
     private String phone_number;
     private String profile_image_url;
+    private Boolean is_id_verified; // 사용자 아이디 중복 체크
 }
