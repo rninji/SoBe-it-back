@@ -180,4 +180,25 @@ public class ArticleController {
                     .body(responseDTO);
         }
     }
+
+    /**
+     * 작성한 글 목록 가져오기
+     * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
+     *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
+     * @param userIdMap
+     * @return 작성한 글 목록
+     * */
+    @RequestMapping("/list")
+    public ResponseEntity<?> articleList(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
+        try {
+            System.out.println("articleList");
+            List<ArticleResponseDTO> list = articleService.getArticleList(loggedInUser, 4, userIdMap.get("userId"));
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+    }
 }
