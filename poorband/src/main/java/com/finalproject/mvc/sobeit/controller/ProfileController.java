@@ -1,8 +1,6 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.*;
-import com.finalproject.mvc.sobeit.entity.Article;
-import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.ProfileService;
 import com.finalproject.mvc.sobeit.service.S3Service;
@@ -38,27 +36,6 @@ public class ProfileController {
 
             ProfileUserDTO profileUserDTO = profileService.selectUserInfo(userIdMap.get("userId")); // userSeqMap.get("userSeq"));
             return ResponseEntity.ok().body(profileUserDTO);
-        } catch(Exception e) {
-            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-            return ResponseEntity
-                    .internalServerError() // Error 500
-                    .body(responseDTO);
-        }
-    }
-
-    /**
-     * 작성한 글 목록 가져오기
-     * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
-     *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
-     * @param userIdMap
-     * @return 작성한 글 목록
-     * */
-    @RequestMapping("/myarticle")
-    public ResponseEntity<?> articleList(@RequestBody Map<String, String> userIdMap) {
-        try {
-            System.out.println("articleList");
-            List<Article> list = profileService.selectArticles(userIdMap.get("userId"));
-            return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity
