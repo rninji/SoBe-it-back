@@ -80,6 +80,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         user.setNickname(updateUser.getNickname());
         user.setIntroduction(updateUser.getIntroduction());
+        user.setProfileImageUrl(updateUser.getProfileImageUrl());
 
         return userRepo.save(user);
     }
