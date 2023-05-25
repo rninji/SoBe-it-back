@@ -100,6 +100,7 @@ public class ArticleServiceImpl implements ArticleService{
      */
     public void deleteArticle(Users user, Long articleSeq) throws RuntimeException {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
+        System.out.println(foundArticle);
         if (foundArticle==null){ // 삭제할 글이 없는 경우
             throw new RuntimeException("삭제할 글이 없습니다.");
         }
@@ -186,6 +187,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .articleType(article.getArticleType())
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
+                .financialText(article.getFinancialText())
                 .isAllowed(article.getIsAllowed())
                 .isMine(isMine)
                 .commentCnt(replyCnt)
