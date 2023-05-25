@@ -5,12 +5,11 @@ import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ResponseDTO;
 import com.finalproject.mvc.sobeit.dto.VoteDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
-import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleServiceImpl;
+import com.finalproject.mvc.sobeit.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +26,7 @@ import java.util.Map;
 @RequestMapping("/article")
 public class ArticleController {
     private final ArticleServiceImpl articleService;
+    private final S3Service s3Service;
 
     /**
      * 글 작성
@@ -35,19 +35,26 @@ public class ArticleController {
      * @return 성공 시 작성된 글
      */
     @PostMapping(value = "/write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestPart("articleDTO") ArticleDTO articleDTO, @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestPart("articleDTO") ArticleDTO articleDTO, @RequestPart(required = false) MultipartFile file) {
         try {
             // 서비스 이용해 글 저장
             Article article = articleService.writeArticle(user, articleDTO);
 
-            // 파일 관련 로직 추가해야함.
-            System.out.println("파일테스트");
-            System.out.println(file);
-
+            /**
+             * 이미지 파일을 S3에 업로드하고
+             * 리턴받은 URL을 DB에 업데이트
+             */
+            if (!file.isEmpty()) {
+                System.out.println(file.getSize());
+                System.out.println("이미지저장!!!");
+                String imageUrl = s3Service.articleImageUpload(file, article.getArticleSeq());
+                System.out.println(imageUrl);
+                articleService.updateArticleImageUrl(article.getArticleSeq(), imageUrl);
+            }
 
             // 파일 관련 로직 끝
 
-            return ResponseEntity.ok().body(article);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 

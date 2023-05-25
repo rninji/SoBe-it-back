@@ -27,6 +27,8 @@ public interface ArticleService {
      */
     public Article writeArticle(Users user, ArticleDTO articleDTO);
 
+    public void updateArticleImageUrl(Long articleSeq, String url);
+
     /**
      * 글 수정
      * @param user

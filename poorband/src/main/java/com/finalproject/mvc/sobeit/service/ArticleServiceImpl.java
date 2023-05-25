@@ -12,12 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService{
 
@@ -56,6 +58,11 @@ public class ArticleServiceImpl implements ArticleService{
         return articleRepo.save(article);
     }
 
+    @Override
+    public void updateArticleImageUrl(Long articleSeq, String url){
+        System.out.println("이미지 url 업데이트");
+        articleRepo.updateImageUrl(articleSeq, url);
+    }
     /**
      * 글 수정
      * @param user
