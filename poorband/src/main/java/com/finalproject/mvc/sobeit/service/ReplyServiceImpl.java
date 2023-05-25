@@ -126,15 +126,15 @@ public class ReplyServiceImpl implements ReplyService {
      */
     @Override
     public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq) {
-        List<Reply> writtenReplyList = replyRepo.findReplyByArticleSeq(articleSeq);
-        Long articleUserSeq = articleRepo.findByArticleSeq(articleSeq).getUser().getUserSeq();
+        List<Reply> writtenReplyList = replyRepo.findReplyByArticleSeq(articleSeq); // 해당 글의 댓글 리스트
+        Long articleUserSeq = articleRepo.findByArticleSeq(articleSeq).getUser().getUserSeq(); // 해당 글 작성자의 사용자 고유 번호
 
         List<ReplyDTO> responseReplyDTOList = new ArrayList<>();
-        for (Reply writtenReply : writtenReplyList) {
-            int replyLikeCount = countReplyLike(writtenReply.getReplySeq());
-            UserDTO replyWriter = selectReplyWriter(writtenReply.getUser().getUserSeq());
-            boolean is_article_writer = false;
-            boolean is_reply_writer = false;
+        for (Reply writtenReply : writtenReplyList) { // 해당 글에 작성된 댓글의 개수만큼 반복
+            int replyLikeCount = countReplyLike(writtenReply.getReplySeq()); // 해당 글에 작성된 댓글 중 하나의 댓글의 좋아요 개수
+            Users replyWriter = userRepo.findByUserSeq(writtenReply.getUser().getUserSeq()); // 해당 글에 작성된 댓글 중 하나의 댓글의 작성자 정보
+            boolean is_article_writer = false; // 글 작성자와 댓글 작성자가 같은지
+            boolean is_reply_writer = false; // 현재 로그인한 사용자가 해당 댓글의 작성자인지
 
             if (Objects.equals(writtenReply.getUser().getUserSeq(), articleUserSeq)) {
                 is_article_writer = true;
@@ -145,7 +145,7 @@ public class ReplyServiceImpl implements ReplyService {
             }
 
             ReplyLike replyLike;
-            boolean is_clicked_like = false;
+            boolean is_clicked_like = false; // 현재 로그인한 사용자가 해당 댓글의 좋아요를 클릭했는지
             if (replyLikeRepo.existsByReplyAndUser(writtenReply, user)) {
                 replyLike = replyLikeRepo.findByReplyAndUser(writtenReply, user);
 
@@ -164,8 +164,8 @@ public class ReplyServiceImpl implements ReplyService {
                             .written_date(writtenReply.getWrittenDate())
                             .reply_like_cnt(replyLikeCount)
                             .nickname(replyWriter.getNickname())
-                            .user_tier(replyWriter.getUser_tier())
-                            .profile_image_url(replyWriter.getProfile_image_url())
+                            .user_tier(replyWriter.getUserTier())
+                            .profile_image_url(replyWriter.getProfileImageUrl())
                             .is_article_writer(is_article_writer)
                             .is_reply_writer(is_reply_writer)
                             .is_clicked_like(is_clicked_like)

@@ -23,6 +23,7 @@ public class ArticleResponseDTO {
     private LocalDate consumptionDate;
     private LocalDateTime writtenDate;
     private String isAllowed;
+    private String financialText;
 
     // 내 글인지 여부
     private boolean isMine;

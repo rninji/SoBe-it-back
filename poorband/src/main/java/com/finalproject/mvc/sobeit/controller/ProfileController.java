@@ -1,14 +1,16 @@
 package com.finalproject.mvc.sobeit.controller;
 
 import com.finalproject.mvc.sobeit.dto.*;
-import com.finalproject.mvc.sobeit.entity.Article;
-import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.ProfileService;
+import com.finalproject.mvc.sobeit.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final S3Service s3Service;
 
     /**
      * 프로필 유저 정보 가져오기
@@ -41,40 +44,22 @@ public class ProfileController {
     }
 
     /**
-     * 작성한 글 목록 가져오기
-     * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
-     *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
-     * @param userIdMap
-     * @return 작성한 글 목록
-     * */
-    @RequestMapping("/myarticle")
-    public ResponseEntity<?> articleList(@RequestBody Map<String, String> userIdMap) {
-        try {
-            System.out.println("articleList");
-            List<Article> list = profileService.selectArticles(userIdMap.get("userId"));
-            return ResponseEntity.ok().body(list);
-        } catch(Exception e) {
-            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-            return ResponseEntity
-                    .internalServerError() // Error 500
-                    .body(responseDTO);
-        }
-    }
-
-    /**
      * 유저 프로필 편집 저장
      * -- parameter dto로 변경
      * @param loggedInUser
      * @param profile
      * @return 성공 시 "success", 실패 시 Error message
      * */
-    @RequestMapping("/save")
-    public ResponseEntity<Object> save(@AuthenticationPrincipal Users loggedInUser, @RequestBody Users profile) {
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> save(@AuthenticationPrincipal Users loggedInUser, @RequestPart() Users profile, @RequestPart(required = false) MultipartFile file) {
         try{
+            String url = s3Service.profileImageUpload(file, loggedInUser.getUserSeq());
+
             Users user = Users.builder()
                     .userId(profile.getUserId())
                     .nickname(profile.getNickname())
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
+                    .profileImageUrl(url)
                     .build();
             System.out.println("user = "+user);
             Users updatedUser = profileService.insertProfile(loggedInUser, user);

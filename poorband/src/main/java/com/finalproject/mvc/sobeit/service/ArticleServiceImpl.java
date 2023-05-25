@@ -193,6 +193,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .articleType(article.getArticleType())
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
+                .financialText(article.getFinancialText())
                 .isAllowed(article.getIsAllowed())
                 .isMine(isMine)
                 .commentCnt(replyCnt)
@@ -227,7 +228,6 @@ public class ArticleServiceImpl implements ArticleService{
         // ArticleResponseDTO 가져오기
         List<ArticleResponseDTO> feedList = new ArrayList<>();
         feedSeqList.getContent().forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
-        System.out.println("서비스 ㅎㅇ");
         return feedList;
     }
 
@@ -242,7 +242,6 @@ public class ArticleServiceImpl implements ArticleService{
         Pageable pageable = PageRequest.of(0, size);
         Page<Long> articleSeqs;
         if (lastArticleId == null) {
-            System.out.println("---테스트---");
             articleSeqs = articleRepo.findArticleSeqListInFeedFirst(userSeq, pageable);
             return articleSeqs;
         }
@@ -462,6 +461,66 @@ public class ArticleServiceImpl implements ArticleService{
         List<ArticleResponseDTO> articleList = new ArrayList<>();
         seqList.forEach(f -> articleList.add(findArticleResponse(user.getUserSeq(), f)));
 
+        return articleList;
+    }
+
+    /**
+     * 작성한 글의 articleSeq 가져오기
+     * @param loggedInUser
+     * @param size
+     * @param userId
+     * @return userSeqList
+     * */
+    @Override
+    public Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId) {
+        Pageable pageable = PageRequest.of(0, size);
+
+        Users targetUser = userRepo.findByUserId(userId);
+        Page<Long> userSeqList;
+
+        // 1. 로그인한 유저 -> 본인 글(본인 글 selectAll)
+        if(loggedInUser.getUserId() == userId) {
+            userSeqList = articleRepo.findProfileArticleSeqByLoginUser(loggedInUser.getUserSeq(), pageable);
+        } else {
+            // 2. 로그인한 유저 -> 맞팔인 유저의 글(상대의 맞팔 공개 글)
+            if(followingRepo.findByFollowingAndFollower(loggedInUser, targetUser.getUserSeq()) != null) {
+                userSeqList = articleRepo.findProfileArticleSeqByFollowedUser(targetUser.getUserSeq(), pageable);
+
+                // 3. 로그인한 유저 -> 맞팔이 아닌 유저의 글(상대의 전체 공개 글)
+            } else {
+                userSeqList = articleRepo.findProfileArticleSeqByUnknownUser(targetUser.getUserSeq(), pageable);
+            }
+
+        }
+        return userSeqList;
+    }
+
+    /**
+     * 작성한 글(List) 가져오기
+     * @param loggedInUser
+     * @param size
+     * @param userId
+     * @return articleList
+     * */
+    @Override
+    public List<ArticleResponseDTO> getArticleList(Users loggedInUser, int size, String userId) throws RuntimeException {
+        Users targetUser = userRepo.findByUserId(userId);
+
+        // 권한에 맞는 글번호 리스트 가져오기
+        Page<Long> feedSeqList = selectArticleSeq(loggedInUser, size, userId);
+        if (feedSeqList.isEmpty()) { // 가져온 글이 없다면
+            throw new RuntimeException("조회할 피드의 글이 없습니다.");
+        }
+
+        // ArticleResponseDTO 가져오기
+        List<ArticleResponseDTO> articleList = new ArrayList<>();
+
+        // 로그인한 유저 -> 본인 글(본인 글 selectAll)
+        if(loggedInUser.getUserId() == userId) {
+            feedSeqList.getContent().forEach(f -> articleList.add(findArticleResponse(loggedInUser.getUserSeq(), f)));
+        } else {
+            feedSeqList.getContent().forEach(f -> articleList.add(findArticleResponse(targetUser.getUserSeq(), f)));
+        }
         return articleList;
     }
 

@@ -3,10 +3,8 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
-import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.FollowNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
-import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +14,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +21,8 @@ import java.util.Optional;
 public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepo userRepo;
-    private final ArticleRepo articleRepo;
     private final FollowingRepo followingRepo;
     private final FollowNotificationRepo followNotificationRepo;
-    private final GoalAmountRepo goalAmountRepo;
 
     /**
      * 프로필 유저 정보 가져오기
@@ -57,19 +52,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profileUserDTO;
     }
 
-    /**
-     * 작성한 글 가져오기
-     * @param userId
-     * @return userArticles
-     * */
     @Override
-
     public List<Article> selectArticles(String userId) {
-        List<Article> userArticles = articleRepo.findArticlesByUser(userId);
-
-        if(userArticles.size() == 0) throw new RuntimeException("게시물이 없습니다.");
-
-        return userArticles;
+        return null;
     }
 
     /**
@@ -85,6 +70,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         user.setNickname(updateUser.getNickname());
         user.setIntroduction(updateUser.getIntroduction());
+        user.setProfileImageUrl(updateUser.getProfileImageUrl());
 
         return userRepo.save(user);
     }
