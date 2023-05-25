@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.entity.*;
 import com.finalproject.mvc.sobeit.dto.ArticleDTO;
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -443,4 +445,36 @@ public class ArticleServiceImpl implements ArticleService{
         }
         return true;
     }
+
+    /**
+     * 사이드바 인기 게시물(articleSeq) 상위 세 개 가져오기
+     * */
+    @Override
+    public List<Long> selectHotPostSeq() {
+        List<Long> list = articleLikeRepo.findHotPostSeq();//.subList(0, 3);
+
+        System.out.println("\n사이드바~~~~~\n");
+        System.out.println(list);
+
+        return list;
+    }
+
+    /**
+     * 사이드바 인기 게시물 가져오기
+     * */
+    @Override
+    public List<ArticleResponseDTO> selectHotPost(Users user) {
+        List<Long> seqList = selectHotPostSeq();
+
+        if (seqList.isEmpty()) { // 가져온 글이 없다면
+            throw new RuntimeException("조회할 글이 없습니다.");
+        }
+
+        List<ArticleResponseDTO> articleList = new ArrayList<>();
+        seqList.forEach(f -> articleList.add(findArticleResponse(user.getUserSeq(), f)));
+
+        return articleList;
+    }
+
+
 }
