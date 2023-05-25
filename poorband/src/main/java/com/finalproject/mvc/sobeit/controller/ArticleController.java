@@ -1,9 +1,6 @@
 package com.finalproject.mvc.sobeit.controller;
 
-import com.finalproject.mvc.sobeit.dto.ArticleDTO;
-import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
-import com.finalproject.mvc.sobeit.dto.ResponseDTO;
-import com.finalproject.mvc.sobeit.dto.VoteDTO;
+import com.finalproject.mvc.sobeit.dto.*;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -168,5 +165,19 @@ public class ArticleController {
 
     }
 
-
+    /**
+     * 사이드바 인기 게시물 가져오기
+     * */
+    @PostMapping("/hotpost")
+    public ResponseEntity<?> selectHotPost(@AuthenticationPrincipal Users user) {
+        try {
+            List<ArticleResponseDTO> list = articleService.selectHotPost(user);
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+    }
 }

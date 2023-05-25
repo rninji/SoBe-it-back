@@ -5,6 +5,7 @@ import com.finalproject.mvc.sobeit.entity.ArticleLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 import java.util.Optional;
@@ -17,4 +18,9 @@ public interface ArticleLikeRepo extends JpaRepository<ArticleLike, Long> {
     @Query("select count(*) from ArticleLike  a where a.article.articleSeq = ?1")
     public int findCountArticleLikeByArticleSeq(Long articleSeq);
     Optional<Long> countByArticle(Article article);
+
+//    @Query("select a.article.articleSeq, count(a) as likeCount from ArticleLike a group by a.article.articleSeq order by likeCount desc")
+    @Query("SELECT a.article.articleSeq FROM ArticleLike a GROUP BY a.article.articleSeq ORDER BY COUNT(a) DESC")
+    public List<Long> findHotPostSeq();
+
 }
