@@ -8,9 +8,7 @@ import com.finalproject.mvc.sobeit.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,16 +23,14 @@ public class ProfileController {
     /**
      * 프로필 유저 정보 가져오기
      * : 로그인된 사용자, 다른 사용자 프로필 조회
-     * -- parameter에 @AuthenticationPrincipal Users loggedInUser 추가 여부 생각해보기
+     * @param loggedInUser
      * @param userIdMap
      * @return 프로필에 표시되는 사용자 정보
      * */
-    @RequestMapping("/profileinfo")
-    public ResponseEntity<?> profileinfo(@RequestBody Map<String, String> userIdMap) {// @RequestBody Map<String, Long> userSeqMap) {
+    @PostMapping("/profileinfo")
+    public ResponseEntity<?> profileinfo(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            System.out.println("profileinfo");
-
-            ProfileUserDTO profileUserDTO = profileService.selectUserInfo(userIdMap.get("userId")); // userSeqMap.get("userSeq"));
+            ProfileUserDTO profileUserDTO = profileService.selectUserInfo(loggedInUser.getUserId(), userIdMap.get("targetUserId"));
             return ResponseEntity.ok().body(profileUserDTO);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
