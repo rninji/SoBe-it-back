@@ -100,7 +100,6 @@ public class ArticleServiceImpl implements ArticleService{
      */
     public void deleteArticle(Users user, Long articleSeq) throws RuntimeException {
         Article foundArticle = articleRepo.findById(articleSeq).orElse(null);
-        System.out.println(foundArticle);
         if (foundArticle==null){ // 삭제할 글이 없는 경우
             throw new RuntimeException("삭제할 글이 없습니다.");
         }
@@ -222,7 +221,6 @@ public class ArticleServiceImpl implements ArticleService{
         // ArticleResponseDTO 가져오기
         List<ArticleResponseDTO> feedList = new ArrayList<>();
         feedSeqList.getContent().forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
-        System.out.println("서비스 ㅎㅇ");
         return feedList;
 
 //        // 로그인 한 유저가 팔로우 한 유저들 목록
@@ -255,7 +253,6 @@ public class ArticleServiceImpl implements ArticleService{
         Pageable pageable = PageRequest.of(0, size);
         Page<Long> articleSeqs;
         if (lastArticleId == null) {
-            System.out.println("---테스트---");
             articleSeqs = articleRepo.findArticleSeqListInFeedFirst(userSeq, pageable);
             return articleSeqs;
         }
