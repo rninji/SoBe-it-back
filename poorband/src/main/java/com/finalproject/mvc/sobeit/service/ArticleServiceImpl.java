@@ -220,24 +220,6 @@ public class ArticleServiceImpl implements ArticleService{
         feedSeqList.getContent().forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
         System.out.println("서비스 ㅎㅇ");
         return feedList;
-
-//        // 로그인 한 유저가 팔로우 한 유저들 목록
-//        List<Long> followingList = profileService.selectFollowingUserSeq(user.getUserSeq());
-//
-//        // 내 글 전체 가져오기
-//        List<Article> myArticle = articleRepo.findArticlesByUser(user.getUserId());
-//
-//        // 팔로우한 유저의 글 중 전체공개인 글 가져오기.
-//        List<Article> followUserPublishedArticle = articleRepo.findByUserSeqsAndStatus(followingList);
-//
-//        // 맞팔 상태인 유저의 글 중 맞팔 공개인 글 가져오기
-//        List<Long> mutualFollowers = followingRepo.findMutualFollowers(user);
-//        List<Article> mutualArticleList = articleRepo.findByMutualUserSeq(mutualFollowers);
-//
-//        // 각 리스트를 Stream으로 변환하고 하나의 Stream으로 합침
-//        Stream<Article> allPostsStream = Stream.of(myArticle, followUserPublishedArticle, mutualArticleList).flatMap(List::stream);
-//        // Stream의 모든 게시글을 LocalDateTime 기준으로 정렬하고 새로운 리스트에 저장
-//        List<Article> sortedArticles = allPostsStream.sorted(Comparator.comparing(Article::getWrittenDate)).collect(Collectors.toList());
     }
 
 

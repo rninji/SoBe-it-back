@@ -44,6 +44,9 @@ public class ArticleController {
             System.out.println("파일테스트");
             System.out.println(file);
 
+
+            // 파일 관련 로직 끝
+
             return ResponseEntity.ok().body(article);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
