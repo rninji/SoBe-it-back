@@ -5,6 +5,7 @@ import com.finalproject.mvc.sobeit.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
 public interface ArticleRepo extends JpaRepository<Article, Long> {
     @Query("select a from Article a where a.user.userId = ?1 order by a.writtenDate desc")
     List<Article> findArticlesByUser(String user_id);
@@ -21,6 +21,10 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
     List<Long> findArticlesByArticleText(String articleText);
 
     Article findByArticleSeq(Long articleSeq);
+
+    @Modifying
+    @Query("UPDATE Article a SET a.imageUrl = :newImageUrl WHERE a.articleSeq = :articleSeq")
+    void updateImageUrl(@Param("articleSeq") Long articleSeq, @Param("newImageUrl") String newImageUrl);
 
     @Query("select a from Article a where a.user.userSeq in : userSeq AND a.status = 1")
     List<Article> findByUserSeqsAndStatus(List<Long> userSeq);
