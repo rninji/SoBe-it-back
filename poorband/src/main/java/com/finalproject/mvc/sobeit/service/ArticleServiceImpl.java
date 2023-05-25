@@ -193,6 +193,7 @@ public class ArticleServiceImpl implements ArticleService{
                 .articleType(article.getArticleType())
                 .consumptionDate(article.getConsumptionDate())
                 .writtenDate(article.getWrittenDate())
+                .financialText(article.getFinancialText())
                 .isAllowed(article.getIsAllowed())
                 .isMine(isMine)
                 .commentCnt(replyCnt)
@@ -227,7 +228,6 @@ public class ArticleServiceImpl implements ArticleService{
         // ArticleResponseDTO 가져오기
         List<ArticleResponseDTO> feedList = new ArrayList<>();
         feedSeqList.getContent().forEach(f -> feedList.add(findArticleResponse(userSeq, f)));
-        System.out.println("서비스 ㅎㅇ");
         return feedList;
     }
 
@@ -242,7 +242,6 @@ public class ArticleServiceImpl implements ArticleService{
         Pageable pageable = PageRequest.of(0, size);
         Page<Long> articleSeqs;
         if (lastArticleId == null) {
-            System.out.println("---테스트---");
             articleSeqs = articleRepo.findArticleSeqListInFeedFirst(userSeq, pageable);
             return articleSeqs;
         }
