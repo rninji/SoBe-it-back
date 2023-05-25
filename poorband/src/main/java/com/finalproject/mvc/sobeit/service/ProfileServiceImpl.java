@@ -27,12 +27,12 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * 프로필 유저 정보 가져오기
      * @param loggedInUserId: 로그인한 유저 ID
-     * @param targetUserId: 해당 프로필의 주인 유저 ID
+     * @param userId: 해당 프로필의 주인 유저 ID
      * @return profileUserDTO
      * */
     @Override
-    public ProfileUserDTO selectUserInfo(String loggedInUserId, String targetUserId) {
-        Users user = userRepo.findByUserId(targetUserId);
+    public ProfileUserDTO selectUserInfo(String loggedInUserId, String userId) {
+        Users user = userRepo.findByUserId(userId);
 
         if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
 
@@ -44,7 +44,7 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
 
-        if (loggedInUserId.equals(targetUserId)){ // 1. 로그인한 유저와 해당 프로필의 유저가 같은 경우
+        if (loggedInUserId.equals(userId)){ // 1. 로그인한 유저와 해당 프로필의 유저가 같은 경우
             profileUserDTO.setStatus(1);
         } else { // 2. 로그인한 유저와 해당 프로필의 유저가 다른 경우
             profileUserDTO.setStatus(2);

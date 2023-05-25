@@ -15,7 +15,7 @@ public interface ProfileService {
      * @param targetUserId
      * @return profileUserDTO
      */
-    ProfileUserDTO selectUserInfo(String loggedInUserId, String targetUserId);
+    ProfileUserDTO selectUserInfo(String loggedInUserId, String userId);
 
     /**
      * 작성한 글 가져오기
