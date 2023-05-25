@@ -5,12 +5,13 @@ import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.ProfileService;
+import com.finalproject.mvc.sobeit.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final S3Service s3Service;
 
     /**
      * 프로필 유저 정보 가져오기
@@ -72,13 +74,16 @@ public class ProfileController {
      * @param profile
      * @return 성공 시 "success", 실패 시 Error message
      * */
-    @RequestMapping("/save")
-    public ResponseEntity<Object> save(@AuthenticationPrincipal Users loggedInUser, @RequestBody Users profile) {
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> save(@AuthenticationPrincipal Users loggedInUser, @RequestPart() Users profile, @RequestPart(required = false) MultipartFile file) {
         try{
+            String url = s3Service.profileImageUpload(file, loggedInUser.getUserSeq());
+
             Users user = Users.builder()
                     .userId(profile.getUserId())
                     .nickname(profile.getNickname())
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
+                    .profileImageUrl(url)
                     .build();
             System.out.println("user = "+user);
             Users updatedUser = profileService.insertProfile(loggedInUser, user);
