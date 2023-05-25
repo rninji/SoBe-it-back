@@ -11,9 +11,11 @@ import com.finalproject.mvc.sobeit.entity.Vote;
 import com.finalproject.mvc.sobeit.service.ArticleServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,21 +34,26 @@ public class ArticleController {
      * @param articleDTO
      * @return 성공 시 작성된 글
      */
-    @PostMapping("/write")
-    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
-        try{
+    @PostMapping(value = "/write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> writeArticle(@AuthenticationPrincipal Users user, @RequestPart("articleDTO") ArticleDTO articleDTO, @RequestPart("file") MultipartFile file) {
+        try {
             // 서비스 이용해 글 저장
             Article article = articleService.writeArticle(user, articleDTO);
+
+            // 파일 관련 로직 추가해야함.
+            System.out.println("파일테스트");
+            System.out.println(file);
+
             return ResponseEntity.ok().body(article);
-        } catch (Exception e){
+        } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
 
             return ResponseEntity
                     .internalServerError() // Error 500
                     .body(responseDTO);
         }
-
     }
+
 
     /**
      * 글 수정
