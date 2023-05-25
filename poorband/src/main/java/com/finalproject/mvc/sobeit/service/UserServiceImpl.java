@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Users create(final Users users) {
-        if(users == null || users.getUserId() == null || users.getEmail() == null || users.getPhoneNumber() == null) {
+        if (users == null || users.getUserId() == null || users.getEmail() == null || users.getPhoneNumber() == null) {
             throw new RuntimeException("Invalid arguments");
         }
 
@@ -26,17 +26,17 @@ public class UserServiceImpl implements UserService {
         final String email = users.getEmail();
         final String phoneNumber = users.getPhoneNumber();
 
-        if(userRepo.existsByUserId(userId)) {
+        if (userRepo.existsByUserId(userId)) {
             log.warn("UserId already exists {}", userId);
             throw new RuntimeException("UserId already exists");
         }
 
-        if(userRepo.existsByEmail(email)) {
+        if (userRepo.existsByEmail(email)) {
             log.warn("Email already exists {}", email);
             throw new RuntimeException("Email already exists");
         }
 
-        if(userRepo.existsByPhoneNumber(phoneNumber)) {
+        if (userRepo.existsByPhoneNumber(phoneNumber)) {
             log.warn("PhoneNumber already exists {}", phoneNumber);
             throw new RuntimeException("PhoneNumber already exists");
         }
@@ -49,11 +49,16 @@ public class UserServiceImpl implements UserService {
         final Users originalUser = userRepo.findByUserId(user_id);
 
         // matches 메서드를 이용해 패스워드가 같은지 확인
-        if(originalUser != null && encoder.matches(password, originalUser.getPassword())) {
+        if (originalUser != null && encoder.matches(password, originalUser.getPassword())) {
             return originalUser;
         }
 
         return null;
+    }
+
+    @Override
+    public Boolean checkUserId(String user_id) {
+        return !userRepo.existsByUserId(user_id);
     }
 
     @Override

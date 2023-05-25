@@ -56,6 +56,8 @@ public class SmsController {
         String savedAuthCode = session.getAttribute("rand").toString();
 
         System.out.println(savedAuthCode + " : " + code);
+        code = code.substring(1, 7); // 프론트에서 오는 값 양옆의 큰따옴표 제거
+        System.out.println(code);
 
         if (savedAuthCode != null && savedAuthCode.equals(code)) {
             session.removeAttribute("rand");
