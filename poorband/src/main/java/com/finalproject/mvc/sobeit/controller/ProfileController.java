@@ -27,8 +27,8 @@ public class ProfileController {
      * @param userIdMap
      * @return 프로필에 표시되는 사용자 정보
      * */
-    @PostMapping("/profileinfo")
-    public ResponseEntity<?> profileinfo(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
+    @PostMapping("/profileInfo")
+    public ResponseEntity<?> profileInfo(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
             ProfileUserDTO profileUserDTO = profileService.selectUserInfo(loggedInUser.getUserId(), userIdMap.get("targetUserId"));
             return ResponseEntity.ok().body(profileUserDTO);
