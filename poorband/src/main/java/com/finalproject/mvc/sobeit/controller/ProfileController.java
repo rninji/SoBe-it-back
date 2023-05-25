@@ -32,7 +32,7 @@ public class ProfileController {
     @PostMapping("/profileInfo")
     public ResponseEntity<?> profileInfo(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
         try {
-            ProfileUserDTO profileUserDTO = profileService.selectUserInfo(loggedInUser.getUserId(), userIdMap.get("targetUserId"));
+            ProfileUserDTO profileUserDTO = profileService.selectUserInfo(loggedInUser.getUserId(), userIdMap.get("userId"));
             return ResponseEntity.ok().body(profileUserDTO);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
