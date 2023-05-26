@@ -13,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GoalAmountServiceImpl implements GoalAmountService{
 
     private final GoalAmountRepo goalAmountRep;
@@ -46,47 +49,84 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         return goalAmountRep.findById(goalAmountSeq).orElse(null);
     }
 
-    public GoalAmountResponseDTO findGoalAmountResponse(String userId, Long goalAmountSeq){
+    public GoalAmountResponseDTO findGoalAmountResponse(Users user, String userId, Long goalAmountSeq){
         //보려는 도전과제 가져오기
         GoalAmount goalAmount = selectGoalAmountById(goalAmountSeq);
 
         Long consumption = 0L;// 기간동안 소비된 비용
-        List<Article> articleList = articleRep.findArticlesByUser(userId);
-        if (articleList == null){ // 게시글이 없는 경우
-            throw new RuntimeException("소비한 비용이 없습니다.");
-        }
-        for (Article article : articleList){
-            if (article.getConsumptionDate().isAfter(goalAmount.getStartDate()) && article.getConsumptionDate().isBefore(goalAmount.getEndDate())){
-                consumption += article.getAmount();
+        int isSuccess = 0;
+
+        System.out.println("확인 전, " + goalAmount.getConsumption());
+        
+        if(goalAmount.getIsSuccess() == 1){
+
+            List<Article> articleList = articleRep.findArticlesByUser(userId);
+            LocalDate today = LocalDate.now();
+
+            if (articleList == null){ // 게시글이 없는 경우
+                throw new RuntimeException("소비한 비용이 없습니다.");
+            }
+            for (Article article : articleList){ // 소비금액 선정
+                if (goalAmount.getRoutine()==1){ // 반복주기가 매일인 경우
+                    if(today.isAfter(goalAmount.getStartDate()) && today.isBefore(goalAmount.getEndDate()) && today.isEqual(article.getConsumptionDate())){
+                        consumption += article.getAmount();
+                    }
+                } else { // 반복주기가 전체인 경우
+                    if (article.getConsumptionDate().isAfter(goalAmount.getStartDate()) && article.getConsumptionDate().isBefore(goalAmount.getEndDate())){
+                        consumption += article.getAmount();
+                    }
+                }
+            }
+            goalAmount.setConsumption(consumption);
+
+            System.out.println(consumption);
+            System.out.println("확인 후, " + goalAmount.getConsumption());
+
+            // 성공 여부 확인
+            if(consumption > goalAmount.getGoalAmount()){ // 소비가 목표금액을 넘어갈 경우
+                isSuccess = 3; // 실패로 표시
+                goalAmount.setIsSuccess(3);
+            } else { // 소비금액이 목표금액과 같거나 넘지않은 경우
+                if(today.isAfter(goalAmount.getEndDate())){ // 오늘, 도전과제 마지막날을 넘어간 경우
+                    isSuccess = 2; // 성공
+                    goalAmount.setIsSuccess(2);
+                } else { // 오늘, 도전과제 마지막날을 넘어가지 않은 경우
+                    isSuccess = 1; // 진행중
+                    goalAmount.setIsSuccess(1);
+                }
             }
         }
+        GoalAmountResponseDTO goalAmountResponseDTO = new GoalAmountResponseDTO();
+        goalAmountResponseDTO.setGoalAmount(goalAmount.getGoalAmount());
+        goalAmountResponseDTO.setTitle(goalAmount.getTitle());
+        goalAmountResponseDTO.setUserId(userId);
+        goalAmountResponseDTO.setStartDate(goalAmount.getStartDate());
+        goalAmountResponseDTO.setEndDate(goalAmount.getEndDate());
+        goalAmountResponseDTO.setIsSuccess(goalAmount.getIsSuccess());
+        goalAmountResponseDTO.setRoutine(goalAmount.getRoutine());
+        goalAmountResponseDTO.setConsumption(goalAmount.getConsumption());
 
-        GoalAmountResponseDTO goalAmountResponseDTO = GoalAmountResponseDTO.builder()
-                .goalAmount(goalAmount.getGoalAmount())
-                .title(goalAmount.getTitle())
-                .userId(userId)
-                .startDate(goalAmount.getStartDate())
-                .endDate(goalAmount.getEndDate())
-                .isSuccess(goalAmount.getIsSuccess())
-                .routine(goalAmount.getRoutine())
-                .consumption(consumption)
-                .build();
+        if (user.getUserId().equals(userId)){ // 1. 로그인한 유저가 자신의 도전과제를 확인하는 경우
+            goalAmountResponseDTO.setStatus(1);
+        } else { // 2. 로그인한 유저가 다른 유저의 도전과제를 확인하는 경우
+            goalAmountResponseDTO.setStatus(2);
+        }
 
         return goalAmountResponseDTO;
     }
 
     @Override
-    public List<GoalAmountResponseDTO> selectGoalAmount(String userId) {
+    public List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId) {
         List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(userId);
         if (goalAmountSeqList == null) throw new RuntimeException("도전과제가 없습니다.");
 
         List<GoalAmountResponseDTO> goalAmountList = new ArrayList<>();
-        goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(userId, g)));
+        goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, userId, g)));
         return goalAmountList;
     }
 
     @Override
-    public GoalAmount insertGoalAmount(@AuthenticationPrincipal Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
+    public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
         // 요청 이용해 저장할 도전과제 생성
         GoalAmount goalAmount = GoalAmount.builder()
                 .user(user)
@@ -95,7 +135,8 @@ public class GoalAmountServiceImpl implements GoalAmountService{
                 .startDate(goalAmountDTO.getStartDate())
                 .endDate(goalAmountDTO.getEndDate())
                 .routine(goalAmountDTO.getRoutine())
-                .isSuccess(goalAmountDTO.getIsSuccess())
+                .isSuccess(1) // 처음은 무조건 '진행중'으로 작성
+                .consumption(0L)
                 .build();
         return goalAmountRep.save(goalAmount);
     }
