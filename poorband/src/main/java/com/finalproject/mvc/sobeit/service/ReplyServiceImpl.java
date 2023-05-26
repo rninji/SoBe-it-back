@@ -156,7 +156,7 @@ public class ReplyServiceImpl implements ReplyService {
             responseReplyDTOList.add(
                     ReplyDTO.builder()
                             .reply_seq(writtenReply.getReplySeq())
-                            .article_seq(articleSeq)
+                            .article_seq(writtenReply.getArticle().getArticleSeq())
                             .user_seq(writtenReply.getUser().getUserSeq())
                             .reply_text(writtenReply.getReplyText())
                             .parent_reply_seq(writtenReply.getParentReplySeq())
