@@ -289,7 +289,7 @@ public class ArticleServiceImpl implements ArticleService{
                     long articleLikeCnt = countByArticle.get();
                     Users userToSendNotification = likedArticle.getUser();
                     String url = "http://localhost:3000/article/detail/" + likedArticle.getArticleSeq();
-                    if (articleLikeCnt == 10) {
+                    if (articleLikeCnt == 1) {
                         // 좋아요 수가 10개라면
                         ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(1)
                                 .user(userToSendNotification)
@@ -297,14 +297,14 @@ public class ArticleServiceImpl implements ArticleService{
                                 .notificationDateTime(LocalDateTime.now()).build();
                         articleLikeNotificationRepo.save(articleLikeNotification);
                     }
-                    else if (articleLikeCnt == 50){
+                    else if (articleLikeCnt == 3){
                         // 좋아요 수가 50개라면
                         ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(2)
                                 .user(userToSendNotification)
                                 .url(url).notArticleSeq(likedArticle)
                                 .notificationDateTime(LocalDateTime.now()).build();
                         articleLikeNotificationRepo.save(articleLikeNotification);
-                    } else if (articleLikeCnt == 100) {
+                    } else if (articleLikeCnt == 5) {
                         // 좋아요 수가 100개라면
                         ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(3)
                                 .user(userToSendNotification)
@@ -312,7 +312,7 @@ public class ArticleServiceImpl implements ArticleService{
                                 .notificationDateTime(LocalDateTime.now()).build();
                         articleLikeNotificationRepo.save(articleLikeNotification);
 
-                    } else if (articleLikeCnt == 1000) {
+                    } else if (articleLikeCnt == 10) {
                         // 좋아요 수가 1000개라면
                         ArticleLikeNotification articleLikeNotification = ArticleLikeNotification.builder().type(4)
                                 .user(userToSendNotification)
@@ -471,23 +471,26 @@ public class ArticleServiceImpl implements ArticleService{
      * @return userSeqList
      * */
     @Override
-    public Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId) {
+    public Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId, Long lastArticleId) {
         Pageable pageable = PageRequest.of(0, size);
 
         Users targetUser = userRepo.findByUserId(userId);
         Page<Long> userSeqList;
 
         // 1. 로그인한 유저 -> 본인 글(본인 글 selectAll)
-        if(loggedInUser.getUserId() == userId) {
-            userSeqList = articleRepo.findProfileArticleSeqByLoginUser(loggedInUser.getUserSeq(), pageable);
+        if(Objects.equals(loggedInUser.getUserId(), userId)) {
+            if (lastArticleId == null) userSeqList = articleRepo.findProfileArticleSeqByLoginUserWhenLastArticleIdIsNull(loggedInUser.getUserSeq(), pageable);
+            else userSeqList = articleRepo.findProfileArticleSeqByLoginUser(loggedInUser.getUserSeq(), pageable, lastArticleId);
         } else {
             // 2. 로그인한 유저 -> 맞팔인 유저의 글(상대의 맞팔 공개 글)
             if(followingRepo.findByFollowingAndFollower(loggedInUser, targetUser.getUserSeq()) != null) {
-                userSeqList = articleRepo.findProfileArticleSeqByFollowedUser(targetUser.getUserSeq(), pageable);
+                if (lastArticleId == null) userSeqList = articleRepo.findProfileArticleSeqByFollowedUserWhenLastArticleIdIsNull(targetUser.getUserSeq(), pageable);
+                else userSeqList = articleRepo.findProfileArticleSeqByFollowedUser(targetUser.getUserSeq(), pageable, lastArticleId);
 
                 // 3. 로그인한 유저 -> 맞팔이 아닌 유저의 글(상대의 전체 공개 글)
             } else {
-                userSeqList = articleRepo.findProfileArticleSeqByUnknownUser(targetUser.getUserSeq(), pageable);
+                if (lastArticleId == null) userSeqList = articleRepo.findProfileArticleSeqByUnknownUserWhenLastArticleIdIsNull(targetUser.getUserSeq(), pageable);
+                else userSeqList = articleRepo.findProfileArticleSeqByUnknownUser(targetUser.getUserSeq(), pageable, lastArticleId);
             }
 
         }
@@ -502,11 +505,11 @@ public class ArticleServiceImpl implements ArticleService{
      * @return articleList
      * */
     @Override
-    public List<ArticleResponseDTO> getArticleList(Users loggedInUser, int size, String userId) throws RuntimeException {
+    public List<ArticleResponseDTO> getArticleList(Users loggedInUser, int size, String userId, Long lastArticleId) throws RuntimeException {
         Users targetUser = userRepo.findByUserId(userId);
 
         // 권한에 맞는 글번호 리스트 가져오기
-        Page<Long> feedSeqList = selectArticleSeq(loggedInUser, size, userId);
+        Page<Long> feedSeqList = selectArticleSeq(loggedInUser, size, userId, lastArticleId);
         if (feedSeqList.isEmpty()) { // 가져온 글이 없다면
             throw new RuntimeException("조회할 피드의 글이 없습니다.");
         }
@@ -515,7 +518,7 @@ public class ArticleServiceImpl implements ArticleService{
         List<ArticleResponseDTO> articleList = new ArrayList<>();
 
         // 로그인한 유저 -> 본인 글(본인 글 selectAll)
-        if(loggedInUser.getUserId() == userId) {
+        if(Objects.equals(loggedInUser.getUserId(), userId)) {
             feedSeqList.getContent().forEach(f -> articleList.add(findArticleResponse(loggedInUser.getUserSeq(), f)));
         } else {
             feedSeqList.getContent().forEach(f -> articleList.add(findArticleResponse(targetUser.getUserSeq(), f)));

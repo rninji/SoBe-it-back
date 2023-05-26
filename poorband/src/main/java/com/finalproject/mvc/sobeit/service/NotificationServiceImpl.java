@@ -75,9 +75,6 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void deleteOneNotice(Users user, Long notificationSeq, int type) throws Exception {
-        System.out.println("댓글좋아요알림삭제테스트");
-        System.out.println("notificationSeq:" + notificationSeq);
-        System.out.println("type:"+type);
         if (type == 1){
             if (!replyNotificationRepo.existsById(notificationSeq)) throw new Exception("존재하지 않는 알림입니다.");
             replyNotificationRepo.deleteById(notificationSeq);
