@@ -12,6 +12,7 @@ import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
@@ -76,4 +77,22 @@ public interface ArticleService {
      * 사이드바 인기 게시물 가져오기
      * */
     public List<ArticleResponseDTO> selectHotPost(Users user);
+
+    /**
+     * 작성한 글의 articleSeq 가져오기
+     * @param loggedInUser
+     * @param size
+     * @param userId
+     * @return userSeqList
+     * */
+    Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId);
+
+    /**
+     * 작성한 글(List) 가져오기
+     * @param user
+     * @param size
+     * @param userId
+     * @return articleList
+     * */
+    List<ArticleResponseDTO> getArticleList(Users user, int size, String userId);
 }

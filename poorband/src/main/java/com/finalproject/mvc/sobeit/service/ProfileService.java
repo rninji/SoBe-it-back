@@ -11,10 +11,11 @@ public interface ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
-     * @param userId
+     * @param loggedInUserId
+     * @param targetUserId
      * @return profileUserDTO
      */
-    ProfileUserDTO selectUserInfo(String userId);
+    ProfileUserDTO selectUserInfo(String loggedInUserId, String userId);
 
     /**
      * 작성한 글 가져오기

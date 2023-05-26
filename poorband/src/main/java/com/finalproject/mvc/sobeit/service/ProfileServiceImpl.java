@@ -3,10 +3,8 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
-import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.FollowNotificationRepo;
 import com.finalproject.mvc.sobeit.repository.FollowingRepo;
-import com.finalproject.mvc.sobeit.repository.GoalAmountRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +14,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +21,22 @@ import java.util.Optional;
 public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepo userRepo;
-    private final ArticleRepo articleRepo;
     private final FollowingRepo followingRepo;
     private final FollowNotificationRepo followNotificationRepo;
-    private final GoalAmountRepo goalAmountRepo;
 
     /**
      * 프로필 유저 정보 가져오기
-     * @param userId
+     * @param loggedInUserId: 로그인한 유저 ID
+     * @param userId: 해당 프로필의 주인 유저 ID
      * @return profileUserDTO
      * */
     @Override
-    public ProfileUserDTO selectUserInfo(String userId) {
+    public ProfileUserDTO selectUserInfo(String loggedInUserId, String userId) {
         Users user = userRepo.findByUserId(userId);
 
         if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
 
         ProfileUserDTO profileUserDTO = new ProfileUserDTO();
-
         profileUserDTO.setProfileImg(user.getProfileImageUrl());
         profileUserDTO.setNickname(user.getNickname());
         profileUserDTO.setUserId(user.getUserId());
@@ -49,22 +44,17 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
 
+        if (loggedInUserId.equals(userId)){ // 1. 로그인한 유저와 해당 프로필의 유저가 같은 경우
+            profileUserDTO.setStatus(1);
+        } else { // 2. 로그인한 유저와 해당 프로필의 유저가 다른 경우
+            profileUserDTO.setStatus(2);
+        }
         return profileUserDTO;
     }
 
-    /**
-     * 작성한 글 가져오기
-     * @param userId
-     * @return userArticles
-     * */
     @Override
-
     public List<Article> selectArticles(String userId) {
-        List<Article> userArticles = articleRepo.findArticlesByUser(userId);
-
-        if(userArticles.size() == 0) throw new RuntimeException("게시물이 없습니다.");
-
-        return userArticles;
+        return null;
     }
 
     /**
