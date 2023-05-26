@@ -66,7 +66,7 @@ public class SmsController {
         System.out.println("code: " + code);
         System.out.println("phone: " + phone);
 
-
+        System.out.println(smsMap);
         if (code.equals(smsMap.get(phone))){
             smsMap.remove(phone);
             return true;  // Auth successful
