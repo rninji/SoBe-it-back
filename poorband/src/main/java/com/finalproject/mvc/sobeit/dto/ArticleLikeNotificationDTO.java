@@ -19,6 +19,6 @@ public class ArticleLikeNotificationDTO implements NotificationDTO {
 
     @Override
     public LocalDateTime getTimestamp() {
-        return null;
+        return timestamp;
     }
 }

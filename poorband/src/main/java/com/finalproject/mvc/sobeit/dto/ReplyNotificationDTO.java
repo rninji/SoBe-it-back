@@ -22,6 +22,6 @@ public class ReplyNotificationDTO implements NotificationDTO {
 
     @Override
     public LocalDateTime getTimestamp() {
-        return null;
+        return timestamp;
     }
 }
