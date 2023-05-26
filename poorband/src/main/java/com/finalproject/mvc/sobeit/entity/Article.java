@@ -45,7 +45,6 @@ public class Article {
 
     @Column(nullable = false)
     private int articleType; // 1 : 지출, 2 : 결재
-    @Column(nullable = false)
     private LocalDate consumptionDate;
 
     @Column(nullable = false)
