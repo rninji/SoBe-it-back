@@ -41,20 +41,15 @@ public class ArticleController {
              * 이미지 파일을 S3에 업로드하고
              * 리턴받은 URL을 DB에 업데이트
              */
-            if (!file.isEmpty()) {
-                System.out.println(file.getSize());
-                System.out.println("이미지저장!!!");
+            if (file != null) {
                 String imageUrl = s3Service.articleImageUpload(file, article.getArticleSeq());
-                System.out.println(imageUrl);
                 articleService.updateArticleImageUrl(article.getArticleSeq(), imageUrl);
             }
-
             // 파일 관련 로직 끝
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-
             return ResponseEntity
                     .internalServerError() // Error 500
                     .body(responseDTO);
@@ -189,6 +184,27 @@ public class ArticleController {
     public ResponseEntity<?> selectHotPost(@AuthenticationPrincipal Users user) {
         try {
             List<ArticleResponseDTO> list = articleService.selectHotPost(user);
+            return ResponseEntity.ok().body(list);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+    }
+
+    /**
+     * 작성한 글 목록 가져오기
+     * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
+     *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
+     * @param userIdMap
+     * @return 작성한 글 목록
+     * */
+    @RequestMapping("/list")
+    public ResponseEntity<?> articleList(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
+        try {
+            System.out.println("articleList");
+            List<ArticleResponseDTO> list = articleService.getArticleList(loggedInUser, 4, userIdMap.get("userId"));
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();

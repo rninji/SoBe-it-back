@@ -21,7 +21,7 @@ public class FollowNotificationDTO implements NotificationDTO {
     private LocalDateTime timestamp;
     @Override
     public LocalDateTime getTimestamp() {
-        return null;
+        return timestamp;
     }
 
 }
