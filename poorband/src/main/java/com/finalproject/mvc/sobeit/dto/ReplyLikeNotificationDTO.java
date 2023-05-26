@@ -19,5 +19,5 @@ public class ReplyLikeNotificationDTO implements NotificationDTO {
 
     @Override
     public LocalDateTime getTimestamp() {
-        return null;
+        return timestamp;
     }}

@@ -62,7 +62,6 @@ public class ArticleServiceImpl implements ArticleService{
 
     @Override
     public void updateArticleImageUrl(Long articleSeq, String url){
-        System.out.println("이미지 url 업데이트");
         articleRepo.updateImageUrl(articleSeq, url);
     }
     /**
