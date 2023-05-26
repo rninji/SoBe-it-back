@@ -24,7 +24,7 @@ public class GoalAmountDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
-    private String isSuccess;
-    private String routine;
+    private int isSuccess;
+    private int routine;
 
 }

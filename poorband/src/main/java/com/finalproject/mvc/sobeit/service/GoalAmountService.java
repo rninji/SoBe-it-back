@@ -22,7 +22,7 @@ public interface GoalAmountService {
      * @param userId
      * @return 도전과제 목록
      **/
-    public List<GoalAmountResponseDTO> selectGoalAmount(String userId);
+    public List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId);
 
     /**
      * 도전과제 작성
