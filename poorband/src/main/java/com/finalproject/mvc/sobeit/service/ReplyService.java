@@ -16,5 +16,5 @@ public interface ReplyService {
 
     public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq);
 
-    public ReplyLikeDTO likeReply(final Users user, ReplyLikeDTO replyLikeDTO);
+    public boolean likeReply(Users user, Long replySeq);
 }

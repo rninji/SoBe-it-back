@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface ReplyLikeRepo extends JpaRepository<ReplyLike, Long> {
     ReplyLike findByReplyAndUser(Reply reply, Users user);
 
+    @Query("select r from ReplyLike r where r.reply.replySeq = ?1 and r.user.userSeq = ?2")
+    ReplyLike findByReplySeqAndUser(Long replySeq, Long userSeq);
+
     boolean existsByReplyAndUser(Reply reply, Users user);
 
     Optional<Long> countByReply(Reply reply);
