@@ -18,10 +18,10 @@ public interface ReplyRepo extends JpaRepository<Reply, Long> {
     int findReplyCountByArticleSeq(Long articleSeq);
 
     // 댓글을 작성한 사용자 정보 찾기
-    @Query("select u from Reply r, Users u where r.user.userSeq = u.userSeq")
+    @Query("select u from Reply r, Users u where r.user.userSeq = ?1")
     Users findReplyUsersByUserSeq(Long userSeq);
 
     // 해당 글에 작성된 댓글 찾기
-    @Query("select r from Reply r, Article a where r.article.articleSeq = a.articleSeq")
+    @Query("select r from Reply r where r.article.articleSeq = ?1")
     List<Reply> findReplyByArticleSeq(Long articleSeq);
 }

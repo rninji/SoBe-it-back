@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ public class ReplyLikeNotification {
      */
     @ManyToOne
     @JoinColumn(name = "userSeq")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Users user;
 
     /**
@@ -41,6 +44,7 @@ public class ReplyLikeNotification {
 
     @ManyToOne
     @JoinColumn
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Reply reply;
 
     @Column(nullable = false)

@@ -1,6 +1,8 @@
 package com.finalproject.mvc.sobeit.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -18,6 +20,7 @@ public class Vote {
 
     @ManyToOne
     @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Article article;
 
     @Column(nullable = false)

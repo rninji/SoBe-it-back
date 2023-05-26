@@ -31,7 +31,7 @@ public class StatisticsServiceImpl implements StatisticsService{
         int lastday = 30;
         //if (new ArrayList<>(Arrays.asList(1,3,5,7,8,10,12)).contains(month)) lastday = 31;
         // 1일~31일 일별 지출 가져오기
-        for(int i=1; i<32;i++) {
+        for(int i=31; i>0;i--) {
             // 일별 지출 목록 생성
             List<ExpenditureResponseDTO> list = getExpenditureDay(userSeq, year, month, i);
             // 지출 목록이 없는 날이면 패스
