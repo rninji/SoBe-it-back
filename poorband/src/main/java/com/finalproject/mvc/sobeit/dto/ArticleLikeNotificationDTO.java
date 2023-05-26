@@ -12,7 +12,7 @@ public class ArticleLikeNotificationDTO implements NotificationDTO {
     private Long notificationSeq;
     private int type;
     private String content;
-    private String url;
+    private Long notArticleSeq;
     private String imageUrl;
     private String articleContent;
     private LocalDateTime timestamp;

@@ -28,17 +28,17 @@ public class UserServiceImpl implements UserService {
 
         if (userRepo.existsByUserId(userId)) {
             log.warn("UserId already exists {}", userId);
-            throw new RuntimeException("UserId already exists");
+            throw new RuntimeException("이미 존재하는 아이디입니다.");
         }
 
         if (userRepo.existsByEmail(email)) {
             log.warn("Email already exists {}", email);
-            throw new RuntimeException("Email already exists");
+            throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
 
         if (userRepo.existsByPhoneNumber(phoneNumber)) {
             log.warn("PhoneNumber already exists {}", phoneNumber);
-            throw new RuntimeException("PhoneNumber already exists");
+            throw new RuntimeException("이미 존재하는 휴대폰 번호입니다.");
         }
 
         return userRepo.save(users);
