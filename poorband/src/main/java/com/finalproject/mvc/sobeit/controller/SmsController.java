@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finalproject.mvc.sobeit.dto.MessageDTO;
+import com.finalproject.mvc.sobeit.dto.SmsAuthRequestDTO;
 import com.finalproject.mvc.sobeit.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -13,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -24,6 +26,7 @@ public class SmsController {
 
     private final SmsService smsService;
     private final HttpSession session;
+    private final Map<String, String> smsMap;
 
     @PostMapping("/sms/smsAuthRequest")
     public Boolean phoneAuth(@RequestBody String tel) throws JSONException, UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
@@ -46,21 +49,26 @@ public class SmsController {
         messageDTO.setContent("Sobe-it 인증번호는 [" + numStr + "] 입니다.");
         messageDTO.setTo(tel);
         smsService.sendSms(messageDTO);
-        session.setAttribute("rand", numStr);
+//        session.setAttribute("rand", numStr);
+        tel = "0" + tel;
+        smsMap.put(tel,numStr);
+        System.out.println(smsMap);
 
         return true;
     }
 
     @PostMapping("/sms/smsAuthOk")
-    public Boolean phoneAuthOk(@RequestBody String code) {
-        String savedAuthCode = session.getAttribute("rand").toString();
+    public Boolean phoneAuthOk(@RequestBody SmsAuthRequestDTO data) {
+        String code = data.getCode();
+        String phone = data.getPhone();
 
-        System.out.println(savedAuthCode + " : " + code);
-        code = code.substring(1, 7); // 프론트에서 오는 값 양옆의 큰따옴표 제거
-        System.out.println(code);
+//        code = code.substring(1, 7); // 프론트에서 오는 값 양옆의 큰따옴표 제거
+        System.out.println("code: " + code);
+        System.out.println("phone: " + phone);
 
-        if (savedAuthCode != null && savedAuthCode.equals(code)) {
-            session.removeAttribute("rand");
+
+        if (code.equals(smsMap.get(phone))){
+            smsMap.remove(phone);
             return true;  // Auth successful
         }
 
