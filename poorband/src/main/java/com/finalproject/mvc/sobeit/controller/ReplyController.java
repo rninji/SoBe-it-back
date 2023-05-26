@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -139,26 +140,14 @@ public class ReplyController {
     /**
      * 댓글 좋아요
      * @param user
-     * @param replyLikeDTO
+     * @param replySeqMap
      * @return
      */
     @PostMapping("/like")
-    public ResponseEntity<?> likeReply(@AuthenticationPrincipal Users user, @RequestBody ReplyLikeDTO replyLikeDTO) {
+    public ResponseEntity<?> likeReply(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> replySeqMap) {
         try {
-            ReplyLikeDTO likedDTO = replyService.likeReply(user, replyLikeDTO);
-
-            if (likedDTO != null) {
-                return ResponseEntity.ok().body(likedDTO);
-            }
-            else {
-                ResponseDTO responseDTO = ResponseDTO.builder()
-                        .error("Cancel ReplyLike failed.")
-                        .build();
-
-                return ResponseEntity
-                        .internalServerError()
-                        .body(responseDTO);
-            }
+            boolean like = replyService.likeReply(user, replySeqMap.get("replySeq"));
+            return ResponseEntity.ok().body(like);
         }
         catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
