@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.NowUserDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
@@ -245,24 +246,20 @@ public class ProfileServiceImpl implements ProfileService {
         return followingRepo.save(f);
     }
 
-    /**
-     * 로그인한 사용자의 정보 가져오기
-     * */
-   public ProfileUserDTO selectMyInfo(String loggedInUserId) {
-       Users user = userRepo.findByUserId(loggedInUserId);
-       System.out.println("유저 정보~~~~" + user);
+    @Override
+    public NowUserDTO selectNowUser(Users user) {
+        Users existingUser = userRepo.findById(user.getUserSeq()).orElse(null);
 
-       if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
-
-       ProfileUserDTO profileUserDTO = new ProfileUserDTO();
-       profileUserDTO.setProfileImg(user.getProfileImageUrl());
-       profileUserDTO.setNickname(user.getNickname());
-       profileUserDTO.setUserId(user.getUserId());
-       profileUserDTO.setIntroDetail(user.getIntroduction());
-       profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
-       profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
-       profileUserDTO.setStatus(1);
-
-       return profileUserDTO;
-   }
+        if(existingUser==null){
+            throw new RuntimeException("사용자가 존재하지 않습니다.");
+        }
+        NowUserDTO nowUserDTO = NowUserDTO.builder()
+                .userId(existingUser.getUserId())
+                .userSeq(existingUser.getUserSeq())
+                .userTier(existingUser.getUserTier())
+                .nickname(existingUser.getNickname())
+                .profileImgUrl(existingUser.getProfileImageUrl())
+                .build();
+        return nowUserDTO;
+    }
 }

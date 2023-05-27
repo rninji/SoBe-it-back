@@ -88,35 +88,46 @@ public class ReplyServiceImpl implements ReplyService {
     /**
      * 댓글 삭제
      * @param user
-     * @param replyDTO
+     * @param replySeq
+     * @return
      */
     @Override
-    public ReplyDTO deleteReply(final Users user, ReplyDTO replyDTO){
-        if (user == null || replyDTO == null) {
-            throw new RuntimeException("Invalid arguments");
+    public void deleteReply(final Users user, Long replySeq){
+        // 댓글 삭제 시 삭제된 댓글이라고 바꾸기
+//        if (user == null || replyRepo.findByReplySeq(replySeq)==null) {
+//            throw new RuntimeException("Invalid arguments");
+//        }
+
+
+//        if (replyRepo.existsByReplySeqAndUser(replySeq, user)) {
+//            Reply deletingReply = replyRepo.findByReplySeqAndUser(replySeq, user); // 삭제하려는 댓글
+//
+//            deletingReply.setReplyText("삭제된 댓글입니다.");
+//            deletingReply.setIsUpdated(-1);
+//
+//            Reply deletedReply = replyRepo.save(deletingReply);
+//
+//            ReplyDTO responseReplyDTO = ReplyDTO.builder()
+//                    .reply_seq(deletedReply.getReplySeq())
+//                    .reply_text(deletedReply.getReplyText())
+//                    .is_updated(deletedReply.getIsUpdated())
+//                    .build();
+//
+//            return responseReplyDTO;
+//        }
+//        else {
+//            return null;
+//        }
+
+        // 댓글 삭제
+        Reply existingReply = replyRepo.findById(replySeq).orElse(null);
+        if (existingReply==null){
+            throw new RuntimeException("삭제할 댓글이 없습니다.");
         }
-
-        Long deletingReplySeq = replyDTO.getReply_seq();
-
-        if (replyRepo.existsByReplySeqAndUser(deletingReplySeq, user)) {
-            Reply deletingReply = replyRepo.findByReplySeqAndUser(deletingReplySeq, user); // 삭제하려는 댓글
-
-            deletingReply.setReplyText("삭제된 댓글입니다.");
-            deletingReply.setIsUpdated(-1);
-
-            Reply deletedReply = replyRepo.save(deletingReply);
-
-            ReplyDTO responseReplyDTO = ReplyDTO.builder()
-                    .reply_seq(deletedReply.getReplySeq())
-                    .reply_text(deletedReply.getReplyText())
-                    .is_updated(deletedReply.getIsUpdated())
-                    .build();
-
-            return responseReplyDTO;
+        if (existingReply.getUser().getUserSeq() != user.getUserSeq()){
+            throw new RuntimeException("댓글을 삭제할 권한이 없습니다.");
         }
-        else {
-            return null;
-        }
+        replyRepo.deleteById(replySeq);
     }
 
     /**
@@ -156,7 +167,7 @@ public class ReplyServiceImpl implements ReplyService {
             responseReplyDTOList.add(
                     ReplyDTO.builder()
                             .reply_seq(writtenReply.getReplySeq())
-                            .article_seq(articleSeq)
+                            .article_seq(writtenReply.getArticle().getArticleSeq())
                             .user_seq(writtenReply.getUser().getUserSeq())
                             .reply_text(writtenReply.getReplyText())
                             .parent_reply_seq(writtenReply.getParentReplySeq())

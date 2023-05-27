@@ -22,6 +22,6 @@ public interface ReplyRepo extends JpaRepository<Reply, Long> {
     Users findReplyUsersByUserSeq(Long userSeq);
 
     // 해당 글에 작성된 댓글 찾기
-    @Query("select r from Reply r where r.article.articleSeq = ?1")
+    @Query("select r from Reply r where r.article.articleSeq = ?1 order by r.writtenDate")
     List<Reply> findReplyByArticleSeq(Long articleSeq);
 }

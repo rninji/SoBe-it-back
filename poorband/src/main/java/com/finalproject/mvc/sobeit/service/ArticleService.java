@@ -85,7 +85,7 @@ public interface ArticleService {
      * @param userId
      * @return userSeqList
      * */
-    Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId);
+    Page<Long> selectArticleSeq(Users loggedInUser, int size, String userId, Long lastArticleId);
 
     /**
      * 작성한 글(List) 가져오기
@@ -94,5 +94,5 @@ public interface ArticleService {
      * @param userId
      * @return articleList
      * */
-    List<ArticleResponseDTO> getArticleList(Users user, int size, String userId);
+    List<ArticleResponseDTO> getArticleList(Users user, int size, String userId, Long lastArticleId);
 }

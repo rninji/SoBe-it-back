@@ -197,14 +197,17 @@ public class ArticleController {
      * 작성한 글 목록 가져오기
      * : 로그인된 사용자 또는 다른 사용자가 작성한 글 목록 가져오기.
      *   추후 공개 여부에 따라 param을 @Authentication Users user, Users targetUser로 변경
-     * @param userIdMap
+     * @param
      * @return 작성한 글 목록
      * */
-    @RequestMapping("/list")
-    public ResponseEntity<?> articleList(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap) {
+    @GetMapping("/list")
+    public ResponseEntity<?> articleList(@AuthenticationPrincipal Users loggedInUser,
+                                         @RequestParam String userId,
+                                         @RequestParam(required = false) Long lastArticleId)
+    {
         try {
             System.out.println("articleList");
-            List<ArticleResponseDTO> list = articleService.getArticleList(loggedInUser, 4, userIdMap.get("userId"));
+            List<ArticleResponseDTO> list = articleService.getArticleList(loggedInUser, 4, userId, lastArticleId);
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();

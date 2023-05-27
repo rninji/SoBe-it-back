@@ -48,16 +48,33 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
 
     // ProfileController에 해당
     // 1. 로그인한 유저 -> 본인 글(본인 글 selectAll)
+    // lastArticleId가 null이 아닌 경우
+    @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 and a.articleSeq < ?2 order by a.writtenDate desc")
+    Page<Long> findProfileArticleSeqByLoginUser(Long userSeq, Pageable pageable, Long lastArticleId);
+
+    // lastArticleId가 null인 경우
     @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 order by a.writtenDate desc")
-    Page<Long> findProfileArticleSeqByLoginUser(Long userSeq, Pageable pageable);
+    Page<Long> findProfileArticleSeqByLoginUserWhenLastArticleIdIsNull(Long userSeq, Pageable pageable);
 
     // 2. 로그인한 유저 -> 맞팔인 유저의 글(상대의 맞팔 공개 글)
+    // lastArticleId가 null이 아닌 경우
+    @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 and a.articleSeq < ?2 and (a.status = 1 or a.status = 2) order by a.writtenDate desc")
+    Page<Long> findProfileArticleSeqByFollowedUser(Long userSeq, Pageable pageable, Long lastArticleId);
+
+    // lastArticleId가 null인 경우
     @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 and (a.status = 1 or a.status = 2) order by a.writtenDate desc")
-    Page<Long> findProfileArticleSeqByFollowedUser(Long userSeq, Pageable pageable);
+    Page<Long> findProfileArticleSeqByFollowedUserWhenLastArticleIdIsNull(Long userSeq, Pageable pageable);
 
     // 3. 로그인한 유저 -> 맞팔이 아닌 유저의 글(상대의 전체 공개 글)
+    // lastArticleId가 null이 아닌 경우
+    @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 and a.articleSeq < ?2 and a.status = 1 order by a.writtenDate desc")
+    Page<Long> findProfileArticleSeqByUnknownUser(Long userSeq, Pageable pageable, Long lastArticleId);
+
+    // lastArticleId가 null인 경우
     @Query("select a.articleSeq from Article a where a.user.userSeq = ?1 and a.status = 1 order by a.writtenDate desc")
-    Page<Long> findProfileArticleSeqByUnknownUser(Long userSeq, Pageable pageable);
+    Page<Long> findProfileArticleSeqByUnknownUserWhenLastArticleIdIsNull(Long userSeq, Pageable pageable);
+
+
 
     // 유저가 해당 날짜에 쓴 지출 글 전부 가져오기
     @Query("SELECT a FROM Article a WHERE a.user.userSeq=?1 AND a.consumptionDate=?2 AND a.articleType=1")
