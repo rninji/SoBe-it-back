@@ -153,4 +153,19 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         }
         goalAmountRep.deleteById(goalAmountSeq);
     }
+
+    /**
+     * 사이드바 도전 과제 가져오기
+     * : 로그인한 유저의 가장 최근 도전 과제(status = 진행중) 1개를 보여준다.
+     * @param userSeq
+     * @return GoalAmountResponseDTO
+     * */
+    public GoalAmountResponseDTO findGoalAmountSeqList(Long userSeq){
+        Users user = userRep.findById(userSeq).orElse(null);
+
+        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeqList(userSeq);
+        Long goalAmountSeq = goalAmountSeqList.get(0);
+
+        return findGoalAmountResponse(user, user.getUserId(), goalAmountSeq);
+    }
 }
