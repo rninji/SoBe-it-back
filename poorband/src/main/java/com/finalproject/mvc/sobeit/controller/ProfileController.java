@@ -151,4 +151,20 @@ public class ProfileController {
                     .body(responseDTO);
         }
     }
+
+    /**
+     * 로그인한 사용자의 정보 가져오기
+     * */
+    @PostMapping("/myInfo")
+    public ResponseEntity<?> profileInfo(@AuthenticationPrincipal Users loggedInUser) {
+        try {
+            ProfileUserDTO profileUserDTO = profileService.selectMyInfo(loggedInUser.getUserId());
+            return ResponseEntity.ok().body(profileUserDTO);
+        } catch(Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+    }
 }

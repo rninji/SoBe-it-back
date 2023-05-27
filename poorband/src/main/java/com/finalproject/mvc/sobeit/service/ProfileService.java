@@ -11,6 +11,7 @@ public interface ProfileService {
 
     /**
      * 프로필 유저 정보 가져오기
+     *
      * @param loggedInUserId
      * @param targetUserId
      * @return profileUserDTO
@@ -19,6 +20,7 @@ public interface ProfileService {
 
     /**
      * 작성한 글 가져오기
+     *
      * @param userId
      * @return userArticles
      */
@@ -26,6 +28,7 @@ public interface ProfileService {
 
     /**
      * 유저 프로필 편집 저장
+     *
      * @param loggedInUser
      * @param updateUser
      * @return Users : 프로필 편집한 후 update 된 유저
@@ -34,46 +37,52 @@ public interface ProfileService {
 
     /**
      * userSeq에 따른 Users 정보를 profileDTO로 가져오기
+     *
      * @param loggedInUser
      * @param userId
      * @param targetUserSeq
      * @return profileDTO
-     * */
+     */
     ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq);
 
     /**
      * 팔로잉 정보(userSeq) 가져오기
+     *
      * @param userSeq
      * @return userSeqList
-     * */
+     */
     List<Long> selectFollowingUserSeq(Long userSeq);
 
     /**
      * 팔로잉 정보(List) 가져오기
+     *
      * @param loggedInUser // 로그인 된 사용자
-     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @param userId       // 팔로잉 정보를 조회할 사용자
      * @return userList
-     * */
+     */
     List<ProfileDTO> selectFollowing(@AuthenticationPrincipal Users loggedInUser, String userId);
 
     /**
      * 팔로워 정보(userSeq) 가져오기
+     *
      * @param userSeq
      * @return userSeqList
-     * */
+     */
     List<Long> selectFollowerUserSeq(Long userSeq);
 
 
     /**
      * 팔로워 정보(List) 가져오기
+     *
      * @param loggedInUser // 로그인 된 사용자
-     * @param userId // 팔로잉 정보를 조회할 사용자
+     * @param userId       // 팔로잉 정보를 조회할 사용자
      * @return userList
-     * */
+     */
     List<ProfileDTO> selectFollower(@AuthenticationPrincipal Users loggedInUser, String userId);
 
     /**
      * 팔로잉 해제
+     *
      * @param user
      * @param targetUserId
      */
@@ -81,9 +90,15 @@ public interface ProfileService {
 
     /**
      * 팔로우 추가
+     *
      * @param user
      * @param targetUserId
      * @return following
      */
     Following follow(Users user, String targetUserId);
+
+    /**
+     * 로그인한 사용자의 정보 가져오기
+     */
+    ProfileUserDTO selectMyInfo(String loggedInUserId);
 }

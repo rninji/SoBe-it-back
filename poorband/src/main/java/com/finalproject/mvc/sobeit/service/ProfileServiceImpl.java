@@ -244,4 +244,25 @@ public class ProfileServiceImpl implements ProfileService {
 
         return followingRepo.save(f);
     }
+
+    /**
+     * 로그인한 사용자의 정보 가져오기
+     * */
+   public ProfileUserDTO selectMyInfo(String loggedInUserId) {
+       Users user = userRepo.findByUserId(loggedInUserId);
+       System.out.println("유저 정보~~~~" + user);
+
+       if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
+
+       ProfileUserDTO profileUserDTO = new ProfileUserDTO();
+       profileUserDTO.setProfileImg(user.getProfileImageUrl());
+       profileUserDTO.setNickname(user.getNickname());
+       profileUserDTO.setUserId(user.getUserId());
+       profileUserDTO.setIntroDetail(user.getIntroduction());
+       profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
+       profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
+       profileUserDTO.setStatus(1);
+
+       return profileUserDTO;
+   }
 }
