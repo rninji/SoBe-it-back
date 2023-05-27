@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.finalproject.mvc.sobeit.dto.NowUserDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileUserDTO;
 import com.finalproject.mvc.sobeit.entity.*;
@@ -243,5 +244,22 @@ public class ProfileServiceImpl implements ProfileService {
         followNotificationRepo.save(followNotification);
 
         return followingRepo.save(f);
+    }
+
+    @Override
+    public NowUserDTO selectNowUser(Users user) {
+        Users existingUser = userRepo.findById(user.getUserSeq()).orElse(null);
+
+        if(existingUser==null){
+            throw new RuntimeException("사용자가 존재하지 않습니다.");
+        }
+        NowUserDTO nowUserDTO = NowUserDTO.builder()
+                .userId(existingUser.getUserId())
+                .userSeq(existingUser.getUserSeq())
+                .userTier(existingUser.getUserTier())
+                .nickname(existingUser.getNickname())
+                .profileImgUrl(existingUser.getProfileImageUrl())
+                .build();
+        return nowUserDTO;
     }
 }

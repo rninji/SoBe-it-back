@@ -151,4 +151,20 @@ public class ProfileController {
                     .body(responseDTO);
         }
     }
+
+    @GetMapping("/nowUser")
+    public ResponseEntity<?> nowUser(@AuthenticationPrincipal Users user){
+        try{
+            NowUserDTO nowUserDTO = profileService.selectNowUser(user);
+            return ResponseEntity.ok().body(nowUserDTO);
+        }
+        catch (Exception e){
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+
+    }
 }
