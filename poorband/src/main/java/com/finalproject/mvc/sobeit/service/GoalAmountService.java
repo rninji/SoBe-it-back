@@ -15,14 +15,14 @@ public interface GoalAmountService {
      * @param userId
      * @return 성공한 도전과제 갯수&도전과제 갯수
      **/
-    public GoalAmountCntDTO goalAmountCnt(String userId);
+    GoalAmountCntDTO goalAmountCnt(String userId);
 
     /**
      * 도전과제 정보 가져오기(도전과제 리스트)
      * @param userId
      * @return 도전과제 목록
      **/
-    public List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId);
+    List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId);
 
     /**
      * 도전과제 작성
@@ -30,12 +30,20 @@ public interface GoalAmountService {
      * @param goalAmountDTO
      * @return 작성된 도전과제
      **/
-    public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO);
+    GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO);
 
     /**
      * 도전과제 삭제
      * @param user
      * @param goalAmountSeq
      */
-    public void deleteGoalAmount(Users user, Long goalAmountSeq);
+    void deleteGoalAmount(Users user, Long goalAmountSeq);
+
+    /**
+     * 사이드바 도전 과제 가져오기
+     * : 로그인한 유저의 가장 최근 도전 과제(status = 진행중) 1개를 보여준다.
+     * @param userSeq
+     * @return GoalAmountResponseDTO
+     * */
+    GoalAmountResponseDTO findGoalAmountSeqList(Long userSeq);
 }

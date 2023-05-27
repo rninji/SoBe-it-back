@@ -18,4 +18,7 @@ public interface GoalAmountRepo extends JpaRepository<GoalAmount, Long> {
 
     @Query("select a.goalAmountSeq from GoalAmount a where a.user.userId = ?1")
     List<Long> findGoalAmountSeq(String userId);
+
+    @Query("select a.goalAmountSeq from GoalAmount a where a.user.userSeq = :userSeq and a.isSuccess = 1 order by a.goalAmountSeq desc")
+    List<Long> findGoalAmountSeqList(Long userSeq);
 }
