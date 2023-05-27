@@ -81,13 +81,11 @@ public class ProfileServiceImpl implements ProfileService {
      * : selectFollowing(), selectFollower()에서 사용됨.
      * : status는 추후 팔로잉/팔로우 버튼 구분에 필요.
      * @param loggedInUser
-     * @param userId
      * @param targetUserSeq
      * @return profileDTO
      * */
     @Override
-    public ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq) {
-        Users user = userRepo.findByUserId(userId);
+    public ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, Long targetUserSeq) {
         Users targetUser = userRepo.findById(targetUserSeq).orElse(null);
 
         int status = 0; // loggedInUser가 targetUser를 팔로우하지 않은 상태
@@ -144,7 +142,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         List<ProfileDTO> userList = new ArrayList<>();
-        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, userId, u)));
+        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, u)));
 
         return userList;
     }
@@ -180,7 +178,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         List<ProfileDTO> userList = new ArrayList<>();
-        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, userId, u)));
+        userSeqList.forEach(u -> userList.add(selectFollowingUser(loggedInUser, u)));
         return userList;
     }
 

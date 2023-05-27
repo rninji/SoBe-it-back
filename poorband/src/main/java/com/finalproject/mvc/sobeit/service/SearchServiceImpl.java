@@ -2,6 +2,7 @@ package com.finalproject.mvc.sobeit.service;
 
 import com.finalproject.mvc.sobeit.dto.ArticleResponseDTO;
 import com.finalproject.mvc.sobeit.dto.ProfileDTO;
+import com.finalproject.mvc.sobeit.entity.Following;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.repository.ArticleRepo;
 import com.finalproject.mvc.sobeit.repository.UserRepo;
@@ -27,16 +28,17 @@ public class SearchServiceImpl implements SearchService{
      * 사용자(users) 검색
      **/
     @Override
-    public List<ProfileDTO> usersSearch(@AuthenticationPrincipal Users loggedInUser, String userId, String inputText) {
-        List<Long> searchUserSeqList = userRep.findAllByUserId(inputText);
-        List<ProfileDTO> searchUserList = new ArrayList<>();
-        if (searchUserSeqList == null || searchUserSeqList.size() == 0){
-            throw new RuntimeException("검색어가 포함된 유저가 존재하지 않습니다.");
+    public List<ProfileDTO> usersSearch(Users loggedInUser, String inputText) {
+        List<Long> searchUserSeqList = userRep.findByText(inputText);
+
+        if (searchUserSeqList == null || searchUserSeqList.size() == 0) {
+            throw new RuntimeException("검색된 사용자가 없습니다.");
         }
 
-        searchUserSeqList.forEach(u -> searchUserList.add(profileService.selectFollowingUser(loggedInUser, userId, u)));
+        List<ProfileDTO> userList = new ArrayList<>();
+        searchUserSeqList.forEach(u -> userList.add(profileService.selectFollowingUser(loggedInUser, u)));
 
-        return searchUserList;
+        return userList;
     }
 
     /**

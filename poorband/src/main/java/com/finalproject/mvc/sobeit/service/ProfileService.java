@@ -13,7 +13,7 @@ public interface ProfileService {
     /**
      * 프로필 유저 정보 가져오기
      * @param loggedInUserId
-     * @param targetUserId
+     * @param userId
      * @return profileUserDTO
      */
     ProfileUserDTO selectUserInfo(String loggedInUserId, String userId);
@@ -36,11 +36,10 @@ public interface ProfileService {
     /**
      * userSeq에 따른 Users 정보를 profileDTO로 가져오기
      * @param loggedInUser
-     * @param userId
      * @param targetUserSeq
      * @return profileDTO
      * */
-    ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, String userId, Long targetUserSeq);
+    ProfileDTO selectFollowingUser(@AuthenticationPrincipal Users loggedInUser, Long targetUserSeq);
 
     /**
      * 팔로잉 정보(userSeq) 가져오기
