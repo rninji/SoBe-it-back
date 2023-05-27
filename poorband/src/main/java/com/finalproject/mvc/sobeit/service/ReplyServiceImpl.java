@@ -153,7 +153,6 @@ public class ReplyServiceImpl implements ReplyService {
                     is_clicked_like = true;
                 }
             }
-
             responseReplyDTOList.add(
                     ReplyDTO.builder()
                             .reply_seq(writtenReply.getReplySeq())
@@ -194,32 +193,27 @@ public class ReplyServiceImpl implements ReplyService {
         return responseUserDTO;
     }
 
+
     /**
      * 댓글 좋아요
      * @param user
-     * @param replyLikeDTO
+     * @param replySeq
      * @return
      */
     @Override
-    public ReplyLikeDTO likeReply(final Users user, ReplyLikeDTO replyLikeDTO) {
-        if (user == null || replyLikeDTO == null) {
-            throw new RuntimeException("Invalid arguments");
+    public boolean likeReply(Users user, Long replySeq) {
+        if (replyRepo.findByReplySeq(replySeq)== null){ // 댓글이 없는 경우 예외 발생
+            throw new RuntimeException("좋아요할 댓글이 존재하지 않습니다.");
         }
 
-        if (!replyLikeDTO.getIs_liked()) { // 댓글 좋아요가 눌려 있지 않은 경우, 댓글 좋아요 생성
+        ReplyLike existingLike = replyLikeRepo.findByReplySeqAndUser(replySeq,user.getUserSeq());
+        if (existingLike==null){ // 좋아요한 적 없으면 좋아요 생성
+            Reply reply= replyRepo.findByReplySeq(replySeq);
             ReplyLike replyLike = ReplyLike.builder()
-                    .reply(replyRepo.findByReplySeq(replyLikeDTO.getReply_seq()))
-                    .user(userRepo.findByUserSeq(user.getUserSeq()))
+                    .reply(reply)
+                    .user(user)
                     .build();
-
             replyLikeRepo.save(replyLike);
-
-            ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
-                    .reply_like_seq(replyLike.getReplyLikeSeq())
-                    .reply_seq(replyLike.getReply().getReplySeq())
-                    .user_seq(replyLike.getUser().getUserSeq())
-                    .is_liked(true)
-                    .build();
 
             Optional<Long> countByReply = replyLikeRepo.countByReply(replyLike.getReply()); // 해당 댓글의 좋아요 수
             if (countByReply.isPresent()) {
@@ -257,23 +251,11 @@ public class ReplyServiceImpl implements ReplyService {
                 }
             }
 
-
-            return responseReplyLikeDTO;
+            return true;
         }
-        else { // 댓글 좋아요가 눌려 있는 경우, 댓글 좋아요 삭제
-            Reply reply = replyRepo.findByReplySeq(replyLikeDTO.getReply_seq());
-
-            ReplyLike existingReplyLike = replyLikeRepo.findByReplyAndUser(reply, user); // 현재 로그인한 사용자와 좋아요를 누른 사용자가 같은 댓글 좋아요
-
-            replyLikeRepo.delete(existingReplyLike);
-
-            ReplyLikeDTO responseReplyLikeDTO = ReplyLikeDTO.builder()
-                    .reply_seq(replyLikeDTO.getReply_seq())
-                    .user_seq(user.getUserSeq())
-                    .is_liked(false)
-                    .build();
-
-            return responseReplyLikeDTO;
+        else { // 좋아요한 적 있으면 좋아요 취소(삭제)
+            replyLikeRepo.delete(existingLike);
+            return false;
         }
     }
 

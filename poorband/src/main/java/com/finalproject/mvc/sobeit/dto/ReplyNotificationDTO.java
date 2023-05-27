@@ -16,12 +16,12 @@ public class ReplyNotificationDTO implements NotificationDTO {
     private int type;
     private String content;
     private String articleContent;
-    private String url;
+    private Long notArticleSeq;
     private String imageUrl;
     private LocalDateTime timestamp;
 
     @Override
     public LocalDateTime getTimestamp() {
-        return null;
+        return timestamp;
     }
 }

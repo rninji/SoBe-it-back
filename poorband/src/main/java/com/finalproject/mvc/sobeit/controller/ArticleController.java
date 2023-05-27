@@ -41,20 +41,15 @@ public class ArticleController {
              * 이미지 파일을 S3에 업로드하고
              * 리턴받은 URL을 DB에 업데이트
              */
-            if (!file.isEmpty()) {
-                System.out.println(file.getSize());
-                System.out.println("이미지저장!!!");
+            if (file != null) {
                 String imageUrl = s3Service.articleImageUpload(file, article.getArticleSeq());
-                System.out.println(imageUrl);
                 articleService.updateArticleImageUrl(article.getArticleSeq(), imageUrl);
             }
-
             // 파일 관련 로직 끝
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
-
             return ResponseEntity
                     .internalServerError() // Error 500
                     .body(responseDTO);

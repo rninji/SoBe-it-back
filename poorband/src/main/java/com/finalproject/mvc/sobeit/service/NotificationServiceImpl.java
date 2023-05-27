@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -62,6 +64,8 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         if (notifications.size() == 0) throw new Exception("알림이 없습니다.");
+        notifications.sort(Comparator.comparing(NotificationDTO::getTimestamp).reversed());
+
         return notifications;
     }
 
@@ -135,7 +139,7 @@ public class NotificationServiceImpl implements NotificationService {
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 10개 이상입니다.")
-                    .url(articleLikeNotification.getUrl())
+                    .notArticleSeq(articleLikeNotification.getNotArticleSeq().getArticleSeq())
                     .type(4)
                     .build();
         } else if (articleLikeNotification.getType() == 2) {
@@ -145,7 +149,7 @@ public class NotificationServiceImpl implements NotificationService {
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 50개 이상입니다.")
-                    .url(articleLikeNotification.getUrl())
+                    .notArticleSeq(articleLikeNotification.getNotArticleSeq().getArticleSeq())
                     .type(4)
                     .build();
         } else if (articleLikeNotification.getType() == 3) {
@@ -155,7 +159,7 @@ public class NotificationServiceImpl implements NotificationService {
                     //.imageUrl() 좋아요 하트 이미지 넣어줘야함
                     .articleContent(articleLikeNotification.getNotArticleSeq().getArticleText())
                     .content("게시글의 좋아요 수가 100개 이상입니다.")
-                    .url(articleLikeNotification.getUrl())
+                    .notArticleSeq(articleLikeNotification.getNotArticleSeq().getArticleSeq())
                     .type(4)
                     .build();
         }
@@ -170,7 +174,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .articleContent(replyNotification.getArticle().getArticleText())
                 .timestamp(replyNotification.getNotificationDateTime())
                 .imageUrl(replyNotification.getReply().getUser().getProfileImageUrl())
-                .url(replyNotification.getUrl())
+                .notArticleSeq(replyNotification.getReply().getArticle().getArticleSeq())
                 .type(1)
                 .build();
 
@@ -184,7 +188,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
                     .content("댓글의 좋아요 수가 1개 이상입니다.")
                     .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
-                    .url(replyLikeNotification.getUrl())
+                    .notArticleSeq(replyLikeNotification.getReply().getArticle().getArticleSeq())
                     .timestamp(replyLikeNotification.getNotificationDateTime())
                     .type(3)
 //                    .imageUrl() 이미지 url 넣어야함
@@ -194,7 +198,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
                     .content("댓글의 좋아요 수가 10개 이상입니다.")
                     .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
-                    .url(replyLikeNotification.getUrl())
+                    .notArticleSeq(replyLikeNotification.getReply().getArticle().getArticleSeq())
                     .timestamp(replyLikeNotification.getNotificationDateTime())
                     .type(3)
 //                    .imageUrl() 이미지 url 넣어야함
@@ -204,7 +208,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .notificationSeq(replyLikeNotification.getReplyLikeNotificationSeq())
                     .content("댓글의 좋아요 수가 100개 이상입니다.")
                     .articleContent(replyLikeNotification.getReply().getArticle().getArticleText())
-                    .url(replyLikeNotification.getUrl())
+                    .notArticleSeq(replyLikeNotification.getReply().getArticle().getArticleSeq())
                     .timestamp(replyLikeNotification.getNotificationDateTime())
                     .type(3)
 //                    .imageUrl() 이미지 url 넣어야함

@@ -62,7 +62,6 @@ public class ArticleServiceImpl implements ArticleService{
 
     @Override
     public void updateArticleImageUrl(Long articleSeq, String url){
-        System.out.println("이미지 url 업데이트");
         articleRepo.updateImageUrl(articleSeq, url);
     }
     /**
@@ -179,7 +178,7 @@ public class ArticleServiceImpl implements ArticleService{
         int [] voteInfo = findVoteInfo(articleSeq);
 
         // 투표여부 가져오기
-        boolean isVoted = voteCheck(userSeq, articleSeq);
+        boolean isVoted = isMine?true:voteCheck(userSeq, articleSeq); // 내 글이면 무조건 true
 
         // ArticleResponseDTO 반환
         ArticleResponseDTO articleResponseDTO = ArticleResponseDTO.builder()

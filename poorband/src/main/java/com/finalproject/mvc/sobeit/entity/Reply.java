@@ -1,6 +1,8 @@
 package com.finalproject.mvc.sobeit.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,16 +21,17 @@ public class Reply {
 
     @ManyToOne
     @JoinColumn(name = "userSeq", referencedColumnName = "userSeq", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "articleSeq", referencedColumnName = "articleSeq", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Article article;
 
     @Column(nullable = false)
     private String replyText;
 
-    @Column(nullable = false)
     private Long parentReplySeq;
 
     @Column(nullable = false)
