@@ -16,6 +16,6 @@ public interface SearchService {
     /**
      * 게시글(Articles) 검색
      **/
-    List<ArticleResponseDTO> articlesSearch(Long userSeq, String inputText);
+    List<ArticleResponseDTO> articlesSearch(Long userSeq, String inputText, Long lastArticleId);
 
 }

@@ -41,9 +41,11 @@ public class SearchController {
      * 게시글(Articles) 검색
      **/
     @RequestMapping("/articles")
-    public ResponseEntity<?> articlesSearch(@AuthenticationPrincipal Users user, String inputText){
+    public ResponseEntity<?> articlesSearch(@AuthenticationPrincipal Users user,
+                                            @RequestParam String inputText,
+                                            @RequestParam(required = false) Long lastArticleId){
         try {
-            List<ArticleResponseDTO> articleSearchResults = searchService.articlesSearch(user.getUserSeq(), inputText);
+            List<ArticleResponseDTO> articleSearchResults = searchService.articlesSearch(user.getUserSeq(), inputText, lastArticleId);
             return ResponseEntity.ok().body(articleSearchResults);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();

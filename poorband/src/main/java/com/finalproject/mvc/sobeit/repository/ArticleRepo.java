@@ -17,9 +17,10 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
     @Query("select a from Article a where a.user.userId = ?1 order by a.writtenDate desc")
     List<Article> findArticlesByUser(String user_id);
 
-    @Query("select a.articleSeq from Article a where a.articleText like %?1%")
-    List<Long> findArticlesByArticleText(String articleText);
-
+    @Query("select a from Article a where a.articleSeq < ?2 and a.articleText like %?1%")
+    Page<Article> findArticlesByArticleText(String articleText, Long lastArticleId, Pageable pageable);
+    @Query("select a from Article a where a.articleText like %?1%")
+    Page<Article> findArticlesByArticleTextLastArticleIsnull(String articleText, Pageable pageable);
     Article findByArticleSeq(Long articleSeq);
 
     @Modifying
