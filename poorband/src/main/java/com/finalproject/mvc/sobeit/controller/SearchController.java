@@ -24,9 +24,10 @@ public class SearchController {
      * 사용자(users) 검색
      **/
     @RequestMapping("/users")
-    public ResponseEntity<?> usersSearch(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> userIdMap, String inputText){
+    public ResponseEntity<?> usersSearch(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> searchMap){
         try {
-            List<ProfileDTO> userList = searchService.usersSearch(loggedInUser, userIdMap.get("userId"), inputText);
+            List<ProfileDTO> userList = searchService.usersSearch(loggedInUser, searchMap.get("userId"), searchMap.get("inputText"));
+
             return ResponseEntity.ok().body(userList);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
