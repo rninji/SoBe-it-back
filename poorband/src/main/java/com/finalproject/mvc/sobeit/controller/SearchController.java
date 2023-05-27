@@ -26,7 +26,7 @@ public class SearchController {
     @RequestMapping("/users")
     public ResponseEntity<?> usersSearch(@AuthenticationPrincipal Users loggedInUser, @RequestBody Map<String, String> searchMap){
         try {
-            List<ProfileDTO> userList = searchService.usersSearch(loggedInUser, searchMap.get("userId"), searchMap.get("inputText"));
+            List<ProfileDTO> userList = searchService.usersSearch(loggedInUser, searchMap.get("inputText"));
 
             return ResponseEntity.ok().body(userList);
         } catch (Exception e) {

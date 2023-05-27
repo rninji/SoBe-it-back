@@ -11,7 +11,7 @@ public interface SearchService {
     /**
      * 사용자(users) 검색
      **/
-    List<ProfileDTO> usersSearch(@AuthenticationPrincipal Users loggedInUser, String userId, String inputText);
+    List<ProfileDTO> usersSearch(Users loggedInUser, String inputText);
 
     /**
      * 게시글(Articles) 검색

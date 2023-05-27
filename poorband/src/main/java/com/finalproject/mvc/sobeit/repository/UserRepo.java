@@ -28,7 +28,7 @@ public interface UserRepo extends JpaRepository<Users, Long>, QuerydslPredicateE
         Boolean existsByPhoneNumber(String phone_number);
 
         @Query("select u.userSeq from Users u where u.userId like %:inputText%")
-        List<Long> findAllByUserId(@Param("inputText") String inputText);
+        List<Long> findByText(@Param("inputText") String inputText);
 
         Users findByUserNameAndPhoneNumber(String userName, String phoneNumber);
 
