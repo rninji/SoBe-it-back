@@ -12,7 +12,7 @@ public interface ReplyService {
 
     public Reply updateReply(Reply reply);
 
-    public ReplyDTO deleteReply(final Users user, ReplyDTO replyDTO);
+    public void deleteReply(final Users user, Long replySeq);
 
     public List<ReplyDTO> selectAllReply(final Users user, Long articleSeq);
 
