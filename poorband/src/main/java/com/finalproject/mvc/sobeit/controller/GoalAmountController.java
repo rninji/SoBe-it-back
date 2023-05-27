@@ -99,4 +99,23 @@ public class GoalAmountController {
                     .body(responseDTO);
         }
     }
+
+    /**
+     * 사이드바 도전 과제 가져오기
+     * : 로그인한 유저의 가장 최근 도전 과제(status = 진행중) 1개를 보여준다.
+     * @param user
+     * @return goalAmountResponseDTO
+     * */
+    @RequestMapping("/latest")
+    public ResponseEntity<?> selectSideGoalAmount(@AuthenticationPrincipal Users user){
+        try {
+            GoalAmountResponseDTO goalAmountResponseDTO = goalAmountService.findGoalAmountSeqList(user.getUserSeq());
+            return ResponseEntity.ok().body(goalAmountResponseDTO);
+        } catch (Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity
+                    .internalServerError() // Error 500
+                    .body(responseDTO);
+        }
+    }
 }
