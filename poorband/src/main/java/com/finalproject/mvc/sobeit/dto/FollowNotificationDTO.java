@@ -16,6 +16,7 @@ public class FollowNotificationDTO implements NotificationDTO {
     private String followingUserId;
     private String content;
     private boolean isFollowing;
+    private String userTier;
     private String url;
     private String imageUrl;
     private LocalDateTime timestamp;

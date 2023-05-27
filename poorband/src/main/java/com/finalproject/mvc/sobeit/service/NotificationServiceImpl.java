@@ -122,6 +122,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .isFollowing(isFollowed)
                     .imageUrl(followNotification.getFromUser().getProfileImageUrl())
                     .timestamp(followNotification.getNotificationDateTime())
+                    .userTier(followNotification.getUser().getUserTier())
                     .type(2)
                     .build();
 
