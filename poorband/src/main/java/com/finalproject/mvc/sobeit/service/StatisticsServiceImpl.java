@@ -64,7 +64,7 @@ public class StatisticsServiceImpl implements StatisticsService{
      * @return 해당 날짜에 쓴 지출 내역 리스트
      */
     List<ExpenditureResponseDTO> getExpenditureDay(Long userSeq, int year, int month, int day){
-        if(new ArrayList<>(Arrays.asList(4,6,9,11)).contains(month)) return null;
+        if(new ArrayList<>(Arrays.asList(4,6,9,11)).contains(month) && day == 31) return null;
         else if (month==2 && new ArrayList<>(Arrays.asList(29, 30,31)).contains(day)) return null;
         LocalDate date = LocalDate.of(year, month, day);
         // 유저가 그 날 쓴 지출 글 가져오기
