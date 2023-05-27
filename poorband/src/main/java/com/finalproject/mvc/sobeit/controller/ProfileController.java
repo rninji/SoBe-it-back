@@ -52,15 +52,16 @@ public class ProfileController {
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> save(@AuthenticationPrincipal Users loggedInUser, @RequestPart() Users profile, @RequestPart(required = false) MultipartFile file) {
         try{
-            String url = s3Service.profileImageUpload(file, loggedInUser.getUserSeq());
-
+            String url = null;
+            if(file!=null) {
+                url = s3Service.profileImageUpload(file, loggedInUser.getUserSeq());
+            }
             Users user = Users.builder()
                     .userId(profile.getUserId())
                     .nickname(profile.getNickname())
                     .introduction(profile.getIntroduction()) // 추후 이미지 편집도 추가?
                     .profileImageUrl(url)
                     .build();
-            System.out.println("user = "+user);
             Users updatedUser = profileService.insertProfile(loggedInUser, user);
             if (updatedUser==null) {
                 throw new RuntimeException("프로필 수정 실패");

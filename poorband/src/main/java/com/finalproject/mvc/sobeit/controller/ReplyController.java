@@ -110,7 +110,7 @@ public class ReplyController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteReply(@AuthenticationPrincipal Users user, @RequestBody Map<String, Long> replySeqMap){
         try{
-            replyService.deleteReply(user, replySeqMap.get("articleSeq"));
+            replyService.deleteReply(user, replySeqMap.get("replySeq"));
             return ResponseEntity.ok().body("delete success");
         }
         catch (Exception e){
