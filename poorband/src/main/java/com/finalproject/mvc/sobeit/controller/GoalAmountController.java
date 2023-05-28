@@ -49,6 +49,7 @@ public class GoalAmountController {
     @PostMapping("/list")
     public ResponseEntity<?> selectGoalAmount(@AuthenticationPrincipal Users user, @RequestBody Map<String, String> userIdMap) {
         try {
+            System.out.println("유저아이디");
             System.out.println(userIdMap.get("userId"));
             List<GoalAmountResponseDTO> list = goalAmountService.selectGoalAmount(user, userIdMap.get("userId"));
             System.out.println("리스트" + list);

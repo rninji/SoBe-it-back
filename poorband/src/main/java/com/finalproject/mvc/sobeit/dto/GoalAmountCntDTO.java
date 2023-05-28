@@ -15,4 +15,6 @@ import java.time.LocalDate;
 public class GoalAmountCntDTO {
     private int successGoalAmountCnt;
     private int goalAmountCnt;
+    private String nextTier;
+    private int leftCnt;
 }
