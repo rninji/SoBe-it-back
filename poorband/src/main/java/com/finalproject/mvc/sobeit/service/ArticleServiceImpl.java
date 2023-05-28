@@ -125,10 +125,10 @@ public class ArticleServiceImpl implements ArticleService{
     public ArticleResponseDTO articleDetail(Users user, Long articleSeq) throws RuntimeException{
         Article article = selectArticleById(articleSeq);
         //글에 대한 권한 확인
-        if (article.getStatus()==2 && user.getUserSeq()!=article.getUser().getUserSeq() && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
+        if (article.getStatus()==2 && !user.getUserSeq().equals(article.getUser().getUserSeq()) && !followToFollowCheck(user.getUserSeq(), article.getUser().getUserSeq())){
             throw new RuntimeException("맞팔로우의 유저만 확인 가능한 글입니다.");
         }
-        else if(article.getStatus()==3 && user.getUserSeq() != article.getUser().getUserSeq()){
+        else if(article.getStatus()==3 && !user.getUserSeq().equals(article.getUser().getUserSeq())){
             throw new RuntimeException("비공개 글입니다.");
         }
 
