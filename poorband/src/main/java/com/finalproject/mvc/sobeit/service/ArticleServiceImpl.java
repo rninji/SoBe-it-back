@@ -160,7 +160,7 @@ public class ArticleServiceImpl implements ArticleService{
         }
 
         // 내 글인지 확인
-        boolean isMine = (userSeq==article.getUser().getUserSeq());
+        boolean isMine = (userSeq.equals(article.getUser().getUserSeq()));
 
         // 댓글 수 가져오기
         //int replyCnt = 0;
