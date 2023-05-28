@@ -64,9 +64,18 @@ public class ArticleController {
      * @return 성공 시 업데이트된 글
      */
     @PostMapping("/update")
-    public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestBody ArticleDTO articleDTO){
+    public ResponseEntity<?> updateArticle(@AuthenticationPrincipal Users user, @RequestPart("articleDTO") ArticleDTO articleDTO, @RequestPart(required = false) MultipartFile file){
         try{
+            // 서비스 이용해 글 저장
             Article updatedArticle = articleService.updateArticle(user, articleDTO);
+            /**
+             * 이미지 파일을 S3에 업로드하고
+             * 리턴받은 URL을 DB에 업데이트
+             */
+            if (file != null) {
+                String imageUrl = s3Service.articleImageUpload(file, updatedArticle.getArticleSeq());
+                articleService.updateArticleImageUrl(updatedArticle.getArticleSeq(), imageUrl);
+            }
             return ResponseEntity.ok().body(updatedArticle);
         } catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
