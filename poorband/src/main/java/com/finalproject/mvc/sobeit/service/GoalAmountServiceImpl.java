@@ -3,6 +3,7 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
+import com.finalproject.mvc.sobeit.dto.NewGoalAmountRequestDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -17,6 +18,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +60,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         int isSuccess = 0;
 
         System.out.println("확인 전, " + goalAmount.getConsumption());
-        
+
         if(goalAmount.getIsSuccess() == 1){
 
             List<Article> articleList = articleRep.findArticlesByUser(userId);
@@ -118,7 +121,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     @Override
     public List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId) {
         List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(userId);
-        if (goalAmountSeqList == null) throw new RuntimeException("도전과제가 없습니다.");
+        if (goalAmountSeqList == null || goalAmountSeqList.size() == 0) throw new RuntimeException("도전과제가 없습니다.");
 
         List<GoalAmountResponseDTO> goalAmountList = new ArrayList<>();
         goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, userId, g)));
@@ -126,19 +129,41 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     }
 
     @Override
-    public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
+    public GoalAmountDTO insertGoalAmount(Users user, NewGoalAmountRequestDTO newGoalAmountRequestDTO) throws RuntimeException{
         // 요청 이용해 저장할 도전과제 생성
+        Long consumption = articleRep
+                .findSumOfAmountByUserAndConsumptionDate(user.getUserSeq(), newGoalAmountRequestDTO.getStartDate())
+                .orElse(0L);
+
+
+        System.out.println("서비스단");
+        System.out.println(newGoalAmountRequestDTO);
+        System.out.println("소비금액" + consumption);
         GoalAmount goalAmount = GoalAmount.builder()
                 .user(user)
-                .goalAmount(goalAmountDTO.getGoalAmount())
-                .title(goalAmountDTO.getTitle())
-                .startDate(goalAmountDTO.getStartDate())
-                .endDate(goalAmountDTO.getEndDate())
-                .routine(goalAmountDTO.getRoutine())
+                .goalAmount(newGoalAmountRequestDTO.getGoalAmount())
+                .title(newGoalAmountRequestDTO.getTitle())
+                .startDate(newGoalAmountRequestDTO.getStartDate())
+                .endDate(newGoalAmountRequestDTO.getEndDate())
+                .routine(newGoalAmountRequestDTO.getRoutine())
                 .isSuccess(1) // 처음은 무조건 '진행중'으로 작성
-                .consumption(0L)
+                .consumption(consumption)
                 .build();
-        return goalAmountRep.save(goalAmount);
+
+        System.out.println("ㅎㅇ");
+        System.out.println(goalAmount);
+        GoalAmount savedGoalAmount = goalAmountRep.save(goalAmount);
+
+        GoalAmountDTO goalAmountDTO = GoalAmountDTO.builder()
+                .goalAmountSeq(savedGoalAmount.getGoalAmountSeq())
+                .goalAmount(savedGoalAmount.getGoalAmount())
+                .title(savedGoalAmount.getTitle())
+                .startDate(savedGoalAmount.getStartDate())
+                .endDate(savedGoalAmount.getEndDate())
+                .routine(savedGoalAmount.getRoutine())
+                .isSuccess(savedGoalAmount.getIsSuccess())
+                .build();
+        return goalAmountDTO;
     }
 
     @Override
@@ -148,7 +173,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
             throw new RuntimeException("삭제할 도전과제가 없습니다.");
         }
 
-        if (user.getUserSeq() != foundGoalAmount.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+        if (!Objects.equals(user.getUserSeq(), foundGoalAmount.getUser().getUserSeq())){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
             throw new RuntimeException("작성자가 아닙니다.");
         }
         goalAmountRep.deleteById(goalAmountSeq);

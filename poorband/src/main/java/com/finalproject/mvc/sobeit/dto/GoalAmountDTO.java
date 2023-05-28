@@ -17,11 +17,8 @@ public class GoalAmountDTO {
     private Long goalAmountSeq;
     private Long goalAmount;
     private String title;
-    private Users user;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private int isSuccess;

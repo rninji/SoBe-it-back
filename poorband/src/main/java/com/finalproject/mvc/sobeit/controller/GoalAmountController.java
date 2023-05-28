@@ -1,9 +1,6 @@
 package com.finalproject.mvc.sobeit.controller;
 
-import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
-import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
-import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
-import com.finalproject.mvc.sobeit.dto.ResponseDTO;
+import com.finalproject.mvc.sobeit.dto.*;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import com.finalproject.mvc.sobeit.service.GoalAmountService;
@@ -52,7 +49,9 @@ public class GoalAmountController {
     @PostMapping("/list")
     public ResponseEntity<?> selectGoalAmount(@AuthenticationPrincipal Users user, @RequestBody Map<String, String> userIdMap) {
         try {
+            System.out.println(userIdMap.get("userId"));
             List<GoalAmountResponseDTO> list = goalAmountService.selectGoalAmount(user, userIdMap.get("userId"));
+            System.out.println("리스트" + list);
             return ResponseEntity.ok().body(list);
         } catch(Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
@@ -65,14 +64,15 @@ public class GoalAmountController {
     /**
      * 도전과제 작성
      * @param user
-     * @param goalAmountDTO
+     * @param
      * @return 성공 시 작성된 도전과제
      */
     @RequestMapping("/add")
-    public ResponseEntity<?> insertGoalAmount(@AuthenticationPrincipal Users user, @RequestBody GoalAmountDTO goalAmountDTO){
+    public ResponseEntity<?> insertGoalAmount(@AuthenticationPrincipal Users user,
+                                              @RequestBody NewGoalAmountRequestDTO newGoalAmountRequestDTO){
         try {
-            GoalAmount goalAmount = goalAmountService.insertGoalAmount(user, goalAmountDTO);
-            return ResponseEntity.ok().body(goalAmount);
+            GoalAmountDTO goalAmountDTO = goalAmountService.insertGoalAmount(user, newGoalAmountRequestDTO);
+            return ResponseEntity.ok().body(goalAmountDTO);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity
