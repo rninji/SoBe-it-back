@@ -3,6 +3,7 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
+import com.finalproject.mvc.sobeit.dto.NewGoalAmountRequestDTO;
 import com.finalproject.mvc.sobeit.entity.Article;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
@@ -15,8 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +37,39 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         int successCnt = goalAmountRep.findGoalAmountSeqSuccess(userId).size();
         int AllCnt = goalAmountRep.findGoalAmountSeq(userId).size();
 
+        Users user = userRep.findByUserId(userId);
+        String currentTier = user.getUserTier();
+        String nextTier = "";
+        int leftCnt = 0;
+
+        if (successCnt < 3) {
+            // BRONZE TIER
+            if (!Objects.equals(currentTier, "BRONZE")){
+                user.setUserTier("BRONZE");
+            }
+            nextTier = "SILVER";
+            leftCnt = 3-successCnt;
+        } else if (successCnt < 7) {
+            // SILVER TIER
+            if (!Objects.equals(currentTier, "SILVER")){
+                user.setUserTier("SILVER");
+            }
+            nextTier = "GOLD";
+            leftCnt = 7-successCnt;
+
+        } else if (successCnt > 7){
+            // GOLD TIER
+            if (!Objects.equals(currentTier, "BRONZE")){
+                user.setUserTier("SILVER");
+            }
+            nextTier = "NONE";
+        }
+
         GoalAmountCntDTO cntDTO = GoalAmountCntDTO.builder()
                 .successGoalAmountCnt(successCnt)
                 .goalAmountCnt(AllCnt)
+                .nextTier(nextTier)
+                .leftCnt(leftCnt)
                 .build();
 
         return cntDTO;
@@ -52,12 +82,13 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     public GoalAmountResponseDTO findGoalAmountResponse(Users user, String userId, Long goalAmountSeq){
         //보려는 도전과제 가져오기
         GoalAmount goalAmount = selectGoalAmountById(goalAmountSeq);
+        Users byUserId = userRep.findByUserId(userId);
 
         Long consumption = 0L;// 기간동안 소비된 비용
         int isSuccess = 0;
 
         System.out.println("확인 전, " + goalAmount.getConsumption());
-        
+
         if(goalAmount.getIsSuccess() == 1){
 
             List<Article> articleList = articleRep.findArticlesByUser(userId);
@@ -97,6 +128,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
             }
         }
         GoalAmountResponseDTO goalAmountResponseDTO = new GoalAmountResponseDTO();
+        goalAmountResponseDTO.setGoalAmountSeq(goalAmountSeq);
         goalAmountResponseDTO.setGoalAmount(goalAmount.getGoalAmount());
         goalAmountResponseDTO.setTitle(goalAmount.getTitle());
         goalAmountResponseDTO.setUserId(userId);
@@ -105,6 +137,9 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         goalAmountResponseDTO.setIsSuccess(goalAmount.getIsSuccess());
         goalAmountResponseDTO.setRoutine(goalAmount.getRoutine());
         goalAmountResponseDTO.setConsumption(goalAmount.getConsumption());
+        goalAmountResponseDTO.setProfileImg(byUserId.getProfileImageUrl());
+        goalAmountResponseDTO.setNickName(byUserId.getNickname());
+        goalAmountResponseDTO.setUserTier(byUserId.getUserTier());
 
         if (user.getUserId().equals(userId)){ // 1. 로그인한 유저가 자신의 도전과제를 확인하는 경우
             goalAmountResponseDTO.setStatus(1);
@@ -118,27 +153,56 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     @Override
     public List<GoalAmountResponseDTO> selectGoalAmount(Users user, String userId) {
         List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeq(userId);
-        if (goalAmountSeqList == null) throw new RuntimeException("도전과제가 없습니다.");
 
+        System.out.println("여긴가0");
+        if (goalAmountSeqList == null || goalAmountSeqList.size() == 0) throw new RuntimeException("도전과제가 없습니다.");
+
+
+        System.out.println("여긴가1");
         List<GoalAmountResponseDTO> goalAmountList = new ArrayList<>();
         goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, userId, g)));
+
+        System.out.println("여긴가2");
+        goalAmountList.sort(Comparator.comparing(GoalAmountResponseDTO::getStartDate).reversed());
         return goalAmountList;
     }
 
     @Override
-    public GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO) throws RuntimeException{
+    public GoalAmountDTO insertGoalAmount(Users user, NewGoalAmountRequestDTO newGoalAmountRequestDTO) throws RuntimeException{
         // 요청 이용해 저장할 도전과제 생성
+        Long consumption = articleRep
+                .findSumOfAmountByUserAndConsumptionDate(user.getUserSeq(), newGoalAmountRequestDTO.getStartDate())
+                .orElse(0L);
+
+
+        System.out.println("서비스단");
+        System.out.println(newGoalAmountRequestDTO);
+        System.out.println("소비금액" + consumption);
         GoalAmount goalAmount = GoalAmount.builder()
                 .user(user)
-                .goalAmount(goalAmountDTO.getGoalAmount())
-                .title(goalAmountDTO.getTitle())
-                .startDate(goalAmountDTO.getStartDate())
-                .endDate(goalAmountDTO.getEndDate())
-                .routine(goalAmountDTO.getRoutine())
+                .goalAmount(newGoalAmountRequestDTO.getGoalAmount())
+                .title(newGoalAmountRequestDTO.getTitle())
+                .startDate(newGoalAmountRequestDTO.getStartDate())
+                .endDate(newGoalAmountRequestDTO.getEndDate())
+                .routine(newGoalAmountRequestDTO.getRoutine())
                 .isSuccess(1) // 처음은 무조건 '진행중'으로 작성
-                .consumption(0L)
+                .consumption(consumption)
                 .build();
-        return goalAmountRep.save(goalAmount);
+
+        System.out.println("ㅎㅇ");
+        System.out.println(goalAmount);
+        GoalAmount savedGoalAmount = goalAmountRep.save(goalAmount);
+
+        GoalAmountDTO goalAmountDTO = GoalAmountDTO.builder()
+                .goalAmountSeq(savedGoalAmount.getGoalAmountSeq())
+                .goalAmount(savedGoalAmount.getGoalAmount())
+                .title(savedGoalAmount.getTitle())
+                .startDate(savedGoalAmount.getStartDate())
+                .endDate(savedGoalAmount.getEndDate())
+                .routine(savedGoalAmount.getRoutine())
+                .isSuccess(savedGoalAmount.getIsSuccess())
+                .build();
+        return goalAmountDTO;
     }
 
     @Override
@@ -148,7 +212,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
             throw new RuntimeException("삭제할 도전과제가 없습니다.");
         }
 
-        if (user.getUserSeq() != foundGoalAmount.getUser().getUserSeq()){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
+        if (!Objects.equals(user.getUserSeq(), foundGoalAmount.getUser().getUserSeq())){ // 삭제 요청 유저가 작성자가 아닐 경우 예외 발생
             throw new RuntimeException("작성자가 아닙니다.");
         }
         goalAmountRep.deleteById(goalAmountSeq);

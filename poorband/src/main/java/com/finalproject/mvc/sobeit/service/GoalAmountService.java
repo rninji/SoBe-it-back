@@ -3,6 +3,7 @@ package com.finalproject.mvc.sobeit.service;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
+import com.finalproject.mvc.sobeit.dto.NewGoalAmountRequestDTO;
 import com.finalproject.mvc.sobeit.entity.GoalAmount;
 import com.finalproject.mvc.sobeit.entity.Users;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,10 +28,10 @@ public interface GoalAmountService {
     /**
      * 도전과제 작성
      * @param user
-     * @param goalAmountDTO
+     * @param
      * @return 작성된 도전과제
      **/
-    GoalAmount insertGoalAmount(Users user, GoalAmountDTO goalAmountDTO);
+    GoalAmountDTO insertGoalAmount(Users user, NewGoalAmountRequestDTO newGoalAmountRequestDTO);
 
     /**
      * 도전과제 삭제

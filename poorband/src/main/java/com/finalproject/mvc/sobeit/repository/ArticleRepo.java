@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ArticleRepo extends JpaRepository<Article, Long> {
     @Query("select a from Article a where a.user.userId = ?1 order by a.writtenDate desc")
@@ -22,6 +23,9 @@ public interface ArticleRepo extends JpaRepository<Article, Long> {
     @Query("select a from Article a where a.articleText like %?1%")
     Page<Article> findArticlesByArticleTextLastArticleIsnull(String articleText, Pageable pageable);
     Article findByArticleSeq(Long articleSeq);
+
+    @Query("select sum(a.amount) from Article a where a.user.userSeq = ?1 and a.consumptionDate = ?2")
+    Optional<Long> findSumOfAmountByUserAndConsumptionDate(Long userSeq, LocalDate consumptionDate);
 
     @Modifying
     @Query("UPDATE Article a SET a.imageUrl = :newImageUrl WHERE a.articleSeq = :articleSeq")
