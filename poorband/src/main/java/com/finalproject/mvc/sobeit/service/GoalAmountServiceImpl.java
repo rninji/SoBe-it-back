@@ -1,5 +1,6 @@
 package com.finalproject.mvc.sobeit.service;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
@@ -227,9 +228,23 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     public GoalAmountResponseDTO findGoalAmountSeqList(Long userSeq){
         Users user = userRep.findById(userSeq).orElse(null);
 
-        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeqList(userSeq);
-        Long goalAmountSeq = goalAmountSeqList.get(0);
+        List<GoalAmount> goalAmountList = goalAmountRep.findGoalAmountSeqList(userSeq);
 
-        return findGoalAmountResponse(user, user.getUserId(), goalAmountSeq);
+        if (goalAmountList==null || goalAmountList.size()==0) return null;
+
+        GoalAmountResponseDTO dto = GoalAmountResponseDTO.builder()
+                .goalAmountSeq(goalAmountList.get(0).getGoalAmountSeq())
+                .goalAmount(goalAmountList.get(0).getGoalAmount())
+                .consumption(goalAmountList.get(0).getConsumption())
+                .status(1)
+                .routine(goalAmountList.get(0).getRoutine())
+                .title(goalAmountList.get(0).getTitle())
+                .endDate(goalAmountList.get(0).getEndDate())
+                .startDate(goalAmountList.get(0).getStartDate())
+                .userId(goalAmountList.get(0).getUser().getUserId())
+                .build();
+
+
+        return dto;
     }
 }
