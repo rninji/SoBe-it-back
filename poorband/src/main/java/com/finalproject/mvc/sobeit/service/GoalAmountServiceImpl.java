@@ -1,6 +1,5 @@
 package com.finalproject.mvc.sobeit.service;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.finalproject.mvc.sobeit.dto.GoalAmountCntDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountDTO;
 import com.finalproject.mvc.sobeit.dto.GoalAmountResponseDTO;
@@ -164,7 +163,7 @@ public class GoalAmountServiceImpl implements GoalAmountService{
         goalAmountSeqList.forEach(g -> goalAmountList.add(findGoalAmountResponse(user, userId, g)));
 
         System.out.println("여긴가2");
-        goalAmountList.sort(Comparator.comparing(GoalAmountResponseDTO::getStartDate).reversed());
+        goalAmountList.sort(Comparator.comparing(GoalAmountResponseDTO::getGoalAmountSeq).reversed());
         return goalAmountList;
     }
 
@@ -228,23 +227,9 @@ public class GoalAmountServiceImpl implements GoalAmountService{
     public GoalAmountResponseDTO findGoalAmountSeqList(Long userSeq){
         Users user = userRep.findById(userSeq).orElse(null);
 
-        List<GoalAmount> goalAmountList = goalAmountRep.findGoalAmountSeqList(userSeq);
+        List<Long> goalAmountSeqList = goalAmountRep.findGoalAmountSeqList(userSeq);
+        Long goalAmountSeq = goalAmountSeqList.get(0);
 
-        if (goalAmountList==null || goalAmountList.size()==0) return null;
-
-        GoalAmountResponseDTO dto = GoalAmountResponseDTO.builder()
-                .goalAmountSeq(goalAmountList.get(0).getGoalAmountSeq())
-                .goalAmount(goalAmountList.get(0).getGoalAmount())
-                .consumption(goalAmountList.get(0).getConsumption())
-                .status(1)
-                .routine(goalAmountList.get(0).getRoutine())
-                .title(goalAmountList.get(0).getTitle())
-                .endDate(goalAmountList.get(0).getEndDate())
-                .startDate(goalAmountList.get(0).getStartDate())
-                .userId(goalAmountList.get(0).getUser().getUserId())
-                .build();
-
-
-        return dto;
+        return findGoalAmountResponse(user, user.getUserId(), goalAmountSeq);
     }
 }
