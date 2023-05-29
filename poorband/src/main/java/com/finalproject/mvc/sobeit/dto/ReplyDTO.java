@@ -20,6 +20,7 @@ public class ReplyDTO {
     private LocalDateTime written_date;
     private int is_updated; // 댓글 수정 여부
     private String nickname; // 댓글을 작성한 사용자의 닉네임
+    private String user_id; // 댓글을 작성한 사용자의 아이디
     private String user_tier; // 댓글을 작성한 사용자의 티어
     private String profile_image_url; // 댓글을 작성한 사용자의 프로필 이미지 URL
     private int reply_like_cnt; // 댓글 좋아요 개수

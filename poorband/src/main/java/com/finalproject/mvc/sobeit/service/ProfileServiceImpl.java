@@ -220,6 +220,10 @@ public class ProfileServiceImpl implements ProfileService {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
+        if(user.getUserId().equals(targetUserId)){
+            throw new RuntimeException("자기 자신은 팔로우할 수 없습니다.");
+        }
+
         Following isFollowing = followingRepo.findByFollowingAndFollower(user, followingUser.getUserSeq()).orElse(null);
 
         // user가 targetUser를 이미 팔로우하고 있을 때
