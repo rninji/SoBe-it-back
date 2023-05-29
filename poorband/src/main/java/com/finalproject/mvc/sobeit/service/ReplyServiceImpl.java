@@ -124,7 +124,8 @@ public class ReplyServiceImpl implements ReplyService {
         if (existingReply==null){
             throw new RuntimeException("삭제할 댓글이 없습니다.");
         }
-        if (existingReply.getUser().getUserSeq() != user.getUserSeq()){
+
+        if (!existingReply.getUser().getUserSeq().equals(user.getUserSeq())){
             throw new RuntimeException("댓글을 삭제할 권한이 없습니다.");
         }
         replyRepo.deleteById(replySeq);
@@ -167,6 +168,7 @@ public class ReplyServiceImpl implements ReplyService {
             responseReplyDTOList.add(
                     ReplyDTO.builder()
                             .reply_seq(writtenReply.getReplySeq())
+                            .user_id(writtenReply.getUser().getUserId())
                             .article_seq(writtenReply.getArticle().getArticleSeq())
                             .user_seq(writtenReply.getUser().getUserSeq())
                             .reply_text(writtenReply.getReplyText())
