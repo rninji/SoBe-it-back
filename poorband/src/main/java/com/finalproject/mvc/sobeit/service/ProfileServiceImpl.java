@@ -34,6 +34,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileUserDTO selectUserInfo(String loggedInUserId, String userId) {
         Users user = userRepo.findByUserId(userId);
+        Users loggedUser = userRepo.findByUserId(loggedInUserId);
 
         if(user == null) throw new RuntimeException("사용자 정보가 없습니다.");
 
@@ -45,10 +46,17 @@ public class ProfileServiceImpl implements ProfileService {
         profileUserDTO.setFollowingCnt(followingRepo.followingCnt(user));
         profileUserDTO.setFollowerCnt(followingRepo.followerCnt(user));
 
+
+
         if (loggedInUserId.equals(userId)){ // 1. 로그인한 유저와 해당 프로필의 유저가 같은 경우
             profileUserDTO.setStatus(1);
         } else { // 2. 로그인한 유저와 해당 프로필의 유저가 다른 경우
-            profileUserDTO.setStatus(2);
+            Following following = followingRepo.findByFollowingAndFollower(loggedUser, user.getUserSeq()).orElse(null);
+            if (following==null){ // 팔로우하지 않은 상태
+                profileUserDTO.setStatus(2);
+            } else{ // 팔로우한 상태
+                profileUserDTO.setStatus(3);
+            }
         }
         return profileUserDTO;
     }

@@ -17,5 +17,5 @@ public class ProfileUserDTO {
     private int followingCnt; // 팔로잉 수
     private int followerCnt; // 팔로워 수
 
-    private int status; // 프로필 대상 : 1. 자신, 2. 타인
+    private int status; // 프로필 대상 : 1. 자신 , 2. 팔로우하지 않은 타인, 3. 팔로우한 타인
 }
